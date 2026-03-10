@@ -683,6 +683,74 @@ Cette refonte majeure transforme la gestion du stock d'un système purement comp
 - Traçabilité améliorée
 - Base solide pour des évolutions futures
 
+---
+
+## 11. Corrections Post-Implémentation
+
+### 11.1 Bug: Validation de Stock au Checkout (10 mars 2026)
+
+**Problème identifié:**
+```
+Exception: Stock insuffisant pour bière spéciale au fût - Bière spéc au fût. 
+Disponible: 10, Requis: 100.00
+```
+
+**Cause:**
+La validation du stock dans `transaction_endpoint.dart` (ligne 84) comparait incorrectement :
+- `product.stockQuantity` (int) = 10 unités complètes
+- `requiredStockQuantity` (double) = 100.00 litres
+
+Pour les produits en vrac, le système comparait des **unités** avec des **litres**, causant des rejets erronés.
+
+**Solution appliquée:**
+```dart
+// AVANT (incorrect)
+if (product.stockQuantity < requiredStockQuantity) {
+  throw Exception('Stock insuffisant...');
+}
+
+// APRÈS (corrigé)
+double availableStock;
+if (product.isBulkProduct &&
+    cartItem.productPortionId != null &&
+    product.bulkTotalQuantity != null) {
+  // Pour produits en vrac : calcul du stock total disponible
+  availableStock = (product.stockQuantity * product.bulkTotalQuantity!) +
+      (product.currentUnitRemaining ?? 0);
+} else {
+  // Pour produits réguliers : utiliser stockQuantity directement
+  availableStock = product.stockQuantity.toDouble();
+}
+
+if (availableStock < requiredStockQuantity) {
+  throw Exception('Stock insuffisant...');
+}
+```
+
+**Exemple concret:**
+- Produit: Fût de bière 10L
+- Stock: 10 fûts complets + 4.25L dans le fût ouvert
+- Client commande: 100 portions de 25cl (= 25L requis)
+- **Avant:** Rejet (10 < 100.00)
+- **Après:** Accepté (104.25L disponibles > 25L requis) ✅
+
+**Commits:**
+- `3e8d752` - Correction de la validation de stock
+- `1ba1b18` - Formatage du code
+- `3531487` - Suppression variable `unitsConsumed` inutilisée
+
+**Fichier modifié:**
+- `airbar_backend_server/lib/src/endpoints/transactions/transaction_endpoint.dart`
+
+**Tests effectués:**
+- ✅ Checkout avec produits en vrac et portions multiples
+- ✅ Vérification du calcul de stock disponible
+- ✅ Messages d'erreur cohérents (affichage en litres)
+
+---
+
+## 12. Conclusion et Étapes Suivantes
+
 **Prochaines étapes recommandées :**
 1. Tests complets sur environnement de staging
 2. Formation des utilisateurs au nouveau système
@@ -691,6 +759,6 @@ Cette refonte majeure transforme la gestion du stock d'un système purement comp
 
 ---
 
-**Dernière mise à jour:** 10 mars 2026  
+**Dernière mise à jour:** 10 mars 2026 - 12h20  
 **Auteur:** Documentation automatique  
-**Version:** 2.0 - Gestion par unités complètes
+**Version:** 2.0.1 - Gestion par unités complètes + corrections
