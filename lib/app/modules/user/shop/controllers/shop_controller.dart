@@ -167,13 +167,32 @@ class ShopController extends GetxController {
         }
       }
 
-      if (product.stockQuantity < requiredStock) {
-        Get.snackbar(
-          'Stock insuffisant',
-          'Il ne reste que ${product.stockQuantity.toStringAsFixed(2)} ${product.isBulkProduct ? "litre(s)" : "unité(s)"} en stock',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
+      // Calculate total available stock
+      double availableStock = 0.0;
+      
+      if (product.isBulkProduct && product.bulkTotalQuantity != null) {
+        // For bulk products: total = (complete units × capacity) + opened unit remaining
+        availableStock = (product.stockQuantity * product.bulkTotalQuantity!) + 
+                        (product.currentUnitRemaining ?? 0.0);
+        
+        if (availableStock < requiredStock) {
+          Get.snackbar(
+            'Stock insuffisant',
+            'Il ne reste que ${availableStock.toStringAsFixed(2)} ${product.bulkUnit ?? "L"} en stock',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
+      } else {
+        // For regular products: just check unit count
+        if (product.stockQuantity < quantity) {
+          Get.snackbar(
+            'Stock insuffisant',
+            'Il ne reste que ${product.stockQuantity} unité(s) en stock',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+          return;
+        }
       }
 
       await _cartRepository.addToCart(

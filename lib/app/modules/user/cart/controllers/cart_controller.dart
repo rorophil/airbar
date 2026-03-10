@@ -134,13 +134,32 @@ class CartController extends GetxController {
           requiredStock = newQuantity * item.portion!.quantity;
         }
 
-        if (item.product!.stockQuantity < requiredStock) {
-          Get.snackbar(
-            'Stock insuffisant',
-            'Il ne reste que ${item.product!.stockQuantity.toStringAsFixed(2)} ${item.product!.isBulkProduct ? "litre(s)" : "unité(s)"} en stock',
-            snackPosition: SnackPosition.BOTTOM,
-          );
-          return;
+        // Calculate total available stock
+        double availableStock = 0.0;
+        
+        if (item.product!.isBulkProduct && item.product!.bulkTotalQuantity != null) {
+          // For bulk products: total = (complete units × capacity) + opened unit remaining
+          availableStock = (item.product!.stockQuantity * item.product!.bulkTotalQuantity!) + 
+                          (item.product!.currentUnitRemaining ?? 0.0);
+          
+          if (availableStock < requiredStock) {
+            Get.snackbar(
+              'Stock insuffisant',
+              'Il ne reste que ${availableStock.toStringAsFixed(2)} ${item.product!.bulkUnit ?? "L"} en stock',
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            return;
+          }
+        } else {
+          // For regular products: just check unit count
+          if (item.product!.stockQuantity < newQuantity) {
+            Get.snackbar(
+              'Stock insuffisant',
+              'Il ne reste que ${item.product!.stockQuantity} unité(s) en stock',
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            return;
+          }
         }
       }
 

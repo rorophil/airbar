@@ -172,8 +172,8 @@ class ProductFormController extends GetxController {
       isLoading.value = true;
 
       final price = double.parse(priceController.text);
-      final stockQuantity = double.parse(stockQuantityController.text);
-      final minStockAlert = double.parse(minStockAlertController.text);
+      final stockQuantity = int.parse(stockQuantityController.text);
+      final minStockAlert = int.parse(minStockAlertController.text);
 
       final bulkUnit = isBulkProduct.value
           ? bulkUnitController.text.trim()

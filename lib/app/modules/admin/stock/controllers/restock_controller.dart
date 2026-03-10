@@ -67,7 +67,7 @@ class RestockController extends GetxController {
         return;
       }
 
-      final quantity = double.parse(quantityController.text);
+      final quantity = int.parse(quantityController.text);
 
       await _stockRepository.restockProduct(
         productId: product!.id!,

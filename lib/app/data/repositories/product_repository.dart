@@ -87,8 +87,8 @@ class ProductRepository {
     required String description,
     required double price,
     required int categoryId,
-    required double stockQuantity,
-    required double minStockAlert,
+    required int stockQuantity,
+    required int minStockAlert,
     String? imageUrl,
     bool isBulkProduct = false,
     String? bulkUnit,
@@ -120,12 +120,12 @@ class ProductRepository {
     required String description,
     required double price,
     required int categoryId,
-    required double minStockAlert,
+    required int minStockAlert,
     String? imageUrl,
     bool? isBulkProduct,
     String? bulkUnit,
     double? bulkTotalQuantity,
-    double? stockQuantity,
+    int? stockQuantity,
   }) async {
     try {
       return await _client.product.updateProduct(
@@ -179,7 +179,7 @@ class ProductRepository {
   }
 
   /// Update product stock quantity (admin only)
-  Future<dynamic> updateStock(int productId, double newStockQuantity) async {
+  Future<dynamic> updateStock(int productId, int newStockQuantity) async {
     try {
       final result = await _client.product.updateStock(
         productId,

@@ -89,7 +89,7 @@ class StockController extends GetxController {
   /// Adjust stock
   Future<void> adjustStock({
     required Product product,
-    required double adjustment,
+    required int adjustment,
     required String reason,
   }) async {
     try {

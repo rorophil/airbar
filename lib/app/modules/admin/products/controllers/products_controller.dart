@@ -214,7 +214,7 @@ class ProductsController extends GetxController {
       text: product.stockQuantity.toString(),
     );
 
-    final result = await Get.dialog<double>(
+    final result = await Get.dialog<int>(
       AlertDialog(
         title: Text('Gérer le stock - ${product.name}'),
         content: Column(
@@ -241,7 +241,7 @@ class ProductsController extends GetxController {
                 ElevatedButton.icon(
                   onPressed: () {
                     final current =
-                        double.tryParse(stockController.text) ??
+                        int.tryParse(stockController.text) ??
                         product.stockQuantity;
                     stockController.text = (current - 10).toString();
                   },
@@ -251,7 +251,7 @@ class ProductsController extends GetxController {
                 ElevatedButton.icon(
                   onPressed: () {
                     final current =
-                        double.tryParse(stockController.text) ??
+                        int.tryParse(stockController.text) ??
                         product.stockQuantity;
                     stockController.text = (current + 10).toString();
                   },
@@ -269,7 +269,7 @@ class ProductsController extends GetxController {
           ),
           ElevatedButton(
             onPressed: () {
-              final newStock = double.tryParse(stockController.text);
+              final newStock = int.tryParse(stockController.text);
               if (newStock != null && newStock >= 0) {
                 Get.back(result: newStock);
               } else {

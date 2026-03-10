@@ -8,7 +8,7 @@ class StockRepository {
   /// Restock product (admin only)
   Future<dynamic> restockProduct({
     required int productId,
-    required double quantity,
+    required int quantity,
     required int adminUserId,
     String? notes,
   }) async {
@@ -28,7 +28,7 @@ class StockRepository {
   /// Adjust stock (admin only)
   Future<dynamic> adjustStock({
     required int productId,
-    required double adjustment,
+    required int adjustment,
     required int adminUserId,
     required String reason,
   }) async {
