@@ -169,12 +169,13 @@ class ShopController extends GetxController {
 
       // Calculate total available stock
       double availableStock = 0.0;
-      
+
       if (product.isBulkProduct && product.bulkTotalQuantity != null) {
         // For bulk products: total = (complete units × capacity) + opened unit remaining
-        availableStock = (product.stockQuantity * product.bulkTotalQuantity!) + 
-                        (product.currentUnitRemaining ?? 0.0);
-        
+        availableStock =
+            (product.stockQuantity * product.bulkTotalQuantity!) +
+            (product.currentUnitRemaining ?? 0.0);
+
         if (availableStock < requiredStock) {
           Get.snackbar(
             'Stock insuffisant',
