@@ -20,6 +20,7 @@ class ProductFormController extends GetxController {
   final minStockAlertController = TextEditingController();
   final bulkUnitController = TextEditingController();
   final bulkTotalQuantityController = TextEditingController();
+  final currentUnitRemainingController = TextEditingController();
 
   // Observables
   final isLoading = false.obs;
@@ -62,6 +63,8 @@ class ProductFormController extends GetxController {
           bulkUnitController.text = productToEdit!.bulkUnit ?? '';
           bulkTotalQuantityController.text =
               productToEdit!.bulkTotalQuantity?.toString() ?? '';
+          currentUnitRemainingController.text =
+              productToEdit!.currentUnitRemaining?.toString() ?? '';
 
           // Load portions for this product
           loadPortions();
@@ -79,6 +82,7 @@ class ProductFormController extends GetxController {
     minStockAlertController.dispose();
     bulkUnitController.dispose();
     bulkTotalQuantityController.dispose();
+    currentUnitRemainingController.dispose();
     super.onClose();
   }
 
@@ -171,7 +175,10 @@ class ProductFormController extends GetxController {
     try {
       isLoading.value = true;
 
-      final price = double.parse(priceController.text);
+      // For bulk products, price is optional (defaults to 0)
+      final price = priceController.text.isEmpty
+          ? 0.0
+          : double.parse(priceController.text);
       final stockQuantity = int.parse(stockQuantityController.text);
       final minStockAlert = int.parse(minStockAlertController.text);
 
@@ -180,6 +187,10 @@ class ProductFormController extends GetxController {
           : null;
       final bulkTotalQuantity = isBulkProduct.value
           ? double.parse(bulkTotalQuantityController.text)
+          : null;
+      final currentUnitRemaining =
+          isBulkProduct.value && currentUnitRemainingController.text.isNotEmpty
+          ? double.parse(currentUnitRemainingController.text)
           : null;
 
       if (isEdit.value && productToEdit != null) {
@@ -195,6 +206,7 @@ class ProductFormController extends GetxController {
           isBulkProduct: isBulkProduct.value,
           bulkUnit: bulkUnit,
           bulkTotalQuantity: bulkTotalQuantity,
+          currentUnitRemaining: currentUnitRemaining,
         );
 
         // Update portions if bulk product
@@ -232,6 +244,7 @@ class ProductFormController extends GetxController {
           isBulkProduct: isBulkProduct.value,
           bulkUnit: bulkUnit,
           bulkTotalQuantity: bulkTotalQuantity,
+          currentUnitRemaining: currentUnitRemaining,
         );
 
         // Create portions if bulk product
@@ -410,6 +423,19 @@ class ProductFormController extends GetxController {
 
   /// Validate price
   String? validatePrice(String? value) {
+    // For bulk products, price is optional (portions define the prices)
+    if (isBulkProduct.value) {
+      if (value == null || value.isEmpty) {
+        return null; // Optional for bulk products
+      }
+      final price = double.tryParse(value);
+      if (price == null || price < 0) {
+        return 'Prix invalide';
+      }
+      return null;
+    }
+
+    // For regular products, price is required
     if (value == null || value.isEmpty) {
       return 'Prix requis';
     }
@@ -417,8 +443,7 @@ class ProductFormController extends GetxController {
     if (price == null || price < 0) {
       return 'Prix invalide';
     }
-    // For bulk products, price can be 0 (portions define the prices)
-    if (!isBulkProduct.value && price <= 0) {
+    if (price <= 0) {
       return 'Prix doit être positif';
     }
     return null;

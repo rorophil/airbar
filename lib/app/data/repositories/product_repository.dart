@@ -64,6 +64,10 @@ class ProductRepository {
         includeDeleted: false,
         activeOnly: true,
       );
+
+      // Cache the result for future use
+      _storageService.write(AppConstants.keyProducts, products);
+
       return products;
     } catch (e) {
       print('Get active products error: $e');
@@ -93,6 +97,7 @@ class ProductRepository {
     bool isBulkProduct = false,
     String? bulkUnit,
     double? bulkTotalQuantity,
+    double? currentUnitRemaining,
   }) async {
     try {
       return await _client.product.createProduct(
@@ -106,6 +111,7 @@ class ProductRepository {
         isBulkProduct: isBulkProduct,
         bulkUnit: bulkUnit,
         bulkTotalQuantity: bulkTotalQuantity,
+        currentUnitRemaining: currentUnitRemaining,
       );
     } catch (e) {
       print('Create product error: $e');
@@ -126,6 +132,7 @@ class ProductRepository {
     String? bulkUnit,
     double? bulkTotalQuantity,
     int? stockQuantity,
+    double? currentUnitRemaining,
   }) async {
     try {
       return await _client.product.updateProduct(
@@ -140,6 +147,7 @@ class ProductRepository {
         bulkUnit: bulkUnit,
         bulkTotalQuantity: bulkTotalQuantity,
         stockQuantity: stockQuantity,
+        currentUnitRemaining: currentUnitRemaining,
       );
     } catch (e) {
       print('Update product error: $e');

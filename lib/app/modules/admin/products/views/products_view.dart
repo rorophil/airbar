@@ -29,6 +29,7 @@ class ProductsView extends GetView<ProductsController> {
           Padding(
             padding: EdgeInsets.all(16.w),
             child: TextField(
+              controller: controller.searchController,
               decoration: InputDecoration(
                 hintText: AppStrings.search,
                 prefixIcon: const Icon(Icons.search),
@@ -36,7 +37,7 @@ class ProductsView extends GetView<ProductsController> {
                   () => controller.searchQuery.value.isNotEmpty
                       ? IconButton(
                           icon: const Icon(Icons.clear),
-                          onPressed: () => controller.updateSearchQuery(''),
+                          onPressed: controller.clearSearch,
                         )
                       : const SizedBox.shrink(),
                 ),

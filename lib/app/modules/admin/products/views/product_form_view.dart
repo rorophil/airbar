@@ -121,7 +121,10 @@ class ProductFormView extends GetView<ProductFormController> {
                         ? 'Prix de base (€) - optionnel'
                         : 'Prix (€)',
                     hintText: controller.isBulkProduct.value
-                        ? 'Laissez 0 si prix définis par portions'
+                        ? 'Laissez vide, les prix sont définis par portions'
+                        : 'Prix unitaire',
+                    helperText: controller.isBulkProduct.value
+                        ? 'Les portions ont leurs propres prix'
                         : null,
                     prefixIcon: const Icon(Icons.euro),
                     border: OutlineInputBorder(
@@ -220,6 +223,31 @@ class ProductFormView extends GetView<ProductFormController> {
                               helperText:
                                   'Volume/poids total d\'une unité complète',
                               prefixIcon: const Icon(Icons.local_drink),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12.r),
+                              ),
+                            ),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
+                            ),
+                          ),
+
+                          SizedBox(height: 16.h),
+
+                          // Current unit remaining
+                          TextFormField(
+                            controller:
+                                controller.currentUnitRemainingController,
+                            decoration: InputDecoration(
+                              labelText:
+                                  'Quantité dans l\'unité ouverte (optionnel)',
+                              hintText:
+                                  'Ex: 3.5 pour 3.5L restants dans un fût',
+                              helperText:
+                                  'Quantité restante dans l\'unité actuellement entamée',
+                              prefixIcon: const Icon(
+                                Icons.inventory_2_outlined,
+                              ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.r),
                               ),

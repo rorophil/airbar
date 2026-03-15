@@ -10,6 +10,9 @@ class ProductsController extends GetxController {
   final ProductRepository _productRepository = Get.find();
   final CategoryRepository _categoryRepository = Get.find();
 
+  // Text editing controller for search bar
+  final searchController = TextEditingController();
+
   // Observables
   final isLoading = false.obs;
   final products = <Product>[].obs;
@@ -22,6 +25,12 @@ class ProductsController extends GetxController {
   void onInit() {
     super.onInit();
     loadData();
+  }
+
+  @override
+  void onClose() {
+    searchController.dispose();
+    super.onClose();
   }
 
   /// Load products and categories
@@ -75,6 +84,13 @@ class ProductsController extends GetxController {
   /// Update search query
   void updateSearchQuery(String query) {
     searchQuery.value = query;
+    filterProducts();
+  }
+
+  /// Clear search
+  void clearSearch() {
+    searchController.clear();
+    searchQuery.value = '';
     filterProducts();
   }
 
