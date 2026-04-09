@@ -98,6 +98,7 @@ class ProductRepository {
     String? bulkUnit,
     double? bulkTotalQuantity,
     double? currentUnitRemaining,
+    bool trackStock = true,
   }) async {
     try {
       return await _client.product.createProduct(
@@ -112,6 +113,7 @@ class ProductRepository {
         bulkUnit: bulkUnit,
         bulkTotalQuantity: bulkTotalQuantity,
         currentUnitRemaining: currentUnitRemaining,
+        trackStock: trackStock,
       );
     } catch (e) {
       print('Create product error: $e');
@@ -133,6 +135,7 @@ class ProductRepository {
     double? bulkTotalQuantity,
     int? stockQuantity,
     double? currentUnitRemaining,
+    bool? trackStock,
   }) async {
     try {
       return await _client.product.updateProduct(
@@ -148,6 +151,7 @@ class ProductRepository {
         bulkTotalQuantity: bulkTotalQuantity,
         stockQuantity: stockQuantity,
         currentUnitRemaining: currentUnitRemaining,
+        trackStock: trackStock,
       );
     } catch (e) {
       print('Update product error: $e');

@@ -149,7 +149,9 @@ class _ProductCard extends GetView<ProductsController> {
 
   @override
   Widget build(BuildContext context) {
-    final stockColor = product.stockQuantity == 0
+    final stockColor = !product.trackStock
+        ? AppColors.textHint
+        : product.stockQuantity == 0
         ? AppColors.stockOut
         : product.stockQuantity <= product.minStockAlert
         ? AppColors.stockLow
@@ -221,7 +223,9 @@ class _ProductCard extends GetView<ProductsController> {
                           ),
                           SizedBox(width: 4.w),
                           Text(
-                            '${product.stockQuantity}',
+                            product.trackStock
+                                ? '${product.stockQuantity}'
+                                : 'N/A',
                             style: TextStyle(
                               fontSize: 14.sp,
                               color: stockColor,
@@ -321,12 +325,22 @@ class _ProductCard extends GetView<ProductsController> {
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: () => controller.manageStock(product),
+                    onPressed: product.trackStock
+                        ? () => controller.manageStock(product)
+                        : null,
                     icon: Icon(Icons.inventory, size: 18.sp),
-                    label: const Text('Gérer le stock'),
+                    label: Text(
+                      product.trackStock ? 'Gérer le stock' : 'Stock non géré',
+                    ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.textPrimary,
-                      side: const BorderSide(color: AppColors.textHint),
+                      foregroundColor: product.trackStock
+                          ? AppColors.textPrimary
+                          : AppColors.textHint,
+                      side: BorderSide(
+                        color: product.trackStock
+                            ? AppColors.textHint
+                            : AppColors.textHint.withOpacity(0.3),
+                      ),
                     ),
                   ),
                 ),

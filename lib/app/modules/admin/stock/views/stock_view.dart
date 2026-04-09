@@ -260,9 +260,15 @@ class _StockCard extends GetView<StockController> {
                   child: Container(
                     padding: EdgeInsets.all(12.w),
                     decoration: BoxDecoration(
-                      color: AppColors.background,
+                      color: product.trackStock
+                          ? AppColors.background
+                          : Colors.grey[100],
                       borderRadius: BorderRadius.circular(8.r),
-                      border: Border.all(color: AppColors.textHint),
+                      border: Border.all(
+                        color: product.trackStock
+                            ? AppColors.textHint
+                            : Colors.grey[300]!,
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +277,9 @@ class _StockCard extends GetView<StockController> {
                           'Seuil d\'alerte',
                           style: TextStyle(
                             fontSize: 12.sp,
-                            color: AppColors.textSecondary,
+                            color: product.trackStock
+                                ? AppColors.textSecondary
+                                : Colors.grey[400],
                           ),
                         ),
                         SizedBox(height: 4.h),
@@ -280,15 +288,21 @@ class _StockCard extends GetView<StockController> {
                             Icon(
                               Icons.warning_amber_rounded,
                               size: 20.sp,
-                              color: AppColors.textHint,
+                              color: product.trackStock
+                                  ? AppColors.textHint
+                                  : Colors.grey[300],
                             ),
                             SizedBox(width: 4.w),
                             Text(
-                              '${product.minStockAlert}',
+                              product.trackStock
+                                  ? '${product.minStockAlert}'
+                                  : 'N/A',
                               style: TextStyle(
                                 fontSize: 20.sp,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                                color: product.trackStock
+                                    ? AppColors.textPrimary
+                                    : Colors.grey[400],
                               ),
                             ),
                           ],
@@ -302,22 +316,53 @@ class _StockCard extends GetView<StockController> {
 
             SizedBox(height: 12.h),
 
-            // Restock button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: onRestock,
-                icon: const Icon(Icons.add_box),
-                label: const Text('Réapprovisionner'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.textWhite,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
+            // Restock button or disabled message
+            if (!product.trackStock)
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(12.w),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(8.r),
+                  border: Border.all(color: Colors.grey[400]!),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 20.sp,
+                      color: Colors.grey[600],
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      child: Text(
+                        'Gestion de stock désactivée pour ce produit',
+                        style: TextStyle(
+                          fontSize: 13.sp,
+                          color: Colors.grey[700],
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: onRestock,
+                  icon: const Icon(Icons.add_box),
+                  label: const Text('Réapprovisionner'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.textWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

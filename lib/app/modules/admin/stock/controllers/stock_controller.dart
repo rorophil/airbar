@@ -38,9 +38,10 @@ class StockController extends GetxController {
 
       products.value = List<Product>.from(allProducts);
 
-      // Filter products with low stock
+      // Filter products with low stock (only for products with stock tracking enabled)
       lowStockProducts.value = products.where((product) {
-        return product.stockQuantity <= product.minStockAlert;
+        return product.trackStock &&
+            product.stockQuantity <= product.minStockAlert;
       }).toList();
 
       filterProducts();
@@ -128,6 +129,9 @@ class StockController extends GetxController {
 
   /// Get stock status
   String getStockStatus(Product product) {
+    if (!product.trackStock) {
+      return 'Stock non géré';
+    }
     if (product.stockQuantity == 0) {
       return 'Rupture';
     } else if (product.stockQuantity <= product.minStockAlert) {
@@ -139,6 +143,9 @@ class StockController extends GetxController {
 
   /// Get stock color
   Color getStockColor(Product product) {
+    if (!product.trackStock) {
+      return const Color(0xFF9E9E9E); // Grey - Stock not tracked
+    }
     if (product.stockQuantity == 0) {
       return const Color(0xFFF44336); // Red
     } else if (product.stockQuantity <= product.minStockAlert) {

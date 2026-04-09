@@ -29,6 +29,17 @@ class RestockController extends GetxController {
     final args = Get.arguments;
     if (args != null) {
       product = args['product'];
+
+      // Check if stock tracking is enabled for this product
+      if (product != null && !product!.trackStock) {
+        Get.back();
+        Get.snackbar(
+          'Erreur',
+          'La gestion de stock est désactivée pour ce produit',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red[100],
+        );
+      }
     }
   }
 

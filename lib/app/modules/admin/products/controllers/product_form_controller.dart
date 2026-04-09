@@ -29,6 +29,7 @@ class ProductFormController extends GetxController {
   final selectedCategory = Rxn<int>();
   final isActive = true.obs;
   final isBulkProduct = false.obs;
+  final trackStock = true.obs;
 
   // Portions management
   final portions = <PortionData>[].obs;
@@ -58,6 +59,7 @@ class ProductFormController extends GetxController {
         selectedCategory.value = productToEdit!.categoryId;
         isActive.value = productToEdit!.isActive;
         isBulkProduct.value = productToEdit!.isBulkProduct;
+        trackStock.value = productToEdit!.trackStock;
 
         if (productToEdit!.isBulkProduct) {
           bulkUnitController.text = productToEdit!.bulkUnit ?? '';
@@ -207,6 +209,7 @@ class ProductFormController extends GetxController {
           bulkUnit: bulkUnit,
           bulkTotalQuantity: bulkTotalQuantity,
           currentUnitRemaining: currentUnitRemaining,
+          trackStock: trackStock.value,
         );
 
         // Update portions if bulk product
@@ -245,6 +248,7 @@ class ProductFormController extends GetxController {
           bulkUnit: bulkUnit,
           bulkTotalQuantity: bulkTotalQuantity,
           currentUnitRemaining: currentUnitRemaining,
+          trackStock: trackStock.value,
         );
 
         // Create portions if bulk product

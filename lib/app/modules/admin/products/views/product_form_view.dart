@@ -144,6 +144,7 @@ class ProductFormView extends GetView<ProductFormController> {
               Obx(
                 () => TextFormField(
                   controller: controller.stockQuantityController,
+                  enabled: controller.trackStock.value,
                   decoration: InputDecoration(
                     labelText: controller.isBulkProduct.value
                         ? 'Nombre d\'unités en stock'
@@ -151,7 +152,9 @@ class ProductFormView extends GetView<ProductFormController> {
                     hintText: controller.isBulkProduct.value
                         ? 'Ex: 5 (pour 5 fûts)'
                         : null,
-                    helperText: controller.isBulkProduct.value
+                    helperText: !controller.trackStock.value
+                        ? '⚠️ Champ désactivé (gestion de stock désactivée)'
+                        : controller.isBulkProduct.value
                         ? 'Nombre d\'unités complètes (ex: fûts, caisses)'
                         : null,
                     prefixIcon: const Icon(Icons.inventory),
@@ -160,7 +163,9 @@ class ProductFormView extends GetView<ProductFormController> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: controller.validateStock,
+                  validator: controller.trackStock.value
+                      ? controller.validateStock
+                      : null,
                 ),
               ),
 
@@ -170,6 +175,7 @@ class ProductFormView extends GetView<ProductFormController> {
               Obx(
                 () => TextFormField(
                   controller: controller.minStockAlertController,
+                  enabled: controller.trackStock.value,
                   decoration: InputDecoration(
                     labelText: controller.isBulkProduct.value
                         ? 'Seuil d\'alerte (unités)'
@@ -177,7 +183,9 @@ class ProductFormView extends GetView<ProductFormController> {
                     hintText: controller.isBulkProduct.value
                         ? 'Ex: 2 (alerte si moins de 2 unités)'
                         : null,
-                    helperText: controller.isBulkProduct.value
+                    helperText: !controller.trackStock.value
+                        ? '⚠️ Champ désactivé (gestion de stock désactivée)'
+                        : controller.isBulkProduct.value
                         ? 'Alerte quand le nombre d\'unités descend sous ce seuil'
                         : null,
                     prefixIcon: const Icon(Icons.warning),
@@ -186,7 +194,9 @@ class ProductFormView extends GetView<ProductFormController> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
-                  validator: controller.validateMinStock,
+                  validator: controller.trackStock.value
+                      ? controller.validateMinStock
+                      : null,
                 ),
               ),
 
@@ -238,13 +248,15 @@ class ProductFormView extends GetView<ProductFormController> {
                           TextFormField(
                             controller:
                                 controller.currentUnitRemainingController,
+                            enabled: controller.trackStock.value,
                             decoration: InputDecoration(
                               labelText:
                                   'Quantité dans l\'unité ouverte (optionnel)',
                               hintText:
                                   'Ex: 3.5 pour 3.5L restants dans un fût',
-                              helperText:
-                                  'Quantité restante dans l\'unité actuellement entamée',
+                              helperText: !controller.trackStock.value
+                                  ? '⚠️ Champ désactivé (gestion de stock désactivée)'
+                                  : 'Quantité restante dans l\'unité actuellement entamée',
                               prefixIcon: const Icon(
                                 Icons.inventory_2_outlined,
                               ),
@@ -370,6 +382,29 @@ class ProductFormView extends GetView<ProductFormController> {
                     controller.isActive.value = value;
                   },
                   activeColor: AppColors.success,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                    side: const BorderSide(color: AppColors.textHint),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Track stock switch
+              Obx(
+                () => SwitchListTile(
+                  title: const Text('Gérer le stock'),
+                  subtitle: Text(
+                    controller.trackStock.value
+                        ? 'Stock suivi et alertes activées'
+                        : 'Pas de gestion de stock (produit en libre service)',
+                  ),
+                  value: controller.trackStock.value,
+                  onChanged: (value) {
+                    controller.trackStock.value = value;
+                  },
+                  activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.r),
                     side: const BorderSide(color: AppColors.textHint),
