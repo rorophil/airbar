@@ -2,7 +2,7 @@
 
 **Application de gestion de bar d'aéro-club**  
 **Stack:** Flutter + Serverpod + PostgreSQL + GetX  
-**Dernière mise à jour:** Mars 2026
+**Dernière mise à jour:** 9 avril 2026
 
 ---
 
@@ -137,6 +137,53 @@ ProductPortion(
   quantity: 0.25,  // litres
   price: 2.50,     // euros
 )
+```
+
+#### 4. Produits sans Gestion de Stock (trackStock = false)
+- **`trackStock` (bool, default: true):** Active/désactive la gestion de stock
+- Pour les produits en libre service (café, eau, etc.) ou virtuels
+- Pas de validation de stock lors de l'achat
+- Pas de déduction de stock
+- Pas de création de StockMovement
+- Pas d'alertes de stock faible
+
+**Comportement lors du checkout:**
+```dart
+// Validation de stock uniquement si trackStock = true
+if (product.trackStock) {
+  double availableStock;
+  if (product.isBulkProduct && product.bulkTotalQuantity != null) {
+    availableStock = (product.stockQuantity * product.bulkTotalQuantity!) + 
+                     (product.currentUnitRemaining ?? 0);
+  } else {
+    availableStock = product.stockQuantity.toDouble();
+  }
+  
+  if (availableStock < requiredQuantity) {
+    throw Exception('Stock insuffisant...');
+  }
+}
+
+// Déduction de stock uniquement si trackStock = true
+if (product.trackStock) {
+  // Logique de déduction de stock
+  // Création de StockMovement
+}
+```
+
+**Interface utilisateur:**
+- Champs de stock désactivés et grisés dans le formulaire produit si `trackStock = false`
+- Affichage "N/A" au lieu de la quantité dans la liste des produits
+- Badge "Stock non géré" dans la vue de gestion du stock
+- Bouton "Réapprovisionner" remplacé par un message d'information
+- Exclus des alertes de stock faible
+
+**Endpoints de stock:**
+```dart
+// stock_endpoint.dart - Bloquer les opérations si trackStock = false
+if (!product.trackStock) {
+  throw Exception('Ce produit n\'a pas de gestion de stock activée');
+}
 ```
 
 ### Logique de Déduction du Stock
@@ -874,6 +921,7 @@ flutter run -d chrome
 6. **TOUJOURS** faire un soft delete des produits (`isActive = false`)
 7. **JAMAIS** supprimer physiquement des transactions (audit trail)
 8. **TOUJOURS** vérifier le solde AVANT de débiter un compte
+9. **TOUJOURS** vérifier `product.trackStock` avant toute opération de stock (validation, déduction, réapprovisionnement)
 
 ---
 

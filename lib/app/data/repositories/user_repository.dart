@@ -81,6 +81,36 @@ class UserRepository {
     }
   }
 
+  /// Reactivate user (admin only)
+  Future<void> reactivateUser(int userId) async {
+    try {
+      await _client.user.reactivateUser(userId);
+    } catch (e) {
+      print('Reactivate user error: $e');
+      rethrow;
+    }
+  }
+
+  /// Reset user password (admin only)
+  Future<void> resetPassword(int userId, String newPassword) async {
+    try {
+      await _client.user.resetPassword(userId, newPassword);
+    } catch (e) {
+      print('Reset password error: $e');
+      rethrow;
+    }
+  }
+
+  /// Reset user PIN code (admin only)
+  Future<void> resetPin(int userId, String newPin) async {
+    try {
+      await _client.user.resetPin(userId, newPin);
+    } catch (e) {
+      print('Reset PIN error: $e');
+      rethrow;
+    }
+  }
+
   /// Delete user (admin only)
   Future<void> deleteUser(int userId) async {
     try {

@@ -96,150 +96,227 @@ class _UserCard extends GetView<UsersController> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
-      child: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                // Avatar
-                CircleAvatar(
-                  radius: 28.r,
-                  backgroundColor: user.role == UserRole.admin
-                      ? AppColors.primary
-                      : AppColors.accent,
-                  child: Text(
-                    '${user.firstName[0]}${user.lastName[0]}'.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textWhite,
-                    ),
-                  ),
-                ),
-
-                SizedBox(width: 16.w),
-
-                // User info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${user.firstName} ${user.lastName}',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4.h),
-                      Text(
-                        user.email,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Role badge
+    return Opacity(
+      opacity: user.isActive ? 1.0 : 0.5,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12.r),
+        ),
+        color: user.isActive ? AppColors.surface : Colors.grey.shade200,
+        child: Padding(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Inactive badge
+              if (!user.isActive)
                 Container(
+                  margin: EdgeInsets.only(bottom: 8.h),
                   padding: EdgeInsets.symmetric(
                     horizontal: 12.w,
                     vertical: 4.h,
                   ),
                   decoration: BoxDecoration(
-                    color: user.role == UserRole.admin
-                        ? AppColors.primary
-                        : AppColors.accent,
+                    color: AppColors.error,
                     borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Text(
-                    user.role == UserRole.admin ? 'Admin' : 'User',
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.textWhite,
-                    ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.block,
+                        size: 14.sp,
+                        color: AppColors.textWhite,
+                      ),
+                      SizedBox(width: 4.w),
+                      Text(
+                        'Utilisateur désactivé',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.textWhite,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              Row(
+                children: [
+                  // Avatar
+                  CircleAvatar(
+                    radius: 28.r,
+                    backgroundColor: user.role == UserRole.admin
+                        ? AppColors.primary
+                        : AppColors.accent,
+                    child: Text(
+                      '${user.firstName[0]}${user.lastName[0]}'.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textWhite,
+                      ),
+                    ),
+                  ),
 
-            SizedBox(height: 12.h),
+                  SizedBox(width: 16.w),
 
-            // Balance
-            Row(
-              children: [
-                Icon(
-                  Icons.account_balance_wallet,
-                  size: 18.sp,
-                  color: AppColors.success,
-                ),
-                SizedBox(width: 8.w),
-                Text(
-                  'Solde: ${user.balance.toStringAsFixed(2)} €',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.bold,
+                  // User info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${user.firstName} ${user.lastName}',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 4.h),
+                        Text(
+                          user.email,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Role badge
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 12.w,
+                      vertical: 4.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: user.role == UserRole.admin
+                          ? AppColors.primary
+                          : AppColors.accent,
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                    child: Text(
+                      user.role == UserRole.admin ? 'Admin' : 'User',
+                      style: TextStyle(
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textWhite,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 12.h),
+
+              // Balance
+              Row(
+                children: [
+                  Icon(
+                    Icons.account_balance_wallet,
+                    size: 18.sp,
                     color: AppColors.success,
                   ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 12.h),
-
-            // Action buttons
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => controller.creditAccount(user),
-                    icon: Icon(Icons.add_circle_outline, size: 18.sp),
-                    label: const Text('Créditer'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.success,
-                      side: const BorderSide(color: AppColors.success),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'Solde: ${user.balance.toStringAsFixed(2)} €',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.success,
                     ),
                   ),
-                ),
-                SizedBox(width: 8.w),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => controller.editUser(user),
-                    icon: Icon(Icons.edit, size: 18.sp),
-                    label: const Text('Modifier'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.primary),
+                ],
+              ),
+
+              SizedBox(height: 12.h),
+
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: user.isActive
+                          ? () => controller.creditAccount(user)
+                          : null,
+                      icon: Icon(Icons.add_circle_outline, size: 18.sp),
+                      label: const Text('Créditer'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.success,
+                        side: const BorderSide(color: AppColors.success),
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 8.w),
-                IconButton(
-                  onPressed: user.isActive
-                      ? () => controller.deactivateUser(user)
-                      : null,
-                  icon: const Icon(Icons.block),
-                  color: AppColors.error,
-                  tooltip: 'Désactiver',
-                ),
-                IconButton(
-                  onPressed: () => controller.deleteUser(user),
-                  icon: const Icon(Icons.delete_forever),
-                  color: Colors.red.shade700,
-                  tooltip: 'Supprimer définitivement',
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => controller.editUser(user),
+                      icon: Icon(Icons.edit, size: 18.sp),
+                      label: const Text('Modifier'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.primary,
+                        side: const BorderSide(color: AppColors.primary),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  if (user.isActive)
+                    IconButton(
+                      onPressed: () => controller.deactivateUser(user),
+                      icon: const Icon(Icons.block),
+                      color: AppColors.error,
+                      tooltip: 'Désactiver',
+                    )
+                  else
+                    IconButton(
+                      onPressed: () => controller.reactivateUser(user),
+                      icon: const Icon(Icons.check_circle),
+                      color: AppColors.success,
+                      tooltip: 'Réactiver',
+                    ),
+                  IconButton(
+                    onPressed: () => controller.deleteUser(user),
+                    icon: const Icon(Icons.delete_forever),
+                    color: Colors.red.shade700,
+                    tooltip: 'Supprimer définitivement',
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 8.h),
+
+              // Second row of actions
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => controller.resetPassword(user),
+                      icon: Icon(Icons.lock_reset, size: 18.sp),
+                      label: const Text('Réinitialiser mot de passe'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.orange,
+                        side: const BorderSide(color: Colors.orange),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => controller.resetPin(user),
+                      icon: Icon(Icons.pin, size: 18.sp),
+                      label: const Text('Réinitialiser code PIN'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.deepOrange,
+                        side: const BorderSide(color: Colors.deepOrange),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -131,6 +131,297 @@ class UsersController extends GetxController {
     }
   }
 
+  /// Reactivate user
+  Future<void> reactivateUser(User user) async {
+    final confirmed = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Réactiver l\'utilisateur'),
+        content: Text(
+          'Êtes-vous sûr de vouloir réactiver ${user.firstName} ${user.lastName} ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false),
+            child: const Text(AppStrings.cancel),
+          ),
+          TextButton(
+            onPressed: () => Get.back(result: true),
+            child: const Text(
+              AppStrings.confirm,
+              style: TextStyle(color: Colors.green),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _userRepository.reactivateUser(user.id!);
+        Get.snackbar(
+          'Succès',
+          'Utilisateur réactivé',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        await loadUsers();
+      } catch (e) {
+        Get.snackbar(
+          'Erreur',
+          'Impossible de réactiver l\'utilisateur: $e',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    }
+  }
+
+  /// Reset user password
+  Future<void> resetPassword(User user) async {
+    final TextEditingController passwordController = TextEditingController();
+    final TextEditingController confirmPasswordController =
+        TextEditingController();
+
+    // Local state for password visibility
+    bool isPasswordVisible = false;
+    bool isConfirmPasswordVisible = false;
+
+    final confirmed = await Get.dialog<bool>(
+      StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Réinitialiser le mot de passe'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Nouveau mot de passe pour ${user.firstName} ${user.lastName}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: passwordController,
+                  obscureText: !isPasswordVisible,
+                  decoration: InputDecoration(
+                    labelText: 'Nouveau mot de passe',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPasswordVisible = !isPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: confirmPasswordController,
+                  obscureText: !isConfirmPasswordVisible,
+                  decoration: InputDecoration(
+                    labelText: 'Confirmer le mot de passe',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isConfirmPasswordVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isConfirmPasswordVisible = !isConfirmPasswordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text(AppStrings.cancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (passwordController.text.isEmpty) {
+                    Get.snackbar(
+                      'Erreur',
+                      'Le mot de passe ne peut pas être vide',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
+                  if (passwordController.text !=
+                      confirmPasswordController.text) {
+                    Get.snackbar(
+                      'Erreur',
+                      'Les mots de passe ne correspondent pas',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
+                  Get.back(result: true);
+                },
+                child: const Text(
+                  'Réinitialiser',
+                  style: TextStyle(color: Colors.orange),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _userRepository.resetPassword(user.id!, passwordController.text);
+        Get.snackbar(
+          'Succès',
+          'Mot de passe réinitialisé avec succès',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } catch (e) {
+        Get.snackbar(
+          'Erreur',
+          'Impossible de réinitialiser le mot de passe: $e',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    }
+
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+  }
+
+  /// Reset user PIN code
+  Future<void> resetPin(User user) async {
+    final TextEditingController pinController = TextEditingController();
+    final TextEditingController confirmPinController = TextEditingController();
+
+    // Local state for PIN visibility
+    bool isPinVisible = false;
+    bool isConfirmPinVisible = false;
+
+    final confirmed = await Get.dialog<bool>(
+      StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Réinitialiser le code PIN'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Nouveau code PIN pour ${user.firstName} ${user.lastName}',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: pinController,
+                  obscureText: !isPinVisible,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    labelText: 'Nouveau code PIN',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isPinVisible ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPinVisible = !isPinVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: confirmPinController,
+                  obscureText: !isConfirmPinVisible,
+                  keyboardType: TextInputType.number,
+                  maxLength: 6,
+                  decoration: InputDecoration(
+                    labelText: 'Confirmer le code PIN',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        isConfirmPinVisible
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isConfirmPinVisible = !isConfirmPinVisible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(result: false),
+                child: const Text(AppStrings.cancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (pinController.text.isEmpty) {
+                    Get.snackbar(
+                      'Erreur',
+                      'Le code PIN ne peut pas être vide',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
+                  if (pinController.text != confirmPinController.text) {
+                    Get.snackbar(
+                      'Erreur',
+                      'Les codes PIN ne correspondent pas',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
+                  Get.back(result: true);
+                },
+                child: const Text(
+                  'Réinitialiser',
+                  style: TextStyle(color: Colors.orange),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await _userRepository.resetPin(user.id!, pinController.text);
+        Get.snackbar(
+          'Succès',
+          'Code PIN réinitialisé avec succès',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      } catch (e) {
+        Get.snackbar(
+          'Erreur',
+          'Impossible de réinitialiser le code PIN: $e',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+    }
+
+    pinController.dispose();
+    confirmPinController.dispose();
+  }
+
   /// Delete user permanently
   Future<void> deleteUser(User user) async {
     final confirmed = await Get.dialog<bool>(

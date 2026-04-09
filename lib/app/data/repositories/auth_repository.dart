@@ -21,9 +21,16 @@ class AuthRepository {
         return {'success': true, 'user': user};
       }
 
-      return {'success': false, 'error': 'Identifiants invalides'};
+      return {
+        'success': false,
+        'error': 'Email ou mot de passe incorrect, ou compte désactivé',
+      };
     } catch (e) {
-      return {'success': false, 'error': e.toString()};
+      print('Login error: $e');
+      return {
+        'success': false,
+        'error': 'Erreur de connexion. Veuillez réessayer.',
+      };
     }
   }
 
