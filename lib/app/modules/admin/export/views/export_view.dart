@@ -21,6 +21,96 @@ class ExportView extends GetView<ExportController> {
         child: ListView(
           padding: EdgeInsets.all(24.w),
           children: [
+            // Low stock products section
+            Text(
+              'Export des produits',
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Info card for low stock
+            Card(
+              color: AppColors.warning.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.r),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_outlined,
+                      color: AppColors.warning,
+                      size: 30.sp,
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Text(
+                        'Exportez la liste des produits dont le stock est sous le seuil d\'alerte',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // Export low stock button
+            Obx(
+              () => SizedBox(
+                height: 60.h,
+                child: ElevatedButton.icon(
+                  onPressed: controller.isExporting.value
+                      ? null
+                      : controller.exportLowStockProducts,
+                  icon: controller.isExporting.value
+                      ? SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: const CircularProgressIndicator(
+                            color: AppColors.textWhite,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.inventory_2_outlined, size: 30),
+                  label: Text(
+                    controller.isExporting.value
+                        ? 'Export en cours...'
+                        : 'Exporter produits stock faible',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.warning,
+                    foregroundColor: AppColors.textWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.r),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 48.h),
+
+            // Divider
+            Divider(thickness: 2, color: AppColors.textHint),
+
+            SizedBox(height: 32.h),
+
+            // Transactions section
+            Text(
+              'Export des transactions',
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            ),
+
+            SizedBox(height: 16.h),
+
             // Info card
             Card(
               color: AppColors.primary.withOpacity(0.1),
@@ -165,7 +255,7 @@ class ExportView extends GetView<ExportController> {
 
             SizedBox(height: 48.h),
 
-            // Export button
+            // Export transactions button
             Obx(
               () => SizedBox(
                 height: 60.h,
@@ -186,7 +276,7 @@ class ExportView extends GetView<ExportController> {
                   label: Text(
                     controller.isExporting.value
                         ? 'Export en cours...'
-                        : 'Exporter',
+                        : 'Exporter les transactions',
                     style: TextStyle(fontSize: 18.sp),
                   ),
                   style: ElevatedButton.styleFrom(
