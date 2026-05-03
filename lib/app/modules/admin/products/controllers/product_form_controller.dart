@@ -7,6 +7,37 @@ import '../../../../data/repositories/category_repository.dart';
 import '../../../../core/values/app_strings.dart';
 import 'products_controller.dart';
 
+/// Controller du formulaire produit (Admin)
+///
+/// Gère la création et modification des produits du catalogue.
+/// Support des produits réguliers et en vrac avec portions multiples.
+///
+/// Fonctionnalités principales:
+/// - Création de produit: nom, description, prix, catégorie, stock
+/// - Modification de produit: tous les champs modifiables
+/// - Support produits réguliers: stockQuantity en unités entières
+/// - Support produits en vrac: bulkUnit, bulkTotalQuantity, portions
+/// - Gestion des portions: nom, quantité, prix (ex: 25cl = 0.25L, 2.50€)
+/// - Option trackStock: activer/désactiver la gestion de stock
+/// - Validation complète des champs et cohérence des données
+///
+/// Produits en vrac (isBulkProduct = true):
+/// - bulkUnit: unité de mesure (ex: "litres", "kg")
+/// - bulkTotalQuantity: capacité d'une unité complète (ex: 6L par fût)
+/// - currentUnitRemaining: quantité restante dans l'unité entamée
+/// - portions: liste des tailles de service disponibles
+/// - Au moins 1 portion requise pour produits en vrac
+///
+/// Gestion de stock (trackStock):
+/// - true (défaut): stock géré, validation lors des ventes, alertes stock faible
+/// - false: stock non géré, pas de validation ni déduction
+///
+/// Workflow portions (produits en vrac):
+/// 1. Ajout/modification de portions via dialog
+/// 2. Suppression de portions existantes et recréation (update)
+/// 3. Validation: au moins 1 portion requise
+///
+/// Note: Les portions sont créées/supprimées via ProductPortionRepository.
 class ProductFormController extends GetxController {
   final ProductRepository _productRepository = Get.find();
   final ProductPortionRepository _portionRepository = Get.find();

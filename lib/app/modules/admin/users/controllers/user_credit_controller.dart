@@ -4,6 +4,27 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/user_repository.dart';
 import 'users_controller.dart';
 
+/// Controller d'ajustement de solde utilisateur (Admin)
+///
+/// Permet aux administrateurs de créditer ou débiter le compte d'un membre.
+/// Support des montants positifs (crédit) et négatifs (débit).
+///
+/// Fonctionnalités principales:
+/// - Crédit de compte: montant positif (ex: +50€)
+/// - Débit de compte: montant négatif (ex: -20€)
+/// - Notes optionnelles pour justifier l'opération (ex: "Remboursement", "Pénalité")
+/// - Validation: montant != 0 requis
+/// - Rechargement automatique de la liste utilisateurs
+///
+/// Workflow:
+/// 1. Récupération de l'utilisateur depuis arguments de navigation
+/// 2. Saisie du montant (+ ou -) et notes optionnelles
+/// 3. Validation et appel repository.creditAccount()
+/// 4. Création automatique d'une transaction (type: credit)
+/// 5. Rechargement de UsersController
+/// 6. Message succès avec opération ("crédité de" ou "débité de")
+///
+/// Note: L'endpoint backend vérifie que le solde final ne soit pas négatif.
 class UserCreditController extends GetxController {
   final UserRepository _userRepository = Get.find();
 

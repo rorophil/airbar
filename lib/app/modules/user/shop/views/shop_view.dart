@@ -6,6 +6,28 @@ import '../controllers/shop_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du module Shop (Boutique utilisateur)
+///
+/// Affiche le catalogue de produits disponibles avec filtrage par catégorie et recherche.
+/// Interface principale pour les achats des membres de l'aéro-club.
+///
+/// Composants principaux:
+/// - AppBar: Titre + Badge panier + Bouton admin (si admin)
+/// - Barre de recherche: Filtrage par texte (nom/description)
+/// - Filtres catégories: Chips horizontaux scrollables
+/// - Grille de produits: Cards avec image, nom, prix, stock, +panier
+/// - Bouton panier flottant: Accès rapide au panier
+///
+/// Interactions:
+/// - Tap catégorie → Filtre les produits
+/// - Texte recherche → Filtre en temps réel
+/// - Tap produit → Dialog pour sélectionner quantité/portion + ajouter
+/// - Tap panier → Navigation vers CartView
+/// - Tap admin → Navigation vers DashboardView (admins uniquement)
+///
+/// Gestion des produits en vrac:
+/// - Si isBulkProduct = true, affiche les portions disponibles (25cl, 50cl, etc.)
+/// - Prix et stock affichés selon la portion sélectionnée
 class ShopView extends GetView<ShopController> {
   const ShopView({Key? key}) : super(key: key);
 
@@ -17,7 +39,7 @@ class ShopView extends GetView<ShopController> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
         actions: [
-          // Cart icon with badge (plus visible)
+          // Icône panier avec badge indiquant le nombre d'articles
           Obx(
             () => Stack(
               children: [

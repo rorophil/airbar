@@ -6,6 +6,29 @@ import '../../../../data/repositories/category_repository.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Controller du module de gestion des produits (Admin)
+///
+/// Permet aux administrateurs de gérer le catalogue de produits du bar.
+/// Support des produits réguliers et en vrac avec gestion de stock.
+///
+/// Fonctionnalités principales:
+/// - Liste complète des produits avec recherche et filtres
+/// - Création/modification de produits (réguliers ou en vrac)
+/// - Activation/désactivation (soft delete) de produits
+/// - Suppression définitive (isActive = false, préserve historique transactions)
+/// - Filtrage par catégorie et recherche textuelle
+/// - Gestion du stock directe (ajustement rapide)
+///
+/// Types de produits supportés:
+/// - Produits réguliers: quantité entière (ex: bouteille, canette)
+/// - Produits en vrac: portions multiples (ex: bière pression 25cl/50cl)
+/// - Produits sans gestion de stock (trackStock = false)
+///
+/// Règles métier:
+/// - Soft delete: isActive = false (produit masqué mais préservé)
+/// - Hard delete impossible (protection historique transactions)
+/// - Produits inactifs: visibles admin, invisibles boutique utilisateur
+/// - Filtrage temps réel par nom, description, catégorie
 class ProductsController extends GetxController {
   final ProductRepository _productRepository = Get.find();
   final CategoryRepository _categoryRepository = Get.find();

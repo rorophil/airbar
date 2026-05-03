@@ -18,20 +18,38 @@ import 'app/services/connectivity_service.dart';
 import 'app/services/storage_service.dart';
 import 'app/services/server_config_service.dart';
 
+/// Point d'entrée de l'application AirBar
+///
+/// Initialise tous les services et repositories GetX nécessaires au
+/// fonctionnement de l'application avant le lancement de l'UI.
+///
+/// Ordre d'initialisation (IMPORTANT):
+/// 1. StorageService - Stockage local (GetStorage)
+/// 2. ServerConfigService - Configuration serveur Serverpod
+/// 3. ServerpodClientProvider - Client API Serverpod
+/// 4. AuthService - Service d'authentification
+/// 5. ConnectivityService - Surveillance de la connexion réseau
+/// 6. Repositories - Couche d'accès aux données
+///
+/// L'ordre est crucial car certains services dépendent d'autres
+/// (ex: ServerpodClient dépend de ServerConfigService).
 void main() async {
+  // Initialisation obligatoire avant tout appel async
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize GetX services
+  // 1. Services de base (stockage local et configuration serveur)
   await Get.putAsync(() => StorageService().init());
   await Get.putAsync(() => ServerConfigService().init());
 
-  // Initialize Serverpod client
+  // 2. Initialisation du client Serverpod avec la config sauvegardée
   await ServerpodClientProvider.initialize();
 
+  // 3. Services globaux (authentification et connectivité)
   Get.put(AuthService());
   Get.put(ConnectivityService());
 
-  // Initialize repositories
+  // 4. Repositories (couche d'accès aux données)
+  // Enregistrés en permanent pour être partagés entre tous les modules
   Get.put(UserRepository());
   Get.put(ProductRepository());
   Get.put(ProductPortionRepository());
@@ -40,37 +58,59 @@ void main() async {
   Get.put(TransactionRepository());
   Get.put(StockRepository());
 
+  // 5. Lancement de l'application
   runApp(const MyApp());
 }
 
+/// Widget racine de l'application AirBar
+///
+/// Configure:
+/// - ScreenUtilInit: Design responsive basé sur 1024x768 (tablette)
+/// - GetMaterialApp: Navigation GetX + thèmes + routes
+/// - Route initiale: SPLASH (redirection auto vers login ou home)
+///
+/// Thèmes:
+/// - Light theme: Thème clair avec couleurs AirBar
+/// - Dark theme: Disponible mais non activé par défaut
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(1024, 768), // Tablet size
-      minTextAdapt: true,
-      splitScreenMode: true,
+      designSize: const Size(1024, 768), // Taille de référence (tablette)
+      minTextAdapt: true, // Adaptation minimale du texte
+      splitScreenMode: true, // Support du mode écran partagé
       builder: (context, child) {
         return GetMaterialApp(
           title: AppStrings.appName,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.light,
-          initialRoute: AppRoutes.SPLASH,
-          getPages: AppPages.routes,
-          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme, // Thème clair
+          darkTheme: AppTheme.darkTheme, // Thème sombre (non utilisé)
+          themeMode: ThemeMode.light, // Mode clair forcé
+          initialRoute: AppRoutes.SPLASH, // Route de démarrage
+          getPages: AppPages.routes, // Définition de toutes les routes
+          debugShowCheckedModeBanner: false, // Masquer le bandeau debug
         );
       },
     );
   }
 }
 
-// Extension to ensure GetxService init returns the service
+/// Extension pour les services GetX
+///
+/// Permet d'utiliser la syntaxe async/await avec Get.putAsync
+/// en forçant les services à se comporter comme des Future<T>.
+///
+/// Exemple d'utilisation:
+/// ```dart
+/// await Get.putAsync(() => StorageService().init());
+/// ```
 extension ServiceInit<T extends GetxService> on T {
+  /// Initialise le service et retourne le service lui-même
+  ///
+  /// Permet le chainage avec Get.putAsync pour une initialisation async.
   Future<T> init() async {
-    onInit();
-    return this;
+    onInit(); // Appel du lifecycle GetxService
+    return this; // Retour du service pour GetX
   }
 }

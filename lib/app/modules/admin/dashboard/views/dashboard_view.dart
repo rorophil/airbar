@@ -5,6 +5,30 @@ import '../controllers/dashboard_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du module Dashboard Admin
+///
+/// Tableau de bord principal pour les administrateurs.
+/// Affiche une grille de cards cliquables pour accéder aux différents modules.
+///
+/// Composants principaux:
+/// - AppBar: Titre + Bouton déconnexion
+/// - Message bienvenue: "Bienvenue, [Nom Admin]"
+/// - Grille de modules: 2 colonnes avec cards icône + titre
+/// - Card Boutique: Accès rapide à la boutique utilisateur
+///
+/// Modules accessibles:
+/// - Utilisateurs: Gestion membres + crédits/débits
+/// - Produits: Catalogue + prix + activation/désactivation
+/// - Catégories: Organisation du catalogue
+/// - Stock: Réapprovisionnement + historique mouvements
+/// - Transactions: Historique + remboursements
+/// - Export: Génération rapports CSV/Excel
+///
+/// Interactions:
+/// - Tap card → Navigation vers le module correspondant
+/// - Tap déconnexion → Confirmation puis retour login
+///
+/// Responsive: Adaptation automatique avec FlutterScreenUtil.
 class DashboardView extends GetView<DashboardController> {
   const DashboardView({Key? key}) : super(key: key);
 
@@ -29,7 +53,7 @@ class DashboardView extends GetView<DashboardController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Welcome message
+              // Message de bienvenue avec nom de l'admin
               Text(
                 'Bienvenue,',
                 style: TextStyle(

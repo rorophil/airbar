@@ -1,9 +1,16 @@
+/// Chaînes de caractères localisées de l'application AirBar
+///
+/// Centralise tous les textes de l'interface utilisateur pour faciliter
+/// la maintenance et la future internationalisation (i18n).
 class AppStrings {
-  // App
+  // === App ===
+  /// Nom de l'application
   static const String appName = 'AirBar';
+
+  /// Slogan de l'application
   static const String appTagLine = 'Gestion de bar d\'aéro club';
 
-  // Auth
+  // === Auth ===
   static const String login = 'Connexion';
   static const String logout = 'Déconnexion';
   static const String email = 'Email';

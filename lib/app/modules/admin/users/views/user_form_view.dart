@@ -6,6 +6,37 @@ import '../controllers/user_form_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du formulaire utilisateur (Admin)
+///
+/// Formulaire de création ou modification d'un membre.
+///
+/// Champs du formulaire:
+/// - Email: validation regex, obligatoire
+/// - Prénom: texte obligatoire
+/// - Nom: texte obligatoire
+/// - Rôle: sélection Admin/User (DropdownButton)
+/// - Password: obligatoire création uniquement, min 6 caractères, toggle visibilité
+/// - Code PIN: obligatoire création uniquement, 4-6 chiffres, toggle visibilité
+///
+/// Modes:
+/// - Création: tous les champs requis, titre "Nouvel utilisateur"
+/// - Édition: password/PIN masqués, titre "Modifier utilisateur"
+///
+/// Composants:
+/// - AppBar: Titre dynamique selon mode
+/// - TextFormFields: tous avec validation
+/// - DropdownButton: sélection rôle
+/// - IconButton: toggle visibilité password/PIN (œil)
+/// - ElevatedButton: soumission formulaire
+///
+/// Validation:
+/// - Email: format valide requis
+/// - Password: min 6 caractères (création uniquement)
+/// - Noms: non vides
+/// - PIN: format numérique (création uniquement)
+///
+/// Workflow:
+/// - Remplissage champs → Validation → Soumission → Message succès → Retour liste
 class UserFormView extends GetView<UserFormController> {
   const UserFormView({Key? key}) : super(key: key);
 

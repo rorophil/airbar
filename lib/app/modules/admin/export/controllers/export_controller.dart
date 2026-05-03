@@ -8,6 +8,38 @@ import '../../../../data/repositories/product_repository.dart';
 import '../../../../data/repositories/category_repository.dart';
 import '../utils/file_saver.dart' as file_saver;
 
+/// Controller du module d'export de données (Admin)
+///
+/// Permet aux administrateurs d'exporter des données en CSV pour analyse externe.
+///
+/// Fonctionnalités principales:
+/// - Export de transactions sur une période donnée
+/// - Export de produits en stock faible/rupture
+/// - Filtrage par type de transaction (optionnel)
+/// - Génération de fichiers CSV avec nom explicite
+/// - Support multi-plateforme (Web, Desktop, Mobile)
+///
+/// Export de transactions:
+/// - Sélection de période (date début/fin)
+/// - Filtrage optionnel par type (purchase/credit/refund)
+/// - Colonnes CSV: ID, Date, Utilisateur, Type, Montant, Solde après, Notes
+/// - Nom fichier: "Transactions du DD-MM-YYYY au DD-MM-YYYY.csv"
+///
+/// Export produits stock faible:
+/// - Filtre automatique: trackStock = true ET (stock <= minStockAlert OU stock = 0)
+/// - Support produits réguliers et en vrac
+/// - Calcul stock total pour produits en vrac (unités complètes + unité entamée)
+/// - Colonnes CSV: ID, Nom, Catégorie, Prix, Stock actuel, Seuil alerte, Unité, Statut
+/// - Statut: "RUPTURE", "STOCK FAIBLE", "OK"
+/// - Nom fichier: "Produits stock faible DD-MM-YYYY.csv"
+///
+/// Gestion multi-plateforme:
+/// - Web: téléchargement automatique via blob
+/// - Desktop/Mobile: sélection dossier puis sauvegarde
+/// - FileSaver abstrait les différences (file_saver.dart)
+///
+/// Note: Les exports respectent le format CSV standard (séparateur virgule,
+/// remplacement virgules par point-virgule dans les textes).
 class ExportController extends GetxController {
   final TransactionRepository _transactionRepository = Get.find();
   final UserRepository _userRepository = Get.find();

@@ -6,6 +6,46 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../controllers/export_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
+/// Vue du module d'export de données (Admin)
+///
+/// Interface d'export de données en CSV pour analyse externe.
+///
+/// Sections disponibles:
+///
+/// 1. Export des produits en stock faible:
+///    - Bouton unique "Exporter les produits en stock faible"
+///    - Génère CSV avec produits où stock <= minStockAlert
+///    - Colonnes: ID, Nom, Catégorie, Prix, Stock actuel, Seuil, Unité, Statut
+///    - Nom fichier: "Produits stock faible DD-MM-YYYY.csv"
+///
+/// 2. Export des transactions:
+///    - Sélection période: date début + date fin (DatePicker)
+///    - Filtrage optionnel par type (Tous/Achats/Crédits/Remboursements)
+///    - Bouton "Exporter les transactions"
+///    - Colonnes CSV: ID, Date, Utilisateur, Type, Montant, Solde après, Notes
+///    - Nom fichier: "Transactions du DD-MM-YYYY au DD-MM-YYYY.csv"
+///
+/// Composants interface:
+/// - Cards groupant les exports par type
+/// - DatePicker pour sélection périodes
+/// - Chips pour filtrage type transaction
+/// - Boutons d'export avec icône download
+/// - Indicateur de chargement pendant export
+///
+/// Validation:
+/// - Export transactions: dates requises
+/// - Export produits: aucune validation (exécution immédiate)
+///
+/// Workflow export:
+/// 1. Configuration des filtres
+/// 2. Tap bouton export
+/// 3. Génération CSV en mémoire
+/// 4. Sauvegarde fichier (dialog sélection dossier sur desktop)
+/// 5. Message succès avec chemin fichier ou nombre d'éléments exportés
+///
+/// Support multi-plateforme:
+/// - Web: téléchargement automatique
+/// - Desktop/Mobile: sélection dossier de sauvegarde
 class ExportView extends GetView<ExportController> {
   const ExportView({Key? key}) : super(key: key);
 

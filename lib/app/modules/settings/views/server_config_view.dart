@@ -5,6 +5,27 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../services/server_config_service.dart';
 import '../controllers/settings_controller.dart';
 
+/// Vue du module Settings (Configuration serveur)
+///
+/// Permet de configurer dynamiquement l'adresse IP et le port du serveur
+/// Serverpod sans recompiler l'application. Utile pour basculer entre
+/// environnements (local, production, test).
+///
+/// Composants principaux:
+/// - Info card: Instructions pour l'utilisateur
+/// - Champ Adresse: IP ou hostname (ex: 192.168.1.100, localhost)
+/// - Champ Port: Port du serveur (1-65535, par défaut 8080)
+/// - Bouton Test: Vérifie la connectivité au serveur
+/// - Bouton Sauvegarder: Enregistre la config + réinitialise le client
+/// - Bouton Réinitialiser: Restaure localhost:8080
+/// - Card Config actuelle: Affiche l'URL en cours d'utilisation
+///
+/// Interactions:
+/// - Tap Tester → Tente une connexion au serveur (TODO: implémenter vraiment)
+/// - Tap Sauvegarder → Validation + Sauvegarde + Reinit client + Retour
+/// - Tap Réinitialiser → Remplit champs avec valeurs par défaut
+///
+/// Configuration par défaut: localhost:8080
 class ServerConfigView extends GetView<SettingsController> {
   const ServerConfigView({super.key});
 
@@ -22,7 +43,7 @@ class ServerConfigView extends GetView<SettingsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Info card
+            // Carte d'information pour guider l'utilisateur
             Card(
               color: Colors.blue.shade50,
               child: Padding(
@@ -51,7 +72,7 @@ class ServerConfigView extends GetView<SettingsController> {
 
             SizedBox(height: 32.h),
 
-            // Host field
+            // Champ adresse du serveur
             Text(
               'Adresse du serveur',
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
@@ -73,7 +94,7 @@ class ServerConfigView extends GetView<SettingsController> {
 
             SizedBox(height: 24.h),
 
-            // Port field
+            // Champ port du serveur
             Text(
               'Port',
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
@@ -99,7 +120,7 @@ class ServerConfigView extends GetView<SettingsController> {
 
             SizedBox(height: 32.h),
 
-            // Test connection button
+            // Bouton de test de connexion
             Obx(
               () => OutlinedButton.icon(
                 onPressed: controller.isLoading.value
@@ -128,7 +149,7 @@ class ServerConfigView extends GetView<SettingsController> {
 
             SizedBox(height: 16.h),
 
-            // Save button
+            // Bouton de sauvegarde
             Obx(
               () => ElevatedButton.icon(
                 onPressed: controller.isSaving.value

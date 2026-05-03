@@ -6,7 +6,26 @@ import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_strings.dart';
 import '../../../routes/app_routes.dart';
 
-/// Login screen
+/// Vue du module Login
+///
+/// Affiche l'écran de connexion pour les membres et administrateurs de l'aéro-club.
+/// Permet la saisie de l'email et du mot de passe avec validation en temps réel.
+///
+/// Composants principaux:
+/// - Logo AirBar: Identité visuelle de l'application
+/// - Champ Email: Validation du format email
+/// - Champ Mot de passe: Masquage/affichage avec icône
+/// - Bouton Connexion: Désactivé pendant le chargement
+/// - Message d'erreur: Affichage en cas d'échec
+/// - Bouton Config serveur: Accès à la configuration Serverpod
+///
+/// Interactions:
+/// - Tap bouton connexion → Validation + Authentification + Navigation
+/// - Enter sur mot de passe → Déclenchement de la connexion
+/// - Tap icône œil → Basculer visibilité mot de passe
+/// - Tap config serveur → Ouvre ServerConfigView
+///
+/// Responsive: Utilise FlutterScreenUtil pour l'adaptation multi-écrans.
 class LoginView extends GetView<LoginController> {
   const LoginView({Key? key}) : super(key: key);
 
@@ -23,12 +42,12 @@ class LoginView extends GetView<LoginController> {
               children: [
                 SizedBox(height: 60.h),
 
-                // Logo
+                // Logo de l'application (icône verre de bar)
                 Icon(Icons.local_bar, size: 80.sp, color: AppColors.primary),
 
                 SizedBox(height: 16.h),
 
-                // Title
+                // Titre de l'application
                 Text(
                   AppStrings.appName,
                   textAlign: TextAlign.center,
@@ -41,6 +60,7 @@ class LoginView extends GetView<LoginController> {
 
                 SizedBox(height: 8.h),
 
+                // Sous-titre
                 Text(
                   'Gestion du bar d\'aéro-club',
                   textAlign: TextAlign.center,
@@ -52,7 +72,7 @@ class LoginView extends GetView<LoginController> {
 
                 SizedBox(height: 60.h),
 
-                // Email field
+                // Champ email avec validation
                 TextFormField(
                   controller: controller.emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -69,13 +89,14 @@ class LoginView extends GetView<LoginController> {
 
                 SizedBox(height: 16.h),
 
-                // Password field
+                // Champ mot de passe avec basculement de visibilité
                 Obx(
                   () => TextFormField(
                     controller: controller.passwordController,
                     obscureText: controller.obscurePassword.value,
                     textInputAction: TextInputAction.done,
-                    onFieldSubmitted: (_) => controller.login(),
+                    onFieldSubmitted: (_) =>
+                        controller.login(), // Enter → Connexion
                     decoration: InputDecoration(
                       labelText: AppStrings.password,
                       prefixIcon: const Icon(Icons.lock_outline),
@@ -97,11 +118,12 @@ class LoginView extends GetView<LoginController> {
 
                 SizedBox(height: 32.h),
 
-                // Error message
+                // Message d'erreur (affiché uniquement si présent)
                 Obx(() {
                   if (controller.errorMessage.value.isEmpty) {
-                    return const SizedBox.shrink();
+                    return const SizedBox.shrink(); // Pas d'erreur = widget vide
                   }
+                  // Affichage du message d'erreur dans un encadré rouge
                   return Container(
                     padding: EdgeInsets.all(12.w),
                     margin: EdgeInsets.only(bottom: 16.h),
@@ -132,7 +154,7 @@ class LoginView extends GetView<LoginController> {
                   );
                 }),
 
-                // Login button
+                // Bouton de connexion (désactivé pendant le chargement)
                 Obx(
                   () => ElevatedButton(
                     onPressed: controller.isLoading.value
@@ -165,7 +187,7 @@ class LoginView extends GetView<LoginController> {
 
                 SizedBox(height: 24.h),
 
-                // Help text
+                // Texte d'aide pour obtenir des identifiants
                 Text(
                   'Contactez l\'administrateur pour obtenir vos identifiants',
                   textAlign: TextAlign.center,
@@ -177,7 +199,7 @@ class LoginView extends GetView<LoginController> {
 
                 SizedBox(height: 32.h),
 
-                // Server config button
+                // Bouton de configuration du serveur Serverpod
                 Center(
                   child: OutlinedButton.icon(
                     onPressed: () => Get.toNamed(AppRoutes.SERVER_CONFIG),

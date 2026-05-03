@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import '../values/app_colors.dart';
 
+/// Configuration des thèmes de l'application AirBar
+///
+/// Fournit les thèmes clair et sombre avec Material Design 3.
 class AppTheme {
+  /// Thème clair de l'application
+  ///
+  /// Utilise Material Design 3 avec la couleur primaire [AppColors.primary]
+  /// et un fond clair.
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -36,6 +43,10 @@ class AppTheme {
     );
   }
 
+  /// Thème sombre de l'application
+  ///
+  /// Utilise Material Design 3 avec la couleur primaire [AppColors.primary]
+  /// et un fond sombre.
   static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,

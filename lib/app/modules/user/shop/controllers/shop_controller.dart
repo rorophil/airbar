@@ -7,48 +7,101 @@ import '../../../../data/repositories/cart_repository.dart';
 import '../../../../data/repositories/product_portion_repository.dart';
 import '../../../../services/auth_service.dart';
 
+/// Controller du module Shop (Boutique utilisateur)
+///
+/// Gère l'affichage et le filtrage des produits disponibles à la vente.
+/// Permet aux utilisateurs de parcourir le catalogue, rechercher des produits
+/// et les ajouter au panier.
+///
+/// État géré:
+/// - [isLoading]: Indicateur de chargement des données
+/// - [categories]: Liste des catégories de produits
+/// - [allProducts]: Tous les produits actifs (non supprimés)
+/// - [filteredProducts]: Produits filtrés selon catégorie et recherche
+/// - [selectedCategoryId]: ID de la catégorie sélectionnée (null = toutes)
+/// - [searchQuery]: Texte de recherche
+/// - [cartItemCount]: Nombre d'articles dans le panier (badge)
+/// - [productPortions]: Map des portions par produit (pour produits en vrac)
+///
+/// Opérations principales:
+/// - [loadData()]: Charge catégories + produits + portions
+/// - [filterProducts()]: Filtre selon catégorie et recherche
+/// - [addToCart()]: Ajoute un produit au panier (avec gestion de portions)
+/// - [loadCartCount()]: Met à jour le badge du panier
 class ShopController extends GetxController {
+  /// Repository pour les opérations sur les produits
   final ProductRepository _productRepository = Get.find();
+
+  /// Repository pour les catégories
   final CategoryRepository _categoryRepository = Get.find();
+
+  /// Repository pour le panier
   final CartRepository _cartRepository = Get.find();
+
+  /// Repository pour les portions de produits en vrac
   final ProductPortionRepository _portionRepository = Get.find();
+
+  /// Service d'authentification (utilisateur connecté)
   final AuthService _authService = Get.find();
 
-  // Observables
+  /// Indicateur de chargement des données
   final isLoading = false.obs;
+
+  /// Liste de toutes les catégories disponibles
   final categories = <ProductCategory>[].obs;
+
+  /// Liste de tous les produits actifs (isActive = true)
   final allProducts = <Product>[].obs;
+
+  /// Liste des produits filtrés selon la catégorie et la recherche
   final filteredProducts = <Product>[].obs;
+
+  /// ID de la catégorie sélectionnée (null = toutes les catégories)
   final selectedCategoryId = Rxn<int>();
+
+  /// Texte de recherche pour filtrer les produits
   final searchQuery = ''.obs;
+
+  /// Nombre d'articles dans le panier (pour le badge)
   final cartItemCount = 0.obs;
+
+  /// Map des portions par ID de produit (productId → List<ProductPortion>)
   final productPortions = <int, List<ProductPortion>>{}.obs;
 
   @override
   void onInit() {
     super.onInit();
+    // Chargement initial des données
     loadData();
     loadCartCount();
   }
 
-  /// Load categories and products
+  /// Charger les catégories, produits et portions
+  ///
+  /// Processus:
+  /// 1. Charge en parallèle les catégories et produits actifs (forceRefresh)
+  /// 2. Charge les portions pour tous les produits en vrac (boucle async)
+  /// 3. Applique le filtre initial (affiche tous les produits)
+  ///
+  /// Utilise forceRefresh: true pour éviter les problèmes de cache.
   Future<void> loadData() async {
     try {
       isLoading.value = true;
 
-      // Load categories and products in parallel
+      // Chargement parallèle pour optimiser les performances
       final results = await Future.wait([
         _categoryRepository.getAllCategories(forceRefresh: true),
         _productRepository.getActiveProducts(forceRefresh: true),
       ]);
 
+      // Assignation des résultats
       categories.assignAll(List<ProductCategory>.from(results[0]));
       allProducts.assignAll(List<Product>.from(results[1]));
 
-      // Load portions for bulk products
+      // Chargement des portions pour les produits en vrac
       await _loadPortionsForBulkProducts();
 
-      // Initial filter
+      // Filtre initial (affiche tous les produits)
       filterProducts();
     } catch (e) {
       Get.snackbar(
@@ -61,10 +114,18 @@ class ShopController extends GetxController {
     }
   }
 
-  /// Load portions for bulk products
+  /// Charger les portions pour les produits en vrac
+  ///
+  /// Pour chaque produit avec isBulkProduct = true, charge la liste
+  /// des portions disponibles (ex: 25cl, 50cl, 1L pour la bière).
+  ///
+  /// Stocke le résultat dans productPortions[productId].
   Future<void> _loadPortionsForBulkProducts() async {
     try {
+      // Récupération de tous les produits en vrac
       final bulkProducts = allProducts.where((p) => p.isBulkProduct).toList();
+
+      // Chargement des portions pour chaque produit
       for (final product in bulkProducts) {
         if (product.id != null) {
           final portions = await _portionRepository.getProductPortions(
@@ -78,12 +139,22 @@ class ShopController extends GetxController {
     }
   }
 
-  /// Get portions for a product
+  /// Récupérer les portions d'un produit
+  ///
+  /// [productId] ID du produit
+  ///
+  /// Retourne la liste des portions si le produit en a, sinon liste vide.
+  /// Utilisé dans l'UI pour afficher les options de taille (25cl, 50cl, etc.).
   List<ProductPortion> getPortionsForProduct(int productId) {
     return productPortions[productId] ?? [];
   }
 
-  /// Load cart item count
+  /// Charger le nombre d'articles dans le panier
+  ///
+  /// Récupère le panier de l'utilisateur connecté et met à jour
+  /// le badge affiché sur l'icône panier.
+  ///
+  /// Appelé au chargement et après chaque ajout au panier.
   Future<void> loadCartCount() async {
     try {
       final userId = _authService.currentUser.value?.id;
@@ -96,18 +167,24 @@ class ShopController extends GetxController {
     }
   }
 
-  /// Filter products by category and search query
+  /// Filtrer les produits selon la catégorie et la recherche
+  ///
+  /// Applique deux filtres successifs:
+  /// 1. Filtre par catégorie (si selectedCategoryId != null)
+  /// 2. Filtre par texte de recherche (nom ou description)
+  ///
+  /// Le résultat est stocké dans filteredProducts (observable).
   void filterProducts() {
     var result = allProducts.toList();
 
-    // Filter by category
+    // Filtre par catégorie
     if (selectedCategoryId.value != null) {
       result = result
           .where((p) => p.categoryId == selectedCategoryId.value)
           .toList();
     }
 
-    // Filter by search query
+    // Filtre par recherche (insensible à la casse)
     if (searchQuery.value.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       result = result
@@ -122,25 +199,50 @@ class ShopController extends GetxController {
     filteredProducts.assignAll(result);
   }
 
-  /// Select category filter
+  /// Sélectionner une catégorie pour le filtre
+  ///
+  /// [categoryId] ID de la catégorie (null = toutes les catégories)
+  ///
+  /// Appelle filterProducts() pour mettre à jour l'affichage.
   void selectCategory(int? categoryId) {
     selectedCategoryId.value = categoryId;
     filterProducts();
   }
 
-  /// Update search query
+  /// Mettre à jour le texte de recherche
+  ///
+  /// [query] Texte saisi par l'utilisateur
+  ///
+  /// Appelle filterProducts() pour mettre à jour l'affichage en temps réel.
   void updateSearchQuery(String query) {
     searchQuery.value = query;
     filterProducts();
   }
 
-  /// Add product to cart
+  /// Ajouter un produit au panier
+  ///
+  /// [product] Le produit à ajouter
+  /// [quantity] Nombre d'unités ou de portions
+  /// [productPortionId] ID de la portion (optionnel, pour produits en vrac)
+  ///
+  /// Processus:
+  /// 1. Vérification de l'authentification
+  /// 2. Calcul du stock requis (avec portions si applicable)
+  /// 3. Validation du stock disponible:
+  ///    - Produits en vrac: stock total = (stockQuantity × bulkTotalQuantity) + currentUnitRemaining
+  ///    - Produits réguliers: stock total = stockQuantity
+  /// 4. Ajout au panier via CartRepository
+  /// 5. Mise à jour du badge panier
+  ///
+  /// IMPORTANT: Pour les produits en vrac avec portions, la quantité demandée
+  /// est multipliée par la quantité de la portion (ex: 2 portions de 50cl = 1L requis).
   Future<void> addToCart(
     Product product,
     int quantity, {
     int? productPortionId,
   }) async {
     try {
+      // Vérification de l'authentification
       final userId = _authService.currentUser.value?.id;
       if (userId == null) {
         Get.snackbar(
@@ -151,31 +253,34 @@ class ShopController extends GetxController {
         return;
       }
 
-      // Check stock availability with actual quantity needed
+      // Calcul du stock requis (quantité réelle nécessaire)
       double requiredStock = quantity.toDouble();
 
       if (productPortionId != null) {
-        // For bulk products with portions, calculate actual stock needed
+        // Pour les produits en vrac avec portions:
+        // requiredStock = nombre de portions × quantité par portion
+        // Ex: 2 portions de 50cl = 2 × 0.5L = 1.0L requis
         final portions = getPortionsForProduct(product.id!);
         final portion = portions.firstWhereOrNull(
           (p) => p.id == productPortionId,
         );
 
         if (portion != null) {
-          // Calculate actual stock: quantity of portions × quantity per portion
           requiredStock = quantity * portion.quantity;
         }
       }
 
-      // Calculate total available stock
+      // Calcul du stock total disponible
       double availableStock = 0.0;
 
       if (product.isBulkProduct && product.bulkTotalQuantity != null) {
-        // For bulk products: total = (complete units × capacity) + opened unit remaining
+        // Produits en vrac: total = (unités complètes × capacité) + unité entamée
+        // Ex: 5 fûts de 6L + 4.25L ouvert = (5 × 6) + 4.25 = 34.25L
         availableStock =
             (product.stockQuantity * product.bulkTotalQuantity!) +
             (product.currentUnitRemaining ?? 0.0);
 
+        // Vérification du stock disponible
         if (availableStock < requiredStock) {
           Get.snackbar(
             'Stock insuffisant',
@@ -185,7 +290,7 @@ class ShopController extends GetxController {
           return;
         }
       } else {
-        // For regular products: just check unit count
+        // Produits réguliers: validation directe sur stockQuantity
         if (product.stockQuantity < quantity) {
           Get.snackbar(
             'Stock insuffisant',
@@ -196,6 +301,7 @@ class ShopController extends GetxController {
         }
       }
 
+      // Ajout au panier via le repository
       await _cartRepository.addToCart(
         userId: userId,
         productId: product.id!,
@@ -203,7 +309,7 @@ class ShopController extends GetxController {
         productPortionId: productPortionId,
       );
 
-      // Update cart count
+      // Mise à jour du badge panier
       await loadCartCount();
 
       Get.snackbar(
@@ -221,35 +327,57 @@ class ShopController extends GetxController {
     }
   }
 
-  /// Navigate to cart
+  /// Naviguer vers le panier
+  ///
+  /// Après le retour du panier, recharge le nombre d'articles (badge).
   Future<void> goToCart() async {
     await Get.toNamed('/user/cart');
-    // Reload cart count when returning from cart
+    // Rechargement du badge après modification du panier
     await loadCartCount();
   }
 
-  /// Navigate to admin dashboard (for admin users)
+  /// Naviguer vers le dashboard administrateur
+  ///
+  /// Accessible uniquement si l'utilisateur connecté a le rôle admin.
+  /// Permet aux admins d'accéder à la gestion sans se déconnecter.
   void goToAdminDashboard() {
     Get.toNamed('/admin/dashboard');
   }
 
-  /// Check if current user is admin
+  /// Vérifie si l'utilisateur connecté est administrateur
+  ///
+  /// Utilisé pour afficher/masquer le bouton d'accès au dashboard admin.
   bool get isAdmin => _authService.isAdmin;
 
-  /// Get category for a product
+  /// Récupérer la catégorie d'un produit
+  ///
+  /// [product] Le produit dont on veut la catégorie
+  ///
+  /// Retourne la catégorie correspondante ou null si non trouvée.
   ProductCategory? getCategoryForProduct(Product product) {
     return categories.firstWhereOrNull((cat) => cat.id == product.categoryId);
   }
 
-  /// Get icon for category
+  /// Récupérer l'icône appropriée pour une catégorie
+  ///
+  /// [category] La catégorie (peut être null)
+  ///
+  /// Retourne l'IconData correspondant au nom de la catégorie.
+  /// Mapping:
+  /// - Bière → Icons.sports_bar
+  /// - Soft/Boissons → Icons.local_drink
+  /// - Snacks → Icons.fastfood
+  /// - Etc.
+  ///
+  /// Par défaut: Icons.help_outline
   IconData getIconForCategory(ProductCategory? category) {
     if (category == null) return Icons.help_outline;
 
-    // Map category names or iconNames to appropriate icons
+    // Mapping nom/iconName → icône
     final categoryName = category.name.toLowerCase();
     final iconName = category.iconName?.toLowerCase();
 
-    // Check iconName first if it exists
+    // Vérification de iconName en priorité
     if (iconName != null) {
       switch (iconName) {
         case 'beer':

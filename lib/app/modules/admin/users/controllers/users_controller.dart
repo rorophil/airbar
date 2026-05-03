@@ -5,27 +5,59 @@ import '../../../../data/repositories/user_repository.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Controller du module de gestion des utilisateurs (Admin)
+///
+/// Permet aux administrateurs de gérer les membres de l'aéro-club:
+/// - Créer / modifier / supprimer des utilisateurs
+/// - Activer / désactiver des comptes
+/// - Ajuster les soldes (créditer / débiter)
+/// - Réinitialiser mots de passe et codes PIN
+/// - Rechercher et filtrer les utilisateurs
+///
+/// Fonctionnalités principales:
+/// - Liste complète des utilisateurs avec recherche
+/// - Gestion des rôles (admin / user)
+/// - Ajustement de compte (crédit/débit avec notes)
+/// - Soft delete (désactivation) et réactivation
+/// - Hard delete (suppression définitive)
+/// - Réinitialisation sécurisée des identifiants
+///
+/// Note: Les utilisateurs désactivés restent en base mais ne peuvent plus se connecter.
 class UsersController extends GetxController {
+  /// Repository d'accès aux données utilisateurs
   final UserRepository _userRepository = Get.find();
 
-  // Observables
-  final isLoading = false.obs;
-  final users = <User>[].obs;
-  final searchQuery = ''.obs;
-  final filteredUsers = <User>[].obs;
+  /// Indicateur de chargement en cours
+  final RxBool isLoading = false.obs;
+
+  /// Liste complète de tous les utilisateurs
+  final RxList<User> users = <User>[].obs;
+
+  /// Liste filtrée des utilisateurs (selon recherche)
+  final RxList<User> filteredUsers = <User>[].obs;
+
+  /// Requête de recherche actuelle
+  final RxString searchQuery = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
+    // Chargement initial des utilisateurs au démarrage du controller
     loadUsers();
   }
 
-  /// Load all users
+  /// Charger tous les utilisateurs depuis le serveur
+  ///
+  /// Récupère la liste complète des utilisateurs (admin + user, actifs + inactifs)
+  /// et applique automatiquement le filtre de recherche actif.
+  ///
+  /// En cas d'erreur, affiche un snackbar mais ne crash pas l'application.
   Future<void> loadUsers() async {
     try {
       isLoading.value = true;
       final result = await _userRepository.getAllUsers();
       users.value = List<User>.from(result);
+      // Application automatique du filtre de recherche
       filterUsers();
     } catch (e) {
       Get.snackbar(
@@ -38,9 +70,17 @@ class UsersController extends GetxController {
     }
   }
 
-  /// Filter users by search query
+  /// Filtrer les utilisateurs par recherche textuelle
+  ///
+  /// Recherche insensible à la casse dans:
+  /// - Prénom (firstName)
+  /// - Nom (lastName)
+  /// - Email
+  ///
+  /// Si la recherche est vide, affiche tous les utilisateurs.
   void filterUsers() {
     if (searchQuery.value.isEmpty) {
+      // Aucune recherche = affiche tous les utilisateurs
       filteredUsers.value = List<User>.from(users);
     } else {
       final query = searchQuery.value.toLowerCase();
@@ -52,13 +92,19 @@ class UsersController extends GetxController {
     }
   }
 
-  /// Update search query
+  /// Mettre à jour la requête de recherche et filtrer
+  ///
+  /// Appelée automatiquement lors de la saisie dans le champ de recherche.
+  /// Déclenche le filtrage immédiat de la liste.
   void updateSearchQuery(String query) {
     searchQuery.value = query;
     filterUsers();
   }
 
-  /// Navigate to create user
+  /// Naviguer vers le formulaire de création d'utilisateur
+  ///
+  /// Ouvre l'écran UserFormView en mode création.
+  /// Si l'utilisateur est créé (result == true), recharge la liste.
   void createUser() async {
     final result = await Get.toNamed(AppRoutes.ADMIN_USER_FORM);
     if (result == true) {
@@ -66,7 +112,10 @@ class UsersController extends GetxController {
     }
   }
 
-  /// Navigate to edit user
+  /// Naviguer vers le formulaire d'édition d'utilisateur
+  ///
+  /// Ouvre l'écran UserFormView en mode édition avec les données du [user].
+  /// Si l'utilisateur est modifié (result == true), recharge la liste.
   void editUser(User user) async {
     final result = await Get.toNamed(
       AppRoutes.ADMIN_USER_FORM,
@@ -77,7 +126,11 @@ class UsersController extends GetxController {
     }
   }
 
-  /// Navigate to credit account
+  /// Naviguer vers l'ajustement de compte (crédit/débit)
+  ///
+  /// Ouvre l'écran UserCreditView pour créditer ou débiter le compte du [user].
+  /// Permet d'ajouter un montant positif (crédit) ou négatif (débit).
+  /// Si le compte est modifié (result == true), recharge la liste.
   void creditAccount(User user) async {
     final result = await Get.toNamed(
       AppRoutes.ADMIN_USER_CREDIT,
@@ -88,7 +141,13 @@ class UsersController extends GetxController {
     }
   }
 
-  /// Deactivate user
+  /// Désactiver un utilisateur (soft delete)
+  ///
+  /// Désactive le compte de l'[user] en appelant userRepository.deactivateUser().
+  /// L'utilisateur reste en base de données mais ne peut plus se connecter.
+  /// Affiche une confirmation avant l'action.
+  ///
+  /// Cas d'usage: suspension de compte, départ du club, non-paiement cotisation.
   Future<void> deactivateUser(User user) async {
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
@@ -131,7 +190,11 @@ class UsersController extends GetxController {
     }
   }
 
-  /// Reactivate user
+  /// Réactiver un utilisateur précédemment désactivé
+  ///
+  /// Réactive le compte de l'[user] en appelant userRepository.reactivateUser().
+  /// L'utilisateur peut à nouveau se connecter et acheter des produits.
+  /// Affiche une confirmation avant l'action.
   Future<void> reactivateUser(User user) async {
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
@@ -298,7 +361,14 @@ class UsersController extends GetxController {
     confirmPasswordController.dispose();
   }
 
-  /// Reset user PIN code
+  /// Réinitialiser le code PIN de connexion d'un utilisateur
+  ///
+  /// Permet à l'admin de définir un nouveau code PIN pour l'[user].
+  /// Affiche un dialog avec 2 champs (nouveau PIN + confirmation).
+  /// Valide que les 2 codes correspondent avant de sauvegarder.
+  ///
+  /// Le PIN est haché en SHA256 côté serveur avant stockage.
+  /// Utilisé pour: PIN oublié, compromission du code, nouveaux utilisateurs.
   Future<void> resetPin(User user) async {
     final TextEditingController pinController = TextEditingController();
     final TextEditingController confirmPinController = TextEditingController();
@@ -422,7 +492,15 @@ class UsersController extends GetxController {
     confirmPinController.dispose();
   }
 
-  /// Delete user permanently
+  /// Supprimer définitivement un utilisateur (hard delete)
+  ///
+  /// ⚠️ ATTENTION: Suppression DÉFINITIVE de l'[user] de la base de données.
+  /// Cette action est IRRÉVERSIBLE.
+  ///
+  /// Affiche une confirmation avec avertissement avant suppression.
+  /// À utiliser avec précaution (préférer deactivateUser dans la plupart des cas).
+  ///
+  /// Cas d'usage exceptionnels: données de test, RGPD (droit à l'oubli), erreur de saisie.
   Future<void> deleteUser(User user) async {
     final confirmed = await Get.dialog<bool>(
       AlertDialog(

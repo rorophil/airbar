@@ -5,6 +5,29 @@ import '../../../../data/repositories/category_repository.dart';
 import '../../../../core/values/app_strings.dart';
 import 'categories_controller.dart';
 
+/// Controller du formulaire catégorie (Admin)
+///
+/// Gère la création et modification des catégories de produits.
+///
+/// Fonctionnalités principales:
+/// - Création de catégorie: nom, description, displayOrder, iconName
+/// - Modification de catégorie: tous les champs modifiables
+/// - Sélection d'icône Material Design parmi 11 icônes disponibles
+/// - Validation des champs (nom requis, displayOrder >= 0)
+/// - Rechargement automatique de CategoriesController après sauvegarde
+///
+/// Icônes disponibles (Material Icons):
+/// - category, local_bar, local_cafe, local_drink
+/// - fastfood, restaurant, wine_bar, lunch_dining
+/// - local_pizza, icecream, liquor
+///
+/// Champs:
+/// - Nom: texte obligatoire, identifiant unique recommandé
+/// - Description: texte optionnel pour détails
+/// - Ordre d'affichage: entier >= 0, détermine position dans la liste
+/// - Icône: sélection parmi icônes Material Design
+///
+/// Note: displayOrder avec valeur élevée = affiché en dernier (ex: "Sans catégorie" = 999)
 class CategoryFormController extends GetxController {
   final CategoryRepository _categoryRepository = Get.find();
 

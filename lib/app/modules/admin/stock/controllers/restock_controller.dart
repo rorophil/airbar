@@ -5,6 +5,35 @@ import '../../../../data/repositories/stock_repository.dart';
 import '../../../../services/auth_service.dart';
 import 'stock_controller.dart';
 
+/// Controller de réapprovisionnement produit (Admin)
+///
+/// Gère le réapprovisionnement du stock pour un produit spécifique.
+///
+/// Fonctionnalités principales:
+/// - Ajout de quantité au stock existant d'un produit
+/// - Notes optionnelles pour traçabilité (ex: "Livraison Fournisseur X")
+/// - Validation: produit doit avoir trackStock = true
+/// - Création automatique de StockMovement (type: restock)
+/// - Enregistrement de l'admin ayant effectué le réapprovisionnement
+/// - Rechargement automatique de StockController
+///
+/// Workflow:
+/// 1. Réception du produit via arguments de navigation
+/// 2. Vérification que trackStock = true (sinon retour immédiat)
+/// 3. Saisie de la quantité à ajouter (entier positif)
+/// 4. Notes optionnelles pour justification
+/// 5. Appel repository.restockProduct() avec adminUserId
+/// 6. Backend crée StockMovement + incrémente product.stockQuantity
+/// 7. Rechargement StockController
+/// 8. Message succès avec quantité ajoutée
+///
+/// Validation:
+/// - Quantité > 0 requise
+/// - Produit avec trackStock = true requis
+/// - AdminUser connecté requis
+///
+/// Note: Pour les produits en vrac, le réapprovisionnement ajoute des unités complètes
+/// (ex: +2 fûts de 6L chacun = stockQuantity += 2).
 class RestockController extends GetxController {
   final StockRepository _stockRepository = Get.find();
   final AuthService _authService = Get.find();

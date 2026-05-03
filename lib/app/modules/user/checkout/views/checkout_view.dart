@@ -6,6 +6,33 @@ import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 import '../../../../services/auth_service.dart';
 
+/// Vue du module Checkout (Paiement)
+///
+/// Affiche l'écran de validation du paiement avec saisie du code PIN.
+/// Interface finale avant débit du compte et validation de la transaction.
+///
+/// Composants principaux:
+/// - Card Solde: Affichage du solde actuel et solde après achat
+/// - Card Total: Montant total de la commande
+/// - Champ PIN: Saisie sécurisée du code PIN (4 chiffres)
+/// - Bouton Payer: Déclenchement de la transaction
+/// - Bouton Annuler: Retour au panier
+///
+/// Interactions:
+/// - Saisie PIN → Validation format (4 chiffres)
+/// - Tap icône œil → Bascule visibilité PIN
+/// - Tap Payer → Transaction atomique + navigation boutique
+/// - Tap Annuler → Retour panier
+///
+/// Sécurité:
+/// - PIN masqué par défaut (obscureText: true)
+/// - Validation côté serveur avec hash SHA256
+/// - PIN effacé après tentative (succès ou échec)
+///
+/// Transaction atomique:
+/// - Vérification PIN + solde + stock
+/// - Débit compte + création transaction + déduction stock + vidage panier
+/// - Tout ou rien (rollback en cas d'erreur)
 class CheckoutView extends GetView<CheckoutController> {
   const CheckoutView({Key? key}) : super(key: key);
 
@@ -26,7 +53,7 @@ class CheckoutView extends GetView<CheckoutController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // User balance info
+                // Informations sur le solde de l'utilisateur
                 Obx(() {
                   final user = authService.currentUser.value;
                   if (user == null) return const SizedBox.shrink();

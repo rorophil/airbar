@@ -5,6 +5,25 @@ import '../../../../data/repositories/user_repository.dart';
 import '../../../../core/values/app_strings.dart';
 import 'users_controller.dart';
 
+/// Controller du formulaire utilisateur (Admin)
+///
+/// Gère la création et modification des membres de l'aéro-club.
+/// Support de deux modes: création (+ PIN/mot de passe) et édition (sans PIN/mot de passe).
+///
+/// Fonctionnalités principales:
+/// - Création d'utilisateur: email, password, firstName, lastName, PIN, role
+/// - Modification d'utilisateur: email, firstName, lastName, role (sans changer PIN/password)
+/// - Sélection du rôle: admin ou user
+/// - Validation des champs: email regex, password min 6 caractères, noms requis
+/// - Visibilité password/PIN (toggle avec icône œil)
+/// - Rechargement automatique de la liste utilisateurs après sauvegarde
+///
+/// Workflow:
+/// - Mode création: tous les champs obligatoires y compris PIN/password
+/// - Mode édition: PIN/password non modifiables (pré-rempli depuis userToEdit)
+/// - Validation → appel repository → retour avec result=true → rechargement UsersController
+///
+/// Note: Les PINs et passwords sont hashés côté backend (SHA256) avant stockage.
 class UserFormController extends GetxController {
   final UserRepository _userRepository = Get.find();
 

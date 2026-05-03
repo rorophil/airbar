@@ -4,6 +4,45 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/restock_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
+/// Vue de réapprovisionnement produit (Admin)
+///
+/// Formulaire de réapprovisionnement du stock d'un produit.
+///
+/// Composants:
+/// - AppBar: Titre "Réapprovisionnement"
+/// - Card informations produit:
+///   * Nom du produit
+///   * Stock actuel avec badge coloré
+///   * Seuil d'alerte
+/// - TextField quantité: entier positif à ajouter
+/// - TextField notes: optionnel, pour traçabilité
+/// - Bouton "Réapprovisionner"
+///
+/// Affichage stock actuel:
+/// - Produit régulier: "X unités"
+/// - Produit en vrac: "X.XX litres" (stock total calculé)
+/// - Badge coloré selon niveau (vert/orange/rouge)
+///
+/// Validation:
+/// - Quantité > 0 requise
+/// - Produit doit avoir trackStock = true
+/// - Format entier uniquement
+///
+/// Notes de traçabilité:
+/// - Champ optionnel mais recommandé
+/// - Exemples: "Livraison Fournisseur X", "Inventaire hebdomadaire"
+/// - Enregistré dans StockMovement pour audit
+///
+/// Workflow:
+/// - Saisie quantité et notes
+/// - Validation
+/// - Création StockMovement (type: restock)
+/// - Incrémentation product.stockQuantity
+/// - Message succès avec nouvelle quantité
+/// - Retour vue stock
+///
+/// Note: Pour produits en vrac, la quantité représente le nombre d'unités
+/// complètes à ajouter (ex: +2 fûts de 6L).
 class RestockView extends GetView<RestockController> {
   const RestockView({Key? key}) : super(key: key);
 

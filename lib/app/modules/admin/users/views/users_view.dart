@@ -6,6 +6,34 @@ import '../controllers/users_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du module de gestion des utilisateurs (Admin)
+///
+/// Interface de gestion des membres de l'aéro-club.
+///
+/// Composants principaux:
+/// - AppBar: Titre + retour dashboard
+/// - Champ de recherche: filtre par nom, prénom, email (temps réel)
+/// - Liste des utilisateurs: cards avec avatar, nom, email, solde, rôle
+/// - FloatingActionButton: "Nouvel utilisateur"
+///
+/// Actions disponibles par utilisateur (menu contextuel):
+/// - Modifier: édition des informations (UserFormView)
+/// - Ajuster solde: crédit/débit de compte (UserCreditView)
+/// - Réinitialiser PIN: génération nouveau code
+/// - Réinitialiser mot de passe: génération nouveau password
+/// - Activer/Désactiver: toggle isActive (soft delete)
+/// - Supprimer: suppression définitive (confirmation requise)
+///
+/// Indicateurs visuels:
+/// - Solde positif: texte vert
+/// - Solde négatif: texte rouge
+/// - Badge rôle: "Admin" (orange) ou "User" (bleu)
+/// - Compte désactivé: opacité réduite + badge "Désactivé"
+///
+/// Interactions:
+/// - Tap card → Menu contextuel actions
+/// - Recherche → Filtrage instantané de la liste
+/// - FAB → Création nouvel utilisateur
 class UsersView extends GetView<UsersController> {
   const UsersView({Key? key}) : super(key: key);
 

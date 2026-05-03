@@ -5,6 +5,34 @@ import '../controllers/user_credit_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue d'ajustement de solde utilisateur (Admin)
+///
+/// Formulaire pour créditer ou débiter le compte d'un membre.
+///
+/// Composants:
+/// - AppBar: Titre "Ajuster le solde"
+/// - Card informations: Nom utilisateur + solde actuel
+/// - TextField montant: accepte + ou - (ex: +50 ou -20)
+/// - TextField notes: optionnel, pour justification
+/// - Instructions: aide visuelle pour montant positif/négatif
+/// - Bouton soumission: "Ajuster le solde"
+///
+/// Règles d'affichage:
+/// - Solde actuel affiché avec 2 décimales
+/// - Couleur solde: vert si positif, rouge si négatif
+/// - Instructions claires: "+ pour crédit, - pour débit"
+///
+/// Validation:
+/// - Montant != 0 requis
+/// - Format numérique valide (double.tryParse)
+/// - Notes optionnelles (texte libre)
+///
+/// Exemples d'utilisation:
+/// - Crédit: +50 avec notes "Remboursement erreur caisse"
+/// - Débit: -10 avec notes "Pénalité verre cassé"
+///
+/// Workflow:
+/// - Saisie montant et notes → Validation → Ajustement compte → Message succès → Retour liste
 class UserCreditView extends GetView<UserCreditController> {
   const UserCreditView({Key? key}) : super(key: key);
 

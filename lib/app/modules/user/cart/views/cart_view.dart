@@ -5,6 +5,29 @@ import '../controllers/cart_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du module Cart (Panier utilisateur)
+///
+/// Affiche le panier d'achat avec possibilité de modifier les quantités,
+/// supprimer des articles et procéder au paiement.
+///
+/// Composants principaux:
+/// - AppBar: Titre + Bouton vider panier (si articles présents)
+/// - Liste articles: Cards avec nom, prix, quantité, sous-total, boutons +/-
+/// - Solde utilisateur: Affichage du solde actuel
+/// - Total panier: Somme de tous les articles
+/// - Bouton Payer: Navigation vers CheckoutView
+///
+/// Interactions:
+/// - Tap + → Incrémente quantité (avec validation stock)
+/// - Tap - → Décrémente quantité (si = 0, suppression)
+/// - Tap supprimer → Retire l'article du panier
+/// - Tap vider panier → Confirmation puis vidage complet
+/// - Tap Payer → Vérification solde puis navigation checkout
+///
+/// Validation:
+/// - Stock disponible vérifié avant modification de quantité
+/// - Solde vérifié avant accès au paiement
+/// - Panier vide → Message "Panier vide" avec retour boutique
 class CartView extends GetView<CartController> {
   const CartView({Key? key}) : super(key: key);
 
@@ -16,6 +39,7 @@ class CartView extends GetView<CartController> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
         actions: [
+          // Bouton vider panier (affiché uniquement si articles présents)
           Obx(
             () => controller.cartItems.isNotEmpty
                 ? IconButton(
@@ -28,10 +52,12 @@ class CartView extends GetView<CartController> {
         ],
       ),
       body: Obx(() {
+        // Indicateur de chargement
         if (controller.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
+        // Message panier vide
         if (controller.cartItems.isEmpty) {
           return Center(
             child: Column(

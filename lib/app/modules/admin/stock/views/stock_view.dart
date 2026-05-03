@@ -5,6 +5,41 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../controllers/stock_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
+/// Vue du module de gestion du stock (Admin)
+///
+/// Interface de suivi et gestion du stock des produits.
+///
+/// Composants principaux:
+/// - AppBar: Titre "Gestion du stock"
+/// - Champ de recherche: filtre par nom produit
+/// - Section alertes: produits en stock faible/rupture
+/// - Liste complète: tous les produits avec leur stock
+///
+/// Section alertes stock (en haut):
+/// - Card rouge/orange si produits en alerte
+/// - Liste des produits: stock <= minStockAlert
+/// - Bouton "Réapprovisionner" par produit
+/// - Affichage stock actuel vs seuil d'alerte
+///
+/// Liste complète des produits:
+/// - Nom du produit
+/// - Stock actuel avec badge coloré:
+///   * Vert: stock OK (> minStockAlert)
+///   * Orange: stock faible (<= minStockAlert)
+///   * Rouge: rupture (= 0)
+///   * Gris "N/A": stock non géré (trackStock = false)
+/// - Bouton "Réapprovisionner" (si trackStock = true)
+/// - Bouton "Info" pour produits sans gestion de stock
+///
+/// Support produits en vrac:
+/// - Affichage stock total = (unités × capacité) + unité entamée
+/// - Exemple: "34.25 litres" au lieu de "5 fûts"
+/// - Seuil d'alerte calculé proportionnellement
+///
+/// Actions:
+/// - Tap "Réapprovisionner" → Navigation RestockView
+/// - Recherche → Filtrage instantané
+/// - Pull to refresh → Rechargement données
 class StockView extends GetView<StockController> {
   const StockView({Key? key}) : super(key: key);
 

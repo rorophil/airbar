@@ -37,102 +37,136 @@ import '../modules/admin/transactions/views/transactions_view.dart';
 import '../modules/admin/export/bindings/export_binding.dart';
 import '../modules/admin/export/views/export_view.dart';
 
+/// Configuration des pages et bindings de l'application
+///
+/// Définit la liste complète des routes GetX avec leurs vues
+/// et bindings associés (injection de dépendances).
+///
+/// Chaque [GetPage] associe:
+/// - Une route ([AppRoutes])
+/// - Une vue (Widget)
+/// - Un binding (pour l'injection de dépendances GetX)
 class AppPages {
+  /// Liste de toutes les pages de l'application
+  ///
+  /// Utilisée dans GetMaterialApp.getPages
   static final routes = [
-    // Splash
+    // === Splash ===
+    // Page de démarrage avec logo et chargement initial
     GetPage(
       name: AppRoutes.SPLASH,
       page: () => const SplashView(),
       binding: SplashBinding(),
     ),
 
-    // Login
+    // === Login ===
+    // Authentification par code PIN (4 chiffres)
     GetPage(
       name: AppRoutes.LOGIN,
       page: () => const LoginView(),
       binding: LoginBinding(),
     ),
 
-    // Server Config
+    // === Server Config ===
+    // Configuration de l'IP et du port du serveur Serverpod
     GetPage(
       name: AppRoutes.SERVER_CONFIG,
       page: () => const ServerConfigView(),
       binding: SettingsBinding(),
     ),
 
-    // User Routes
+    // === User Routes ===
+    // Section utilisateur (boutique, panier, checkout)
+
+    // Boutique: affichage des produits par catégorie
     GetPage(
       name: AppRoutes.USER_SHOP,
       page: () => const ShopView(),
       binding: ShopBinding(),
     ),
+    // Panier: liste des articles sélectionnés avec quantités
     GetPage(
       name: AppRoutes.USER_CART,
       page: () => const CartView(),
       binding: CartBinding(),
     ),
+    // Checkout: validation PIN et confirmation d'achat
     GetPage(
       name: AppRoutes.USER_CHECKOUT,
       page: () => const CheckoutView(),
       binding: CheckoutBinding(),
     ),
 
-    // Admin Routes
+    // === Admin Routes ===
+    // Section administration (gestion utilisateurs, produits, stock, etc.)
+
+    // Dashboard: page d'accueil admin avec statistiques
     GetPage(
       name: AppRoutes.ADMIN_DASHBOARD,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
     ),
+    // Gestion des utilisateurs: liste
     GetPage(
       name: AppRoutes.ADMIN_USERS,
       page: () => const UsersView(),
       binding: UsersBinding(),
     ),
+    // Gestion des utilisateurs: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_USER_FORM,
       page: () => const UserFormView(),
       binding: UserFormBinding(),
     ),
+    // Gestion des utilisateurs: crédit/débit de compte
     GetPage(
       name: AppRoutes.ADMIN_USER_CREDIT,
       page: () => const UserCreditView(),
       binding: UserCreditBinding(),
     ),
+    // Gestion des produits: liste
     GetPage(
       name: AppRoutes.ADMIN_PRODUCTS,
       page: () => const ProductsView(),
       binding: ProductsBinding(),
     ),
+    // Gestion des produits: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_PRODUCT_FORM,
       page: () => const ProductFormView(),
       binding: ProductFormBinding(),
     ),
+    // Gestion des catégories: liste
     GetPage(
       name: AppRoutes.ADMIN_CATEGORIES,
       page: () => const CategoriesView(),
       binding: CategoriesBinding(),
     ),
+    // Gestion des catégories: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_CATEGORY_FORM,
       page: () => const CategoryFormView(),
       binding: CategoryFormBinding(),
     ),
+    // Gestion du stock: vue d'ensemble et alertes
     GetPage(
       name: AppRoutes.ADMIN_STOCK,
       page: () => const StockView(),
       binding: StockBinding(),
     ),
+    // Gestion du stock: réapprovisionnement d'un produit
     GetPage(
       name: AppRoutes.ADMIN_STOCK_RESTOCK,
       page: () => const RestockView(),
       binding: RestockBinding(),
     ),
+    // Historique complet des transactions
     GetPage(
       name: AppRoutes.ADMIN_TRANSACTIONS,
       page: () => const TransactionsView(),
       binding: TransactionsBinding(),
     ),
+    // Export de données (produits, transactions) en CSV
     GetPage(
       name: AppRoutes.ADMIN_EXPORT,
       page: () => const ExportView(),

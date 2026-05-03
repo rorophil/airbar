@@ -3,6 +3,25 @@ import 'package:get/get.dart';
 import '../controllers/splash_controller.dart';
 import '../../../core/values/app_strings.dart';
 
+/// Vue du module Splash
+///
+/// Affiche l'écran de démarrage lors du lancement de l'application.
+/// Pendant 2 secondes, affiche le logo et un indicateur de chargement
+/// pendant que le controller vérifie l'état d'authentification.
+///
+/// Composants principaux:
+/// - Logo AirBar: Icône local_bar (verre de bar)
+/// - Nom de l'application: "AirBar"
+/// - Tagline: "Gestion de bar d'aéro-club"
+/// - Indicateur de chargement: CircularProgressIndicator
+///
+/// Interactions:
+/// Aucune interaction utilisateur - navigation automatique après 2 secondes.
+///
+/// Navigation automatique vers:
+/// - LOGIN si non authentifié
+/// - ADMIN_DASHBOARD si admin connecté
+/// - USER_SHOP si utilisateur standard connecté
 class SplashView extends GetView<SplashController> {
   const SplashView({super.key});
 
@@ -13,7 +32,7 @@ class SplashView extends GetView<SplashController> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // App Logo or Icon
+            // Logo de l'application
             Icon(
               Icons.local_bar,
               size: 100,
@@ -21,7 +40,7 @@ class SplashView extends GetView<SplashController> {
             ),
             const SizedBox(height: 24),
 
-            // App Name
+            // Nom de l'application
             Text(
               AppStrings.appName,
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
@@ -31,7 +50,7 @@ class SplashView extends GetView<SplashController> {
             ),
             const SizedBox(height: 8),
 
-            // Tagline
+            // Slogan de l'application
             Text(
               AppStrings.appTagLine,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -40,7 +59,7 @@ class SplashView extends GetView<SplashController> {
             ),
             const SizedBox(height: 48),
 
-            // Loading indicator
+            // Indicateur de chargement
             const CircularProgressIndicator(),
           ],
         ),

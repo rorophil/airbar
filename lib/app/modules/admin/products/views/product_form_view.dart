@@ -5,6 +5,46 @@ import '../controllers/product_form_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du formulaire produit (Admin)
+///
+/// Formulaire de création ou modification de produits.
+/// Support des produits réguliers et en vrac.
+///
+/// Champs communs:
+/// - Nom: texte obligatoire
+/// - Description: texte optionnel
+/// - Catégorie: dropdown obligatoire
+/// - Stock initial: entier >= 0
+/// - Seuil d'alerte: entier >= 0
+/// - Actif: switch (visible/masqué boutique)
+/// - Gérer le stock: switch (trackStock true/false)
+///
+/// Champs produit régulier:
+/// - Prix unitaire: décimal obligatoire
+///
+/// Champs produit en vrac (checkbox "Produit en vrac"):
+/// - Unité: texte (ex: "litres", "kg")
+/// - Quantité totale par unité: décimal (ex: 6L par fût)
+/// - Quantité restante unité entamée: décimal optionnel
+/// - Prix: optionnel (défini par portions)
+/// - Gestion des portions: bouton "Ajouter portion"
+///
+/// Gestion des portions (produits en vrac):
+/// - Dialog d'ajout: Nom (ex: "25cl"), Quantité (0.25), Prix (2.50€)
+/// - Liste des portions avec modification/suppression
+/// - Au moins 1 portion requise pour produits en vrac
+/// - Affichage: nom, quantité en unité, prix
+///
+/// Option trackStock:
+/// - true (défaut): stock géré, validation ventes, alertes
+/// - false: stock non géré, pas de validation ni déduction
+/// - Si false: champs stock grisés et désactivés
+///
+/// Validation:
+/// - Nom non vide
+/// - Catégorie sélectionnée
+/// - Prix requis si produit régulier
+/// - Si produit en vrac: unité, quantité totale, au moins 1 portion
 class ProductFormView extends GetView<ProductFormController> {
   const ProductFormView({Key? key}) : super(key: key);
 

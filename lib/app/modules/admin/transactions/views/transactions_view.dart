@@ -6,6 +6,44 @@ import 'package:intl/intl.dart';
 import '../controllers/transactions_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
+/// Vue du module de gestion des transactions (Admin)
+///
+/// Interface de consultation de l'historique des transactions.
+///
+/// Composants principaux:
+/// - AppBar: Titre "Transactions"
+/// - Champ de recherche: filtre par nom utilisateur ou notes
+/// - Chips de filtrage: Tous/Achats/Crédits/Remboursements
+/// - Liste des transactions: cards avec détails complets
+///
+/// Informations affichées par transaction:
+/// - Date et heure (format DD/MM/YYYY HH:mm)
+/// - Nom de l'utilisateur
+/// - Type de transaction avec badge coloré:
+///   * Rouge: Achat (purchase)
+///   * Vert: Crédit (credit)
+///   * Orange: Remboursement (refund)
+/// - Montant avec signe (- pour achats, + pour crédits/remboursements)
+/// - Solde après transaction
+/// - Notes (si présentes)
+/// - Bouton "Rembourser" (pour achats uniquement)
+///
+/// Filtrage:
+/// - Par type: tap chip → affiche seulement ce type
+/// - Par recherche: saisie → filtrage nom utilisateur ou notes
+/// - Combinable: type + recherche
+///
+/// Action remboursement:
+/// - Disponible uniquement pour transactions type "purchase"
+/// - Dialog de confirmation avec montant
+/// - Création nouvelle transaction type "refund"
+/// - Recrédit automatique du compte utilisateur
+/// - Préservation de l'historique complet
+///
+/// Affichage montants:
+/// - Achats: rouge avec signe - (ex: "-15.50 €")
+/// - Crédits/Remboursements: vert avec signe + (ex: "+50.00 €")
+/// - Solde après: noir, 2 décimales
 class TransactionsView extends GetView<TransactionsController> {
   const TransactionsView({Key? key}) : super(key: key);
 

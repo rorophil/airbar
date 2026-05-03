@@ -5,6 +5,37 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../controllers/categories_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
+/// Vue du module de gestion des catégories (Admin)
+///
+/// Interface d'organisation des catégories de produits.
+///
+/// Composants principaux:
+/// - AppBar: Titre "Catégories"
+/// - Champ de recherche: filtre par nom ou description
+/// - Liste des catégories: cards avec icône, nom, description
+/// - FloatingActionButton: "+" pour nouvelle catégorie
+///
+/// Informations affichées par catégorie:
+/// - Icône Material Design personnalisée
+/// - Nom de la catégorie
+/// - Description (si présente)
+/// - Ordre d'affichage (displayOrder)
+/// - Boutons actions: Modifier, Supprimer
+///
+/// Règles d'affichage:
+/// - Tri par displayOrder croissant
+/// - "Sans catégorie" toujours en dernier (displayOrder: 999)
+/// - Icône colorée selon thème
+///
+/// Actions disponibles:
+/// - Modifier: édition nom, description, icône, ordre
+/// - Supprimer: confirmation + déplacement produits vers "Sans catégorie"
+/// - Protection: "Sans catégorie" non supprimable
+///
+/// Interactions:
+/// - Tap card → Menu ou édition directe
+/// - Recherche → Filtrage instantané
+/// - FAB → Création nouvelle catégorie
 class CategoriesView extends GetView<CategoriesController> {
   const CategoriesView({Key? key}) : super(key: key);
 

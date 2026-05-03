@@ -5,6 +5,35 @@ import '../controllers/category_form_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du formulaire catégorie (Admin)
+///
+/// Formulaire de création ou modification d'une catégorie de produits.
+///
+/// Champs du formulaire:
+/// - Nom: texte obligatoire, identifiant de la catégorie
+/// - Description: texte optionnel, détails supplémentaires
+/// - Ordre d'affichage: entier >= 0, détermine position dans liste
+/// - Icône: sélection parmi 11 icônes Material Design
+///
+/// Sélection d'icône:
+/// - Grille de 11 icônes cliquables
+/// - Icônes disponibles: category, local_bar, local_cafe, local_drink,
+///   fastfood, restaurant, wine_bar, lunch_dining, local_pizza, icecream, liquor
+/// - Icône sélectionnée mise en évidence (bordure colorée)
+/// - Prévisualisation en temps réel
+///
+/// Validation:
+/// - Nom: non vide requis
+/// - Ordre d'affichage: entier >= 0 requis
+/// - Description: optionnelle
+/// - Icône: sélection obligatoire (défaut: "category")
+///
+/// Modes:
+/// - Création: tous champs vides, titre "Nouvelle catégorie"
+/// - Édition: champs pré-remplis, titre "Modifier catégorie"
+///
+/// Workflow:
+/// - Remplissage → Validation → Sauvegarde → Retour liste
 class CategoryFormView extends GetView<CategoryFormController> {
   const CategoryFormView({Key? key}) : super(key: key);
 

@@ -5,6 +5,35 @@ import '../../../../data/repositories/transaction_repository.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../services/auth_service.dart';
 
+/// Controller du module de gestion des transactions (Admin)
+///
+/// Permet aux administrateurs de consulter l'historique complet des transactions
+/// et d'effectuer des remboursements si nécessaire.
+///
+/// Fonctionnalités principales:
+/// - Liste complète de toutes les transactions (tous utilisateurs)
+/// - Filtrage par type: purchase (achat), credit (crédit), refund (remboursement)
+/// - Recherche par nom d'utilisateur ou notes de transaction
+/// - Remboursement de transactions d'achat (recrédite le compte)
+/// - Affichage détaillé: date, utilisateur, montant, type, solde après
+///
+/// Types de transactions:
+/// - purchase (rouge): achat en boutique, montant négatif
+/// - credit (vert): crédit de compte par admin, montant positif
+/// - refund (orange): remboursement d'achat, montant positif
+///
+/// Workflow remboursement:
+/// 1. Sélection d'une transaction d'achat (purchase)
+/// 2. Confirmation via dialog
+/// 3. Appel repository.refundTransaction()
+/// 4. Backend crée nouvelle transaction (type: refund)
+/// 5. Backend recrédite le compte utilisateur
+/// 6. Rechargement automatique de la liste
+///
+/// Notes:
+/// - Les remboursements sont traçables (nouvelle transaction créée)
+/// - Le solde utilisateur est automatiquement ajusté
+/// - L'historique complet est préservé (audit trail)
 class TransactionsController extends GetxController {
   final TransactionRepository _transactionRepository = Get.find();
   final UserRepository _userRepository = Get.find();

@@ -4,24 +4,36 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../core/constants/app_constants.dart';
 import '../data/repositories/user_repository.dart';
 
-/// Service for managing authentication state
+/// Service de gestion de l'état d'authentification
+///
+/// Gère l'utilisateur actuellement connecté, son rôle,
+/// la persistance de la session et le rafraîchissement des données.
+/// Accessible globalement via `Get.find<AuthService>()`.
 class AuthService extends GetxService {
   final _storage = GetStorage();
 
-  // Lazy getter to avoid initialization order issues
+  // Lazy getter pour éviter les problèmes d'ordre d'initialisation
   UserRepository get _userRepository => Get.find<UserRepository>();
 
+  /// Utilisateur actuellement connecté (null si non connecté)
   final Rx<User?> currentUser = Rx<User?>(null);
+
+  /// Indique si l'utilisateur est authentifié
   final RxBool isAuthenticated = false.obs;
+
+  /// Indique si une opération d'authentification est en cours
   final RxBool isLoading = false.obs;
 
   @override
   void onInit() {
     super.onInit();
+    // Chargement de l'utilisateur depuis le stockage au démarrage
     _loadUserFromStorage();
   }
 
-  /// Load user from local storage on app startup
+  /// Charge l'utilisateur depuis le stockage local au démarrage de l'app
+  ///
+  /// Permet de maintenir la session entre les redémarrages.
   void _loadUserFromStorage() {
     try {
       final userData = _storage.read(AppConstants.storageKeyUser);
@@ -34,7 +46,12 @@ class AuthService extends GetxService {
     }
   }
 
-  /// Set the current user and update authentication state
+  /// Définit l'utilisateur actuel et met à jour l'état d'authentification
+  ///
+  /// [user] Utilisateur à définir (null pour déconnecter)
+  ///
+  /// Si [user] n'est pas null, il est persisté dans le stockage local.
+  /// Si [user] est null, les données d'authentification sont supprimées.
   void setUser(User? user) {
     currentUser.value = user;
     isAuthenticated.value = user != null;
@@ -46,21 +63,30 @@ class AuthService extends GetxService {
     }
   }
 
-  /// Clear user session
+  /// Efface la session utilisateur (déconnexion)
+  ///
+  /// Supprime l'utilisateur et le token d'authentification du stockage.
   void clearUser() {
     setUser(null);
     _storage.remove(AppConstants.storageKeyToken);
   }
 
-  /// Check if user is admin
+  /// Vérifie si l'utilisateur connecté est administrateur
+  ///
+  /// Returns: `true` si connecté et rôle = [UserRole.admin]
   bool get isAdmin =>
       isAuthenticated.value && currentUser.value?.role == UserRole.admin;
 
-  /// Check if user is regular user
+  /// Vérifie si l'utilisateur connecté est un utilisateur régulier
+  ///
+  /// Returns: `true` si connecté et rôle = [UserRole.user]
   bool get isRegularUser =>
       isAuthenticated.value && currentUser.value?.role == UserRole.user;
 
-  /// Refresh user data from server
+  /// Rafraîchit les données utilisateur depuis le serveur
+  ///
+  /// Utile pour mettre à jour le solde après une transaction.
+  /// En cas d'erreur, recharge depuis le stockage local.
   Future<void> refreshUser() async {
     try {
       final currentUserId = currentUser.value?.id;
@@ -69,7 +95,7 @@ class AuthService extends GetxService {
         return;
       }
 
-      // Fetch updated user data from server
+      // Récupération des données utilisateur mises à jour depuis le serveur
       final updatedUser = await _userRepository.getUserById(currentUserId);
 
       if (updatedUser != null) {

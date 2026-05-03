@@ -6,6 +6,35 @@ import '../../../../data/repositories/product_repository.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../routes/app_routes.dart';
 
+/// Controller du module de gestion du stock (Admin)
+///
+/// Permet aux administrateurs de suivre et gérer le stock des produits.
+///
+/// Fonctionnalités principales:
+/// - Vue d'ensemble du stock de tous les produits
+/// - Identification des produits en stock faible (quantité <= minStockAlert)
+/// - Réapprovisionnement rapide (navigation vers RestockController)
+/// - Ajustement manuel du stock avec raison (audit trail)
+/// - Recherche par nom ou description de produit
+/// - Support produits réguliers et en vrac
+///
+/// Indicateurs de stock:
+/// - Stock OK: quantité > minStockAlert (badge vert)
+/// - Stock faible: quantité <= minStockAlert (badge orange)
+/// - Rupture: quantité = 0 (badge rouge)
+/// - Stock non géré: trackStock = false (badge gris "N/A")
+///
+/// Filtrage des alertes:
+/// - Seuls les produits avec trackStock = true sont inclus dans lowStockProducts
+/// - Permet de se concentrer sur les produits nécessitant attention
+///
+/// Workflow ajustement de stock:
+/// - Saisie de l'ajustement (+ ou -)
+/// - Raison obligatoire pour audit
+/// - Création de StockMovement (type: adjustment)
+/// - Rechargement automatique de la liste
+///
+/// Note: Les réapprovisionnements créent des StockMovement de type "restock".
 class StockController extends GetxController {
   final StockRepository _stockRepository = Get.find();
   final ProductRepository _productRepository = Get.find();

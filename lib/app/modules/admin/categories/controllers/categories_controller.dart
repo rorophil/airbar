@@ -5,6 +5,28 @@ import '../../../../data/repositories/category_repository.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Controller du module de gestion des catégories (Admin)
+///
+/// Permet aux administrateurs d'organiser le catalogue de produits par catégories.
+///
+/// Fonctionnalités principales:
+/// - Liste complète des catégories avec recherche
+/// - Création de nouvelles catégories (nom, description, icône, ordre d'affichage)
+/// - Modification de catégories existantes
+/// - Suppression de catégories (avec protection "Sans catégorie")
+/// - Recherche par nom ou description
+/// - Cache local avec forceRefresh
+///
+/// Règles métier importantes:
+/// - La catégorie "Sans catégorie" est spéciale et non supprimable
+/// - Lors de la suppression d'une catégorie, ses produits sont déplacés vers "Sans catégorie"
+/// - displayOrder détermine l'ordre d'affichage dans la boutique
+/// - Icônes Material Design disponibles pour personnalisation
+///
+/// Workflow suppression:
+/// - Confirmation utilisateur requise
+/// - Backend déplace automatiquement les produits orphelins
+/// - Empêche la suppression de "Sans catégorie"
 class CategoriesController extends GetxController {
   final CategoryRepository _categoryRepository = Get.find();
 

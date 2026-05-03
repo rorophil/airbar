@@ -6,6 +6,40 @@ import '../controllers/products_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
 
+/// Vue du module de gestion des produits (Admin)
+///
+/// Interface de gestion du catalogue de produits du bar.
+///
+/// Composants principaux:
+/// - AppBar: Titre "Produits"
+/// - Champ de recherche: filtre par nom ou description
+/// - Chips de catégories: filtrage rapide par catégorie
+/// - Liste des produits: cards avec photo, nom, prix, stock
+/// - FloatingActionButton: "Nouveau produit"
+///
+/// Informations affichées par produit:
+/// - Nom et description
+/// - Prix (ou mention "Portions" pour produits en vrac)
+/// - Stock actuel avec indicateur coloré (vert/orange/rouge)
+/// - Catégorie
+/// - Badge "Inactif" si produit désactivé
+/// - Icônes actions: Modifier, Activer/Désactiver, Supprimer
+///
+/// Indicateurs de stock:
+/// - Vert: stock > minStockAlert (OK)
+/// - Orange: stock <= minStockAlert (Stock faible)
+/// - Rouge: stock = 0 (Rupture)
+/// - Gris "N/A": trackStock = false (Stock non géré)
+///
+/// Filtrage:
+/// - Par catégorie: tap chip → affiche produits de cette catégorie
+/// - Par recherche: saisie → filtrage instantané nom/description
+/// - Combinable: catégorie + recherche
+///
+/// Actions disponibles:
+/// - Modifier: édition complète du produit
+/// - Activer/Désactiver: toggle visibilité boutique
+/// - Supprimer: soft delete (isActive = false)
 class ProductsView extends GetView<ProductsController> {
   const ProductsView({Key? key}) : super(key: key);
 
