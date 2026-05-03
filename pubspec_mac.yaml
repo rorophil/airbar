@@ -1,0 +1,48 @@
+# Configuration pour MAC (Développement Local)
+# Utilise la version locale du client backend
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  
+  # GetX - State management, routing, DI
+  get: ^4.6.6
+  
+  # Serverpod
+  serverpod_flutter: ^3.3.1
+  serverpod_auth_client: ^3.3.1
+  
+  # VERSION LOCALE - Pour Mac/Développement
+  airbar_backend_client:
+    path: ../airbar_backend/airbar_backend_client
+  
+  # Stockage local
+  get_storage: ^2.1.1
+  flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.3
+  
+  # UI & Utils
+  intl: ^0.20.0
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.10
+  
+  # Connectivité
+  connectivity_plus: ^6.0.0
+  
+  # Formulaires & Validation
+  flutter_form_builder: ^10.3.0
+  form_builder_validators: ^11.1.2
+  
+  # PIN Input
+  pin_code_fields: ^8.0.1
+  
+  # Export Excel/CSV
+  excel: ^4.0.0
+  file_picker: ^8.0.0
+  
+  # Utils
+  logger: ^2.0.2
+  flutter_screenutil: ^5.9.0
+  shimmer: ^3.0.0

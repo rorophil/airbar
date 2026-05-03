@@ -44,3 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 flutter_log.txt
+
+# Configuration locale (ne pas versionner)
+# Les templates pubspec_mac.yaml et pubspec_windows.yaml sont versionnés
+*.local
+.env.local
