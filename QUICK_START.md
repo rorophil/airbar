@@ -114,7 +114,29 @@ flutter run -d windows
 
 ---
 
-## 🐛 Dépannage Express
+## � Gestion des Dépendances
+
+### ⚠️ RÈGLE IMPORTANTE
+
+**NE JAMAIS modifier `pubspec.yaml` directement !**
+
+**Toujours modifier `pubspec_mac.yaml` ET `pubspec_windows.yaml`**
+
+```bash
+# Méthode automatique (recommandée)
+./add_dependency.sh http ^1.0.0
+
+# Méthode manuelle
+# 1. Éditer pubspec_mac.yaml
+# 2. Éditer pubspec_windows.yaml (même modification)
+# 3. ./switch_to_local.sh
+```
+
+📖 **Documentation complète :** [DEPENDENCIES.md](DEPENDENCIES.md)
+
+---
+
+## �🐛 Dépannage Express
 
 ### Mac : "Cannot find airbar_backend_client"
 
