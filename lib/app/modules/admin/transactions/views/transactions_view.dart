@@ -132,6 +132,139 @@ class TransactionsView extends GetView<TransactionsController> {
               ),
             ),
 
+            // Date and limit filters
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 16.h),
+              child: Column(
+                children: [
+                  // Date filters row
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Obx(
+                          () => OutlinedButton.icon(
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate:
+                                    controller.startDate.value ??
+                                    DateTime.now(),
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime.now(),
+                              );
+                              if (date != null) {
+                                controller.setStartDate(date);
+                              }
+                            },
+                            icon: const Icon(Icons.calendar_today, size: 16),
+                            label: Text(
+                              controller.startDate.value != null
+                                  ? 'Du ${DateFormat('dd/MM/yy').format(controller.startDate.value!)}'
+                                  : 'Date début',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 8.h,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: Obx(
+                          () => OutlinedButton.icon(
+                            onPressed: () async {
+                              final date = await showDatePicker(
+                                context: context,
+                                initialDate:
+                                    controller.endDate.value ?? DateTime.now(),
+                                firstDate: DateTime(2020),
+                                lastDate: DateTime.now(),
+                              );
+                              if (date != null) {
+                                // Set end of day (23:59:59)
+                                final endOfDay = DateTime(
+                                  date.year,
+                                  date.month,
+                                  date.day,
+                                  23,
+                                  59,
+                                  59,
+                                );
+                                controller.setEndDate(endOfDay);
+                              }
+                            },
+                            icon: const Icon(Icons.calendar_today, size: 16),
+                            label: Text(
+                              controller.endDate.value != null
+                                  ? 'Au ${DateFormat('dd/MM/yy').format(controller.endDate.value!)}'
+                                  : 'Date fin',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12.w,
+                                vertical: 8.h,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Obx(
+                        () =>
+                            (controller.startDate.value != null ||
+                                controller.endDate.value != null)
+                            ? IconButton(
+                                onPressed: controller.clearDateFilters,
+                                icon: const Icon(Icons.clear),
+                                tooltip: 'Effacer les filtres de dates',
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 8.h),
+                  // Limit selector
+                  Row(
+                    children: [
+                      Text(
+                        'Nombre de transactions:',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Obx(
+                        () => DropdownButton<int>(
+                          value: controller.limit.value,
+                          items: [10, 25, 50, 100, 200, 500].map((int value) {
+                            return DropdownMenuItem<int>(
+                              value: value,
+                              child: Text('$value'),
+                            );
+                          }).toList(),
+                          onChanged: (int? newValue) {
+                            if (newValue != null) {
+                              controller.updateLimit(newValue);
+                            }
+                          },
+                          underline: Container(
+                            height: 1,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
             // Transactions list
             Expanded(
               child: Obx(() {

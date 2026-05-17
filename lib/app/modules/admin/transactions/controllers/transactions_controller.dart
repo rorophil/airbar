@@ -46,6 +46,9 @@ class TransactionsController extends GetxController {
   final users = <User>[].obs;
   final searchQuery = ''.obs;
   final selectedType = Rxn<TransactionType>();
+  final startDate = Rxn<DateTime>();
+  final endDate = Rxn<DateTime>();
+  final limit = 50.obs;
 
   @override
   void onInit() {
@@ -62,7 +65,12 @@ class TransactionsController extends GetxController {
 
       // Load transactions and users in parallel
       final results = await Future.wait([
-        _transactionRepository.getAllTransactions(),
+        _transactionRepository.getAllTransactions(
+          type: selectedType.value,
+          limit: limit.value,
+          startDate: startDate.value,
+          endDate: endDate.value,
+        ),
         _userRepository.getAllUsers(),
       ]);
 
@@ -84,12 +92,8 @@ class TransactionsController extends GetxController {
   void filterTransactions() {
     var filtered = transactions.toList();
 
-    // Filter by type
-    if (selectedType.value != null) {
-      filtered = filtered.where((t) => t.type == selectedType.value).toList();
-    }
-
-    // Filter by search query
+    // Filter by search query (local filter only)
+    // Type, dates, and limit are filtered server-side
     if (searchQuery.value.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where((t) {
@@ -111,7 +115,7 @@ class TransactionsController extends GetxController {
   /// Select transaction type filter
   void selectType(TransactionType? type) {
     selectedType.value = type;
-    filterTransactions();
+    loadData();
   }
 
   /// Refund transaction
@@ -204,6 +208,36 @@ class TransactionsController extends GetxController {
       return '${user.firstName} ${user.lastName}';
     }
     return 'Utilisateur #$userId';
+  }
+
+  /// Update limit
+  void updateLimit(int newLimit) {
+    limit.value = newLimit;
+    loadData();
+  }
+
+  /// Set start date
+  void setStartDate(DateTime? date) {
+    startDate.value = date;
+    // If start date is set but no end date, set end date to now
+    if (date != null && endDate.value == null) {
+      final now = DateTime.now();
+      endDate.value = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    }
+    loadData();
+  }
+
+  /// Set end date
+  void setEndDate(DateTime? date) {
+    endDate.value = date;
+    loadData();
+  }
+
+  /// Clear date filters
+  void clearDateFilters() {
+    startDate.value = null;
+    endDate.value = null;
+    loadData();
   }
 
   /// Refresh data

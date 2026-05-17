@@ -102,6 +102,8 @@ class TransactionRepository {
   /// [type] Filtre optionnel par type (TransactionType.purchase, credit, etc.)
   /// [limit] Nombre maximum de transactions à retourner (défaut: 50)
   /// [offset] Nombre de transactions à ignorer (pagination)
+  /// [startDate] Date de début du filtre (optionnel)
+  /// [endDate] Date de fin du filtre (optionnel)
   ///
   /// Returns: Liste de toutes les transactions triées par date décroissante
   ///
@@ -113,12 +115,16 @@ class TransactionRepository {
     dynamic type,
     int limit = 50,
     int offset = 0,
+    DateTime? startDate,
+    DateTime? endDate,
   }) async {
     try {
       return await _client.transaction.getAllTransactions(
         limit: limit,
         offset: offset,
         type: type,
+        startDate: startDate,
+        endDate: endDate,
       );
     } catch (e) {
       print('Get all transactions error: $e');
