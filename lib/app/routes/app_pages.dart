@@ -36,6 +36,10 @@ import '../modules/admin/transactions/bindings/transactions_binding.dart';
 import '../modules/admin/transactions/views/transactions_view.dart';
 import '../modules/admin/export/bindings/export_binding.dart';
 import '../modules/admin/export/views/export_view.dart';
+import '../modules/cashier/bindings/cashier_binding.dart';
+import '../modules/cashier/views/cashier_view.dart';
+import '../modules/cashier/views/cashier_checkout_view.dart';
+import '../modules/cashier/views/cashier_receipt_view.dart';
 
 /// Configuration des pages et bindings de l'application
 ///
@@ -95,6 +99,28 @@ class AppPages {
       name: AppRoutes.USER_CHECKOUT,
       page: () => const CheckoutView(),
       binding: CheckoutBinding(),
+    ),
+
+    // === Cashier Routes ===
+    // Module de caisse pour ventes aux non-membres (accessible par tous les membres)
+
+    // Mode Caisse: interface de vente avec panier temps réel
+    GetPage(
+      name: AppRoutes.CASHIER,
+      page: () => const CashierView(),
+      binding: CashierBinding(),
+    ),
+    // Validation vente caisse: choix paiement (espèces/carte) et PIN vendeur
+    GetPage(
+      name: AppRoutes.CASHIER_CHECKOUT,
+      page: () => const CashierCheckoutView(),
+      binding: CashierBinding(),
+    ),
+    // Reçu de vente: affichage et options impression/partage PDF
+    GetPage(
+      name: AppRoutes.CASHIER_RECEIPT,
+      page: () => const CashierReceiptView(),
+      binding: CashierBinding(),
     ),
 
     // === Admin Routes ===

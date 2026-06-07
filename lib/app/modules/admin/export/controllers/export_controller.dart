@@ -350,7 +350,9 @@ class ExportController extends GetxController {
 
     // Rows
     for (final transaction in transactions) {
-      final userName = _getUserName(transaction.userId);
+      final userName = transaction.userId != null
+          ? _getUserName(transaction.userId!)
+          : 'Client anonyme';
       buffer.writeln(
         [
           transaction.id,
@@ -390,6 +392,8 @@ class ExportController extends GetxController {
         return 'Crédits';
       case TransactionType.refund:
         return 'Remboursements';
+      case TransactionType.cashSale:
+        return 'Vente caisse';
     }
   }
 }

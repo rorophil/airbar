@@ -97,7 +97,9 @@ class TransactionsController extends GetxController {
     if (searchQuery.value.isNotEmpty) {
       final query = searchQuery.value.toLowerCase();
       filtered = filtered.where((t) {
-        final userName = getUserName(t.userId).toLowerCase();
+        final userName = t.userId != null
+            ? getUserName(t.userId!).toLowerCase()
+            : 'client anonyme';
         return userName.contains(query) ||
             (t.notes?.toLowerCase().contains(query) ?? false);
       }).toList();
@@ -186,6 +188,8 @@ class TransactionsController extends GetxController {
         return 'Crédit';
       case TransactionType.refund:
         return 'Remboursement';
+      case TransactionType.cashSale:
+        return 'Vente caisse';
     }
   }
 
@@ -198,6 +202,8 @@ class TransactionsController extends GetxController {
         return const Color(0xFF4CAF50); // Green
       case TransactionType.refund:
         return const Color(0xFFFF9800); // Orange
+      case TransactionType.cashSale:
+        return const Color(0xFF2196F3); // Blue
     }
   }
 

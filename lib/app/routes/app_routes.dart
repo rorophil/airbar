@@ -39,6 +39,17 @@ abstract class AppRoutes {
   /// Historique des transactions (non implémenté)
   static const USER_HISTORY = '/user/history';
 
+  // === Cashier Routes (accessible par tous les membres) ===
+
+  /// Mode Caisse - Vente aux non-membres
+  static const CASHIER = '/cashier';
+
+  /// Validation de vente caisse - Choix paiement et PIN vendeur
+  static const CASHIER_CHECKOUT = '/cashier/checkout';
+
+  /// Reçu de vente caisse - Affichage et impression
+  static const CASHIER_RECEIPT = '/cashier/receipt';
+
   // === Admin Routes ===
 
   /// Tableau de bord administrateur (page d'accueil admin)

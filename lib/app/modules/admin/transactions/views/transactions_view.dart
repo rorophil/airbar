@@ -396,7 +396,9 @@ class _TransactionCard extends GetView<TransactionsController> {
                 Icon(Icons.person, size: 14.sp, color: AppColors.textHint),
                 SizedBox(width: 4.w),
                 Text(
-                  controller.getUserName(transaction.userId),
+                  transaction.userId != null
+                      ? controller.getUserName(transaction.userId!)
+                      : 'Client anonyme',
                   style: TextStyle(
                     fontSize: 12.sp,
                     color: AppColors.textSecondary,

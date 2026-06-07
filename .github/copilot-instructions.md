@@ -2,7 +2,7 @@
 
 **Application de gestion de bar d'aéro-club**  
 **Stack:** Flutter + Serverpod + PostgreSQL + GetX  
-**Dernière mise à jour:** 9 avril 2026
+**Dernière mise à jour:** 7 juin 2026
 
 ---
 
@@ -858,7 +858,328 @@ await ServerpodClientProvider.reinitialize();
 
 ---
 
-## 📚 Ressources et Documentation
+## � Module Caisse (POS - Point of Sale)
+
+### Vue d'Ensemble
+
+Le module caisse permet aux membres de vendre des produits directement sans passer par le panier personnel.
+Utile pour les permanences de bar où un membre effectue des ventes pour d'autres membres.
+
+**Chemin:** `lib/app/modules/cashier/`
+
+**Accès:** 
+- Depuis la boutique utilisateur : icône `point_of_sale` dans l'AppBar
+- Route: `/cashier`
+
+### Structure du Module
+
+```
+cashier/
+  ├── bindings/
+  │   └── cashier_binding.dart          # DI avec ProductPortionRepository
+  ├── controllers/
+  │   ├── cashier_controller.dart       # Gestion panier caisse
+  │   ├── cashier_checkout_controller.dart
+  │   └── cashier_receipt_controller.dart
+  └── views/
+      ├── cashier_view.dart             # Interface principale
+      ├── cashier_checkout_view.dart
+      └── cashier_receipt_view.dart
+```
+
+### Classe CashSaleItem
+
+**Helper class pour représenter un article dans le panier caisse:**
+
+```dart
+class CashSaleItem {
+  final Product product;           // Le produit
+  final int quantity;              // Quantité commandée
+  final ProductPortion? portion;   // Portion si produit en vrac
+  
+  // Propriétés calculées
+  double get effectivePrice;       // portion?.price ?? product.price
+  String get displayName;          // "Produit - Portion" ou "Produit"
+  double get subtotal;             // effectivePrice × quantity
+}
+```
+
+**Exemples:**
+```dart
+// Produit régulier
+CashSaleItem(product: biere, quantity: 2)
+// → displayName: "Bière", effectivePrice: 3.50€, subtotal: 7.00€
+
+// Produit en vrac avec portion
+CashSaleItem(product: futBiere, quantity: 3, portion: portion50cl)
+// → displayName: "Bière - 50cl", effectivePrice: 2.50€, subtotal: 7.50€
+```
+
+### CashierController
+
+**État géré:**
+```dart
+final isLoading = false.obs;
+final products = <Product>[].obs;              // Tous les produits
+final categories = <ProductCategory>[].obs;    // Toutes les catégories
+final cashierCart = <CashSaleItem>[].obs;      // Panier de la caisse
+final selectedCategoryId = Rx<int?>(null);     // Filtre catégorie
+final searchQuery = ''.obs;                    // Filtre recherche
+final productPortions = <int, List<ProductPortion>>{}.obs;  // Map portions
+```
+
+**Méthodes principales:**
+
+#### `loadData()`
+Charge produits, catégories et portions en parallèle:
+```dart
+Future<void> loadData() async {
+  // 1. Charge produits + catégories en parallèle
+  final results = await Future.wait([
+    _productRepository.getAllProducts(forceRefresh: true),
+    _categoryRepository.getAllCategories(forceRefresh: true),
+  ]);
+  
+  // 2. Charge les portions pour produits en vrac
+  await _loadPortionsForBulkProducts();
+}
+```
+
+#### `getPortionsForProduct(int productId)`
+Retourne les portions disponibles pour un produit:
+```dart
+List<ProductPortion> getPortionsForProduct(int productId) {
+  return productPortions[productId] ?? [];
+}
+```
+
+#### `addToCashierCart(Product, quantity, {portionId?})`
+Ajoute un article au panier de la caisse:
+
+**Processus:**
+1. Résout la portion si `portionId` fourni
+2. Vérifie le stock disponible (si `trackStock` = true)
+3. Ajoute au panier ou met à jour la quantité si déjà présent
+4. Affiche un snackbar de confirmation
+
+**Validation du stock:**
+```dart
+if (product.trackStock) {
+  double requiredQuantity = quantity.toDouble();
+  if (portion != null) {
+    requiredQuantity = quantity * portion.quantity;
+  }
+  
+  double availableStock;
+  if (product.isBulkProduct && product.bulkTotalQuantity != null) {
+    // Stock total = unités complètes + unité entamée
+    availableStock = (product.stockQuantity * product.bulkTotalQuantity!) +
+                     (product.currentUnitRemaining ?? 0);
+  } else {
+    availableStock = product.stockQuantity.toDouble();
+  }
+  
+  if (availableStock < requiredQuantity) {
+    // Afficher erreur
+  }
+}
+```
+
+**Exemples d'utilisation:**
+```dart
+// Produit régulier
+controller.addToCashierCart(biere, 2);
+
+// Produit en vrac avec portion 50cl
+controller.addToCashierCart(futBiere, 3, portionId: portion50cl.id);
+```
+
+#### `updateQuantity(index, newQuantity)`
+Met à jour la quantité d'un article (avec vérification de stock).
+Supprime l'article si newQuantity ≤ 0.
+
+#### `removeFromCart(index)`
+Supprime un article du panier.
+
+#### `clearCart()`
+Vide le panier avec confirmation dialog.
+
+#### `goToCheckout()`
+Navigue vers le checkout avec les données du panier.
+
+#### `goBackToDashboard()`
+Retour au dashboard avec confirmation si panier non vide.
+Navigue vers Admin Dashboard ou User Shop selon le rôle.
+
+### CashierView - Interface Utilisateur
+
+**Layout Split-Screen:**
+```
+┌─────────────────────────┬──────────────┐
+│  Produits (Gauche)      │ Panier (Droite) │
+├─────────────────────────┤              │
+│  [Barre de recherche]   │  [Total]     │
+│  [Filtres catégories]   │  [Articles]  │
+│                         │  [Boutons]   │
+│  [Liste produits]       │              │
+│  - ProductCard          │              │
+│  - BulkProductCard      │              │
+└─────────────────────────┴──────────────┘
+```
+
+**Composants personnalisés:**
+
+#### `_ProductCard` - Carte produit régulier
+Affiche:
+- Icône du produit
+- Nom et description
+- Prix unitaire
+- Indicateur de stock (vert/orange/rouge)
+
+Au tap → Ouvre `_ProductDetailsSheet`
+
+#### `_BulkProductCard` - Carte produit en vrac
+Affiche:
+- Badge "Produit en vrac"
+- Nom et contenance (ex: 6L)
+- Stock disponible
+- Liste des portions cliquables (25cl, 50cl, etc.)
+
+Chaque portion au tap → Ouvre `_showPortionDialog`
+
+#### `_ProductDetailsSheet` - Bottom Sheet détails
+Affiche automatiquement:
+- `_buildRegularProductSheet` pour produits réguliers
+- `_buildBulkProductSheet` pour produits en vrac
+
+Permet de sélectionner la quantité (et portion si vrac) avant ajout.
+
+#### `_showPortionDialog` - Dialog pour portions
+Dialog compact pour ajouter une portion:
+- Nom de la portion (ex: "50cl")
+- Prix de la portion
+- Quantité de la portion (ex: 0.5L)
+- Champ de saisie du nombre de portions
+
+**Workflow d'ajout au panier:**
+1. Utilisateur clique sur portion
+2. Dialog s'ouvre avec quantité = 1
+3. Utilisateur ajuste la quantité
+4. Clic "Ajouter au panier"
+5. **Dialog se ferme AVANT** l'appel à `addToCashierCart`
+6. Snackbar de confirmation s'affiche
+
+**IMPORTANT:** L'ordre est crucial pour éviter les conflits entre Get.back() et le snackbar:
+```dart
+onPressed: () {
+  Get.back();  // Fermer d'abord
+  controller.addToCashierCart(...);  // Puis ajouter
+}
+```
+
+### Affichage du Panier (Partie Droite)
+
+**En-tête:**
+- Titre "Panier"
+- Nombre d'articles
+
+**Liste des articles:**
+```dart
+Widget _buildCartItem(CashSaleItem item, int index) {
+  // Affiche:
+  // - displayName (avec portion si applicable)
+  // - Prix effectif
+  // - Boutons: - / quantité / + / supprimer
+}
+```
+
+**Pied de panier:**
+- Total en gros caractères
+- Bouton "Vider" (avec confirmation)
+- Bouton "Valider la vente" (vers checkout)
+
+### Indicateurs de Stock
+
+Couleurs selon niveau:
+```dart
+Color _getStockColor() {
+  if (product.stockQuantity == 0) return AppColors.error;        // Rouge
+  if (product.stockQuantity <= product.minStockAlert) return Colors.orange;
+  return AppColors.success;                                      // Vert
+}
+```
+
+### Gestion des Produits sans Stock
+
+Pour les produits avec `trackStock = false`:
+- Pas d'affichage de stock
+- Pas de validation de stock
+- Ajout au panier toujours autorisé
+- Icône panier en couleur primaire (pas grisée)
+
+### Points Clés d'Implémentation
+
+**1. Injection du ProductPortionRepository:**
+```dart
+// cashier_binding.dart
+Get.lazyPut<ProductPortionRepository>(() => ProductPortionRepository());
+```
+
+**2. Chargement des portions au démarrage:**
+```dart
+@override
+void onInit() {
+  super.onInit();
+  loadData();  // Charge produits + catégories + portions
+}
+```
+
+**3. Harmonisation avec ShopView:**
+Le module caisse utilise exactement les mêmes composants UI que la boutique:
+- `_ProductCard` pour produits réguliers
+- `_BulkProductCard` pour produits en vrac
+- `_ProductDetailsSheet` pour les détails
+- Même logique de validation de stock
+
+Cela garantit une expérience utilisateur cohérente.
+
+**4. Pattern pour fermeture de dialog:**
+Toujours fermer le dialog AVANT d'appeler le controller:
+```dart
+ElevatedButton(
+  onPressed: () {
+    Get.back();  // 1. Fermer dialog
+    controller.addToCashierCart(...);  // 2. Ajouter au panier
+  },
+)
+```
+
+### Routes du Module
+
+```dart
+// app_routes.dart
+static const CASHIER = '/cashier';
+static const CASHIER_CHECKOUT = '/cashier/checkout';
+static const CASHIER_RECEIPT = '/cashier/receipt';
+```
+
+**Navigation:**
+```dart
+// Depuis ShopView
+IconButton(
+  icon: Icon(Icons.point_of_sale),
+  onPressed: () => Get.toNamed('/cashier'),
+)
+
+// Retour au dashboard
+controller.goBackToDashboard();  // Gère admin vs user
+```
+
+**Accès:** Tous les membres authentifiés peuvent accéder au mode caisse.
+
+---
+
+## �📚 Ressources et Documentation
 
 ### Documentation Officielle
 - [Serverpod](https://serverpod.dev/) - Backend framework
@@ -922,6 +1243,7 @@ flutter run -d chrome
 7. **JAMAIS** supprimer physiquement des transactions (audit trail)
 8. **TOUJOURS** vérifier le solde AVANT de débiter un compte
 9. **TOUJOURS** vérifier `product.trackStock` avant toute opération de stock (validation, déduction, réapprovisionnement)
+10. **TOUJOURS** fermer les dialogs avec `Get.back()` AVANT d'appeler les méthodes du controller (évite conflits avec snackbars)
 
 ---
 

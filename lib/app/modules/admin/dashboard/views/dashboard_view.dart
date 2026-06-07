@@ -90,6 +90,13 @@ class DashboardView extends GetView<DashboardController> {
                     onTap: controller.goToShop,
                   ),
                   _DashboardCard(
+                    icon: Icons.point_of_sale,
+                    title: 'Caisse',
+                    subtitle: 'Vendre aux non-membres',
+                    color: AppColors.success,
+                    onTap: () => Get.toNamed('/cashier'),
+                  ),
+                  _DashboardCard(
                     icon: Icons.people,
                     title: AppStrings.users,
                     subtitle: 'Gérer les utilisateurs',
