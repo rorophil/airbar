@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'app_routes.dart';
+import 'middlewares/auth_middleware.dart';
+import 'middlewares/admin_middleware.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -87,18 +89,21 @@ class AppPages {
       name: AppRoutes.USER_SHOP,
       page: () => const ShopView(),
       binding: ShopBinding(),
+      middlewares: [AuthMiddleware()],
     ),
     // Panier: liste des articles sélectionnés avec quantités
     GetPage(
       name: AppRoutes.USER_CART,
       page: () => const CartView(),
       binding: CartBinding(),
+      middlewares: [AuthMiddleware()],
     ),
     // Checkout: validation PIN et confirmation d'achat
     GetPage(
       name: AppRoutes.USER_CHECKOUT,
       page: () => const CheckoutView(),
       binding: CheckoutBinding(),
+      middlewares: [AuthMiddleware()],
     ),
 
     // === Cashier Routes ===
@@ -109,18 +114,21 @@ class AppPages {
       name: AppRoutes.CASHIER,
       page: () => const CashierView(),
       binding: CashierBinding(),
+      middlewares: [AuthMiddleware()],
     ),
     // Validation vente caisse: choix paiement (espèces/carte) et PIN vendeur
     GetPage(
       name: AppRoutes.CASHIER_CHECKOUT,
       page: () => const CashierCheckoutView(),
       binding: CashierBinding(),
+      middlewares: [AuthMiddleware()],
     ),
     // Reçu de vente: affichage et options impression/partage PDF
     GetPage(
       name: AppRoutes.CASHIER_RECEIPT,
       page: () => const CashierReceiptView(),
       binding: CashierBinding(),
+      middlewares: [AuthMiddleware()],
     ),
 
     // === Admin Routes ===
@@ -131,72 +139,84 @@ class AppPages {
       name: AppRoutes.ADMIN_DASHBOARD,
       page: () => const DashboardView(),
       binding: DashboardBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: liste
     GetPage(
       name: AppRoutes.ADMIN_USERS,
       page: () => const UsersView(),
       binding: UsersBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_USER_FORM,
       page: () => const UserFormView(),
       binding: UserFormBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: crédit/débit de compte
     GetPage(
       name: AppRoutes.ADMIN_USER_CREDIT,
       page: () => const UserCreditView(),
       binding: UserCreditBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des produits: liste
     GetPage(
       name: AppRoutes.ADMIN_PRODUCTS,
       page: () => const ProductsView(),
       binding: ProductsBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des produits: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_PRODUCT_FORM,
       page: () => const ProductFormView(),
       binding: ProductFormBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des catégories: liste
     GetPage(
       name: AppRoutes.ADMIN_CATEGORIES,
       page: () => const CategoriesView(),
       binding: CategoriesBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion des catégories: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_CATEGORY_FORM,
       page: () => const CategoryFormView(),
       binding: CategoryFormBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion du stock: vue d'ensemble et alertes
     GetPage(
       name: AppRoutes.ADMIN_STOCK,
       page: () => const StockView(),
       binding: StockBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Gestion du stock: réapprovisionnement d'un produit
     GetPage(
       name: AppRoutes.ADMIN_STOCK_RESTOCK,
       page: () => const RestockView(),
       binding: RestockBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Historique complet des transactions
     GetPage(
       name: AppRoutes.ADMIN_TRANSACTIONS,
       page: () => const TransactionsView(),
       binding: TransactionsBinding(),
+      middlewares: [AdminMiddleware()],
     ),
     // Export de données (produits, transactions) en CSV
     GetPage(
       name: AppRoutes.ADMIN_EXPORT,
       page: () => const ExportView(),
       binding: ExportBinding(),
+      middlewares: [AdminMiddleware()],
     ),
   ];
 }
