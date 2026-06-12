@@ -17,6 +17,15 @@ class CashierReceiptController extends GetxController {
   // État réactif
   final isGeneratingPdf = false.obs;
 
+  // Getter pour le nom du vendeur
+  String get sellerName {
+    final user = _authService.currentUser.value;
+    if (user != null) {
+      return '${user.firstName} ${user.lastName}';
+    }
+    return 'Inconnu';
+  }
+
   @override
   void onInit() {
     super.onInit();

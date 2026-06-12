@@ -19,17 +19,19 @@ import '../../../../core/values/app_colors.dart';
 /// Informations affichées par transaction:
 /// - Date et heure (format DD/MM/YYYY HH:mm)
 /// - Nom de l'utilisateur
+/// - Nom du vendeur (pour ventes caisse uniquement)
 /// - Type de transaction avec badge coloré:
 ///   * Rouge: Achat (purchase)
 ///   * Vert: Crédit (credit)
 ///   * Orange: Remboursement (refund)
+///   * Bleu: Vente caisse (cashSale)
 /// - Montant avec signe (- pour achats, + pour crédits/remboursements)
-/// - Solde après transaction
+/// - Solde après transaction (si applicable)
 /// - Notes (si présentes)
 /// - Bouton "Rembourser" (pour achats uniquement)
 ///
 /// Filtrage:
-/// - Par type: tap chip → affiche seulement ce type
+/// - Par type: tap chip → affiche seulement ce type (achats/crédits/remboursements/ventes caisse)
 /// - Par recherche: saisie → filtrage nom utilisateur ou notes
 /// - Combinable: type + recherche
 ///
@@ -124,6 +126,16 @@ class TransactionsView extends GetView<TransactionsController> {
                             TransactionType.refund,
                         onSelected: (selected) {
                           controller.selectType(TransactionType.refund);
+                        },
+                      ),
+                      SizedBox(width: 8.w),
+                      ChoiceChip(
+                        label: const Text('Ventes caisse'),
+                        selected:
+                            controller.selectedType.value ==
+                            TransactionType.cashSale,
+                        onSelected: (selected) {
+                          controller.selectType(TransactionType.cashSale);
                         },
                       ),
                     ],
@@ -406,6 +418,29 @@ class _TransactionCard extends GetView<TransactionsController> {
                 ),
               ],
             ),
+
+            // Seller name (for cash sales)
+            if (transaction.sellerId != null) ...[
+              SizedBox(height: 8.h),
+              Row(
+                children: [
+                  Icon(
+                    Icons.point_of_sale,
+                    size: 14.sp,
+                    color: AppColors.textHint,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    'Vendeur: ${controller.getSellerName(transaction.sellerId!)}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
 
             // Notes
             if (transaction.notes != null && transaction.notes!.isNotEmpty) ...[

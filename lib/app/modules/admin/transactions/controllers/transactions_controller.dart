@@ -100,7 +100,11 @@ class TransactionsController extends GetxController {
         final userName = t.userId != null
             ? getUserName(t.userId!).toLowerCase()
             : 'client anonyme';
+        final sellerName = t.sellerId != null
+            ? getSellerName(t.sellerId!).toLowerCase()
+            : '';
         return userName.contains(query) ||
+            sellerName.contains(query) ||
             (t.notes?.toLowerCase().contains(query) ?? false);
       }).toList();
     }
@@ -214,6 +218,15 @@ class TransactionsController extends GetxController {
       return '${user.firstName} ${user.lastName}';
     }
     return 'Utilisateur #$userId';
+  }
+
+  /// Get seller name by ID
+  String getSellerName(int sellerId) {
+    final seller = users.firstWhereOrNull((u) => u.id == sellerId);
+    if (seller != null) {
+      return '${seller.firstName} ${seller.lastName}';
+    }
+    return 'Vendeur #$sellerId';
   }
 
   /// Update limit
