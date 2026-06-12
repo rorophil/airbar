@@ -884,112 +884,117 @@ class _ProductDetailsSheet extends GetView<CashierController> {
   ) {
     return Padding(
       padding: EdgeInsets.all(24.w),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Product name
-          Text(
-            product.name,
-            style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
-          ),
-
-          SizedBox(height: 8.h),
-
-          // Description
-          if (product.description != null)
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product name
             Text(
-              product.description!,
-              style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
+              product.name,
+              style: TextStyle(fontSize: 20.sp, fontWeight: FontWeight.bold),
             ),
 
-          SizedBox(height: 16.h),
+            SizedBox(height: 8.h),
 
-          // Price
-          Row(
-            children: [
-              Text('Prix: ', style: TextStyle(fontSize: 16.sp)),
+            // Description
+            if (product.description != null)
               Text(
-                '${product.price.toStringAsFixed(2)} €',
+                product.description!,
                 style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
+                  fontSize: 14.sp,
+                  color: AppColors.textSecondary,
                 ),
               ),
-            ],
-          ),
 
-          SizedBox(height: 8.h),
+            SizedBox(height: 16.h),
 
-          // Stock
-          if (product.trackStock)
-            Text(
-              'Stock disponible: ${product.stockQuantity}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: product.stockQuantity > 0
-                    ? AppColors.success
-                    : AppColors.error,
-              ),
+            // Price
+            Row(
+              children: [
+                Text('Prix: ', style: TextStyle(fontSize: 16.sp)),
+                Text(
+                  '${product.price.toStringAsFixed(2)} €',
+                  style: TextStyle(
+                    fontSize: 18.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
             ),
 
-          SizedBox(height: 24.h),
+            SizedBox(height: 8.h),
 
-          // Quantity selector
-          Row(
-            children: [
-              Text('Quantité:', style: TextStyle(fontSize: 16.sp)),
-              SizedBox(width: 16.w),
-              SizedBox(
-                width: 100.w,
-                child: TextField(
-                  controller: quantityController,
-                  keyboardType: TextInputType.number,
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                    ),
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 8.h,
+            // Stock
+            if (product.trackStock)
+              Text(
+                'Stock disponible: ${product.stockQuantity}',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: product.stockQuantity > 0
+                      ? AppColors.success
+                      : AppColors.error,
+                ),
+              ),
+
+            SizedBox(height: 24.h),
+
+            // Quantity selector
+            Row(
+              children: [
+                Text('Quantité:', style: TextStyle(fontSize: 16.sp)),
+                SizedBox(width: 16.w),
+                SizedBox(
+                  width: 100.w,
+                  child: TextField(
+                    controller: quantityController,
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 8.h,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
 
-          SizedBox(height: 24.h),
+            SizedBox(height: 24.h),
 
-          // Add to cart button
-          SizedBox(
-            width: double.infinity,
-            height: 48.h,
-            child: ElevatedButton.icon(
-              onPressed: (!product.trackStock || product.stockQuantity > 0)
-                  ? () {
-                      final quantity =
-                          int.tryParse(quantityController.text) ?? 1;
-                      if (quantity > 0) {
-                        Get.back();
-                        controller.addToCashierCart(product, quantity);
+            // Add to cart button
+            SizedBox(
+              width: double.infinity,
+              height: 48.h,
+              child: ElevatedButton.icon(
+                onPressed: (!product.trackStock || product.stockQuantity > 0)
+                    ? () {
+                        final quantity =
+                            int.tryParse(quantityController.text) ?? 1;
+                        if (quantity > 0) {
+                          Get.back();
+                          controller.addToCashierCart(product, quantity);
+                        }
                       }
-                    }
-                  : null,
-              icon: const Icon(Icons.add_shopping_cart),
-              label: const Text('Ajouter au panier'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
+                    : null,
+                icon: const Icon(Icons.add_shopping_cart),
+                label: const Text('Ajouter au panier'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1021,240 +1026,246 @@ class _ProductDetailsSheet extends GetView<CashierController> {
 
     return Padding(
       padding: EdgeInsets.all(24.w),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Product name with bulk indicator
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  product.name,
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4.r),
-                ),
-                child: Text(
-                  'Produit en vrac',
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    color: AppColors.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          SizedBox(height: 8.h),
-
-          // Description
-          if (product.description != null)
-            Text(
-              product.description!,
-              style: TextStyle(fontSize: 14.sp, color: AppColors.textSecondary),
-            ),
-
-          SizedBox(height: 8.h),
-
-          // Bulk product info
-          if (product.bulkUnit != null && product.bulkTotalQuantity != null)
-            Text(
-              'Contenance: ${product.bulkTotalQuantity} ${product.bulkUnit}',
-              style: TextStyle(
-                fontSize: 13.sp,
-                fontStyle: FontStyle.italic,
-                color: AppColors.textSecondary,
-              ),
-            ),
-
-          SizedBox(height: 16.h),
-
-          // Stock
-          if (product.trackStock)
-            Text(
-              'Stock disponible: ${product.stockQuantity} ${product.bulkUnit ?? "unité(s)"}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: product.stockQuantity > 0
-                    ? AppColors.success
-                    : AppColors.error,
-              ),
-            ),
-
-          SizedBox(height: 16.h),
-
-          // Portions list
-          Text(
-            'Choisissez une portion:',
-            style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-          ),
-
-          SizedBox(height: 12.h),
-
-          if (portions.isEmpty)
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: AppColors.error.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              child: Text(
-                'Aucune portion disponible pour ce produit',
-                style: TextStyle(fontSize: 14.sp, color: AppColors.error),
-              ),
-            )
-          else
-            ...portions
-                .where((p) => p.isActive)
-                .map(
-                  (portion) => Obx(() {
-                    final isSelected = selectedPortion.value?.id == portion.id;
-                    return InkWell(
-                      onTap: () => selectedPortion.value = portion,
-                      child: Container(
-                        margin: EdgeInsets.only(bottom: 8.h),
-                        padding: EdgeInsets.all(12.w),
-                        decoration: BoxDecoration(
-                          color: isSelected
-                              ? AppColors.primary.withOpacity(0.1)
-                              : AppColors.surface,
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primary
-                                : AppColors.textSecondary,
-                            width: isSelected ? 2 : 1,
-                          ),
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    portion.name,
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      fontWeight: FontWeight.w600,
-                                      color: isSelected
-                                          ? AppColors.primary
-                                          : AppColors.textPrimary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '${portion.quantity} ${product.bulkUnit ?? ""}',
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Text(
-                              '${portion.price.toStringAsFixed(2)} €',
-                              style: TextStyle(
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.bold,
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.textPrimary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-
-          SizedBox(height: 24.h),
-
-          // Quantity selector (only if portion selected)
-          Obx(() {
-            if (selectedPortion.value == null) return const SizedBox.shrink();
-
-            return Column(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product name with bulk indicator
+            Row(
               children: [
-                Row(
-                  children: [
-                    Text('Quantité:', style: TextStyle(fontSize: 16.sp)),
-                    SizedBox(width: 16.w),
-                    SizedBox(
-                      width: 100.w,
-                      child: TextField(
-                        controller: quantityController,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(
+                Expanded(
+                  child: Text(
+                    product.name,
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4.r),
+                  ),
+                  child: Text(
+                    'Produit en vrac',
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            SizedBox(height: 8.h),
+
+            // Description
+            if (product.description != null)
+              Text(
+                product.description!,
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+
+            SizedBox(height: 8.h),
+
+            // Bulk product info
+            if (product.bulkUnit != null && product.bulkTotalQuantity != null)
+              Text(
+                'Contenance: ${product.bulkTotalQuantity} ${product.bulkUnit}',
+                style: TextStyle(
+                  fontSize: 13.sp,
+                  fontStyle: FontStyle.italic,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+
+            SizedBox(height: 16.h),
+
+            // Stock
+            if (product.trackStock)
+              Text(
+                'Stock disponible: ${product.stockQuantity} ${product.bulkUnit ?? "unité(s)"}',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: product.stockQuantity > 0
+                      ? AppColors.success
+                      : AppColors.error,
+                ),
+              ),
+
+            SizedBox(height: 16.h),
+
+            // Portions list
+            Text(
+              'Choisissez une portion:',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+
+            SizedBox(height: 12.h),
+
+            if (portions.isEmpty)
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Text(
+                  'Aucune portion disponible pour ce produit',
+                  style: TextStyle(fontSize: 14.sp, color: AppColors.error),
+                ),
+              )
+            else
+              ...portions
+                  .where((p) => p.isActive)
+                  .map(
+                    (portion) => Obx(() {
+                      final isSelected =
+                          selectedPortion.value?.id == portion.id;
+                      return InkWell(
+                        onTap: () => selectedPortion.value = portion,
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 8.h),
+                          padding: EdgeInsets.all(12.w),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.primary.withOpacity(0.1)
+                                : AppColors.surface,
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.primary
+                                  : AppColors.textSecondary,
+                              width: isSelected ? 2 : 1,
+                            ),
                             borderRadius: BorderRadius.circular(8.r),
                           ),
-                          contentPadding: EdgeInsets.symmetric(
-                            horizontal: 8.w,
-                            vertical: 8.h,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      portion.name,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w600,
+                                        color: isSelected
+                                            ? AppColors.primary
+                                            : AppColors.textPrimary,
+                                      ),
+                                    ),
+                                    Text(
+                                      '${portion.quantity} ${product.bulkUnit ?? ""}',
+                                      style: TextStyle(
+                                        fontSize: 12.sp,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                '${portion.price.toStringAsFixed(2)} €',
+                                style: TextStyle(
+                                  fontSize: 16.sp,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.textPrimary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+
+            SizedBox(height: 24.h),
+
+            // Quantity selector (only if portion selected)
+            Obx(() {
+              if (selectedPortion.value == null) return const SizedBox.shrink();
+
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      Text('Quantité:', style: TextStyle(fontSize: 16.sp)),
+                      SizedBox(width: 16.w),
+                      SizedBox(
+                        width: 100.w,
+                        child: TextField(
+                          controller: quantityController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: 8.w,
+                              vertical: 8.h,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16.h),
-              ],
-            );
-          }),
+                    ],
+                  ),
+                  SizedBox(height: 16.h),
+                ],
+              );
+            }),
 
-          // Add to cart button
-          Obx(
-            () => SizedBox(
-              width: double.infinity,
-              height: 48.h,
-              child: ElevatedButton.icon(
-                onPressed:
-                    ((!product.trackStock || product.stockQuantity > 0) &&
-                        selectedPortion.value != null)
-                    ? () {
-                        final quantity =
-                            int.tryParse(quantityController.text) ?? 1;
-                        if (quantity > 0) {
-                          Get.back();
-                          controller.addToCashierCart(
-                            product,
-                            quantity,
-                            portionId: selectedPortion.value?.id,
-                          );
+            // Add to cart button
+            Obx(
+              () => SizedBox(
+                width: double.infinity,
+                height: 48.h,
+                child: ElevatedButton.icon(
+                  onPressed:
+                      ((!product.trackStock || product.stockQuantity > 0) &&
+                          selectedPortion.value != null)
+                      ? () {
+                          final quantity =
+                              int.tryParse(quantityController.text) ?? 1;
+                          if (quantity > 0) {
+                            Get.back();
+                            controller.addToCashierCart(
+                              product,
+                              quantity,
+                              portionId: selectedPortion.value?.id,
+                            );
+                          }
                         }
-                      }
-                    : null,
-                icon: const Icon(Icons.add_shopping_cart),
-                label: Text(
-                  selectedPortion.value == null
-                      ? 'Sélectionnez une portion'
-                      : 'Ajouter au panier',
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
+                      : null,
+                  icon: const Icon(Icons.add_shopping_cart),
+                  label: Text(
+                    selectedPortion.value == null
+                        ? 'Sélectionnez une portion'
+                        : 'Ajouter au panier',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

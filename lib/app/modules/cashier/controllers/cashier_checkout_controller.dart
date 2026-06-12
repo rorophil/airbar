@@ -29,7 +29,7 @@ class CashierCheckoutController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     // Récupérer les arguments
     final args = Get.arguments as Map<String, dynamic>;
     cart = List<CashSaleItem>.from(args['cart'] ?? []);
@@ -89,14 +89,11 @@ class CashierCheckoutController extends GetxController {
       // Naviguer vers le reçu
       Get.offNamed(
         AppRoutes.CASHIER_RECEIPT,
-        arguments: {
-          'transaction': transaction,
-          'items': cart,
-        },
+        arguments: {'transaction': transaction, 'items': cart},
       );
     } catch (e) {
       String errorMessage = 'Une erreur est survenue';
-      
+
       if (e.toString().contains('PIN incorrect')) {
         errorMessage = 'Code PIN incorrect';
       } else if (e.toString().contains('Stock insuffisant')) {
@@ -105,11 +102,7 @@ class CashierCheckoutController extends GetxController {
         errorMessage = 'Produit introuvable';
       }
 
-      Get.snackbar(
-        'Erreur',
-        errorMessage,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar('Erreur', errorMessage, snackPosition: SnackPosition.BOTTOM);
     } finally {
       isProcessing.value = false;
     }

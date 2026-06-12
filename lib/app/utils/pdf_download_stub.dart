@@ -17,7 +17,7 @@ Future<void> downloadPdf(Uint8List bytes, String filename) async {
       // Sauvegarder le fichier
       final file = File(outputPath);
       await file.writeAsBytes(bytes);
-      
+
       Get.snackbar(
         'Succès',
         'Le reçu PDF a été sauvegardé',

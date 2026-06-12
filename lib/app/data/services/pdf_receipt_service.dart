@@ -36,10 +36,7 @@ class PdfReceiptService {
       pw.Page(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
-        theme: pw.ThemeData.withFont(
-          base: fontRegular,
-          bold: fontBold,
-        ),
+        theme: pw.ThemeData.withFont(base: fontRegular, bold: fontBold),
         build: (context) {
           return pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -86,7 +83,7 @@ class PdfReceiptService {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
-          'AirBar',
+          'Air Evasion',
           style: pw.TextStyle(
             fontSize: 28,
             fontWeight: pw.FontWeight.bold,
@@ -95,19 +92,13 @@ class PdfReceiptService {
         ),
         pw.SizedBox(height: 5),
         pw.Text(
-          'Bar d\'Aéro-club',
-          style: pw.TextStyle(
-            fontSize: 14,
-            color: PdfColors.grey700,
-          ),
+          'Aéro-club ULM de Saint Hubert EBSH',
+          style: pw.TextStyle(fontSize: 14, color: PdfColors.grey700),
         ),
         pw.SizedBox(height: 20),
         pw.Text(
           'REÇU DE VENTE',
-          style: pw.TextStyle(
-            fontSize: 20,
-            fontWeight: pw.FontWeight.bold,
-          ),
+          style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
         ),
       ],
     );
@@ -147,10 +138,7 @@ class PdfReceiptService {
       children: [
         pw.Text(
           'Articles achetés',
-          style: pw.TextStyle(
-            fontSize: 14,
-            fontWeight: pw.FontWeight.bold,
-          ),
+          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 10),
         pw.Table(
@@ -164,19 +152,29 @@ class PdfReceiptService {
           children: [
             // En-tête du tableau
             pw.TableRow(
-              decoration: const pw.BoxDecoration(
-                color: PdfColors.grey300,
-              ),
+              decoration: const pw.BoxDecoration(color: PdfColors.grey300),
               children: [
                 _buildTableCell('Article', isHeader: true),
-                _buildTableCell('Qté', isHeader: true, align: pw.TextAlign.center),
-                _buildTableCell('Prix unit.', isHeader: true, align: pw.TextAlign.right),
-                _buildTableCell('Sous-total', isHeader: true, align: pw.TextAlign.right),
+                _buildTableCell(
+                  'Qté',
+                  isHeader: true,
+                  align: pw.TextAlign.center,
+                ),
+                _buildTableCell(
+                  'Prix unit.',
+                  isHeader: true,
+                  align: pw.TextAlign.right,
+                ),
+                _buildTableCell(
+                  'Sous-total',
+                  isHeader: true,
+                  align: pw.TextAlign.right,
+                ),
               ],
             ),
             // Lignes des articles
             ...items.map((item) {
-              final displayName = item.portion != null 
+              final displayName = item.portion != null
                   ? '${item.product.name} - ${item.portion.name}'
                   : item.product.name;
               final effectivePrice = item.portion?.price ?? item.product.price;
@@ -185,9 +183,18 @@ class PdfReceiptService {
               return pw.TableRow(
                 children: [
                   _buildTableCell(displayName),
-                  _buildTableCell('${item.quantity}', align: pw.TextAlign.center),
-                  _buildTableCell(_formatCurrency(effectivePrice), align: pw.TextAlign.right),
-                  _buildTableCell(_formatCurrency(subtotal), align: pw.TextAlign.right),
+                  _buildTableCell(
+                    '${item.quantity}',
+                    align: pw.TextAlign.center,
+                  ),
+                  _buildTableCell(
+                    _formatCurrency(effectivePrice),
+                    align: pw.TextAlign.right,
+                  ),
+                  _buildTableCell(
+                    _formatCurrency(subtotal),
+                    align: pw.TextAlign.right,
+                  ),
                 ],
               );
             }).toList(),
@@ -224,16 +231,10 @@ class PdfReceiptService {
           width: 150,
           child: pw.Text(
             label,
-            style: pw.TextStyle(
-              fontSize: 12,
-              fontWeight: pw.FontWeight.bold,
-            ),
+            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold),
           ),
         ),
-        pw.Text(
-          value,
-          style: const pw.TextStyle(fontSize: 12),
-        ),
+        pw.Text(value, style: const pw.TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -251,10 +252,7 @@ class PdfReceiptService {
         children: [
           pw.Text(
             'TOTAL',
-            style: pw.TextStyle(
-              fontSize: 18,
-              fontWeight: pw.FontWeight.bold,
-            ),
+            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
           ),
           pw.Text(
             _formatCurrency(transaction.totalAmount),
@@ -278,18 +276,12 @@ class PdfReceiptService {
         pw.SizedBox(height: 10),
         pw.Text(
           'Merci de votre visite',
-          style: pw.TextStyle(
-            fontSize: 14,
-            fontWeight: pw.FontWeight.bold,
-          ),
+          style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
         ),
         pw.SizedBox(height: 5),
         pw.Text(
           'Document généré le ${_dateFormat.format(DateTime.now())}',
-          style: const pw.TextStyle(
-            fontSize: 10,
-            color: PdfColors.grey600,
-          ),
+          style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey600),
         ),
       ],
     );

@@ -26,105 +26,107 @@ class CashierReceiptView extends GetView<CashierReceiptController> {
         child: Container(
           constraints: BoxConstraints(maxWidth: 600.w),
           padding: EdgeInsets.all(24.w),
-          child: Column(
-            children: [
-              // Icône de succès
-              Container(
-                padding: EdgeInsets.all(20.w),
-                decoration: const BoxDecoration(
-                  color: AppColors.success,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.check, size: 60.sp, color: Colors.white),
-              ),
-              SizedBox(height: 24.h),
-
-              Text(
-                'Vente réussie !',
-                style: TextStyle(
-                  fontSize: 24.sp,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.success,
-                ),
-              ),
-              SizedBox(height: 32.h),
-
-              // Détails de la transaction
-              Card(
-                child: Padding(
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // Icône de succès
+                Container(
                   padding: EdgeInsets.all(20.w),
-                  child: Column(
-                    children: [
-                      _buildInfoRow(
-                        'N° Transaction',
-                        '#${controller.transaction.id}',
-                      ),
-                      Divider(height: 24.h),
-                      _buildInfoRow(
-                        'Date',
-                        dateFormat.format(controller.transaction.timestamp),
-                      ),
-                      Divider(height: 24.h),
-                      _buildInfoRow(
-                        'Mode de paiement',
-                        controller.transaction.paymentMethod ==
-                                PaymentMethod.cash
-                            ? 'Espèces'
-                            : 'Carte bancaire',
-                      ),
-                      Divider(height: 24.h),
-                      _buildInfoRow(
-                        'Montant',
-                        '${controller.transaction.totalAmount.toStringAsFixed(2)} €',
-                        isTotal: true,
-                      ),
-                    ],
+                  decoration: const BoxDecoration(
+                    color: AppColors.success,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.check, size: 60.sp, color: Colors.white),
+                ),
+                SizedBox(height: 24.h),
+
+                Text(
+                  'Vente réussie !',
+                  style: TextStyle(
+                    fontSize: 24.sp,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.success,
                   ),
                 ),
-              ),
-              SizedBox(height: 32.h),
+                SizedBox(height: 32.h),
 
-              // Boutons d'action
-              Row(
-                children: [
-                  Expanded(
-                    child: Obx(
-                      () => OutlinedButton.icon(
-                        onPressed: controller.isGeneratingPdf.value
-                            ? null
-                            : controller.printReceipt,
-                        icon: controller.isGeneratingPdf.value
-                            ? SizedBox(
-                                width: 16.w,
-                                height: 16.w,
-                                child: const CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Icon(kIsWeb ? Icons.download : Icons.save),
-                        label: Text(
-                          kIsWeb ? 'Télécharger PDF' : 'Sauvegarder PDF',
+                // Détails de la transaction
+                Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(20.w),
+                    child: Column(
+                      children: [
+                        _buildInfoRow(
+                          'N° Transaction',
+                          '#${controller.transaction.id}',
+                        ),
+                        Divider(height: 24.h),
+                        _buildInfoRow(
+                          'Date',
+                          dateFormat.format(controller.transaction.timestamp),
+                        ),
+                        Divider(height: 24.h),
+                        _buildInfoRow(
+                          'Mode de paiement',
+                          controller.transaction.paymentMethod ==
+                                  PaymentMethod.cash
+                              ? 'Espèces'
+                              : 'Carte bancaire',
+                        ),
+                        Divider(height: 24.h),
+                        _buildInfoRow(
+                          'Montant',
+                          '${controller.transaction.totalAmount.toStringAsFixed(2)} €',
+                          isTotal: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 32.h),
+
+                // Boutons d'action
+                Row(
+                  children: [
+                    Expanded(
+                      child: Obx(
+                        () => OutlinedButton.icon(
+                          onPressed: controller.isGeneratingPdf.value
+                              ? null
+                              : controller.printReceipt,
+                          icon: controller.isGeneratingPdf.value
+                              ? SizedBox(
+                                  width: 16.w,
+                                  height: 16.w,
+                                  child: const CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Icon(kIsWeb ? Icons.download : Icons.save),
+                          label: Text(
+                            kIsWeb ? 'Télécharger PDF' : 'Sauvegarder PDF',
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.h),
-
-              // Bouton nouvelle vente
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: controller.startNewSale,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.success,
-                    padding: EdgeInsets.symmetric(vertical: 16.h),
-                  ),
-                  child: const Text('Nouvelle vente'),
+                  ],
                 ),
-              ),
-            ],
+                SizedBox(height: 16.h),
+
+                // Bouton nouvelle vente
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: controller.startNewSale,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.success,
+                      padding: EdgeInsets.symmetric(vertical: 16.h),
+                    ),
+                    child: const Text('Nouvelle vente'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

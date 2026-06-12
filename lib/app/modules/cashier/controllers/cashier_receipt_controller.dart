@@ -20,7 +20,7 @@ class CashierReceiptController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    
+
     // Récupérer la transaction et les items
     final args = Get.arguments as Map<String, dynamic>;
     transaction = args['transaction'] as Transaction;

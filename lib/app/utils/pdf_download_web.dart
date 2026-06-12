@@ -10,7 +10,7 @@ Future<void> downloadPdf(Uint8List bytes, String filename) async {
       ..setAttribute('download', filename)
       ..click();
     html.Url.revokeObjectUrl(url);
-    
+
     Get.snackbar(
       'Succès',
       'Le reçu PDF a été téléchargé',
