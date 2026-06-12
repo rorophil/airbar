@@ -115,7 +115,10 @@ class PdfReceiptService {
       children: [
         _buildInfoRow('N° Transaction:', '#${transaction.id}'),
         pw.SizedBox(height: 8),
-        _buildInfoRow('Date:', _dateFormat.format(transaction.timestamp)),
+        _buildInfoRow(
+          'Date:',
+          _dateFormat.format(transaction.timestamp.toLocal()),
+        ),
         pw.SizedBox(height: 8),
         _buildInfoRow('Vendeur:', '${seller.firstName} ${seller.lastName}'),
         pw.SizedBox(height: 8),

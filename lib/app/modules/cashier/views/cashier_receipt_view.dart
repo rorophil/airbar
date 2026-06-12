@@ -63,7 +63,9 @@ class CashierReceiptView extends GetView<CashierReceiptController> {
                         Divider(height: 24.h),
                         _buildInfoRow(
                           'Date',
-                          dateFormat.format(controller.transaction.timestamp),
+                          dateFormat.format(
+                            controller.transaction.timestamp.toLocal(),
+                          ),
                         ),
                         Divider(height: 24.h),
                         _buildInfoRow('Vendeur', controller.sellerName),
