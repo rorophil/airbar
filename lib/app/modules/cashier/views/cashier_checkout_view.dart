@@ -13,6 +13,10 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: const Text('Validation de la vente'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,

@@ -35,6 +35,10 @@ class ServerConfigView extends GetView<SettingsController> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: const Text('Configuration du serveur'),
         centerTitle: true,
       ),

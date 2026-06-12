@@ -42,6 +42,10 @@ class CheckoutView extends GetView<CheckoutController> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: const Text(AppStrings.checkout),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,

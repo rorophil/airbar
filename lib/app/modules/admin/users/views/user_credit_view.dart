@@ -42,6 +42,10 @@ class UserCreditView extends GetView<UserCreditController> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: const Text('Ajuster le solde'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,

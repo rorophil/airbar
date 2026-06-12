@@ -53,6 +53,10 @@ class ExportView extends GetView<ExportController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: const Text('Export de données'),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,

@@ -35,6 +35,10 @@ class CartView extends GetView<CartController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Get.back(),
+        ),
         title: const Text(AppStrings.cart),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
