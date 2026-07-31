@@ -75,6 +75,10 @@ dependencies:
   flutter_screenutil: ^5.9.0
   shimmer: ^3.0.0
 
+  # PDF
+  pdf: ^3.11.1
+  printing: ^5.13.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
