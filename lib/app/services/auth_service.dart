@@ -27,8 +27,24 @@ class AuthService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    // Chargement de l'utilisateur depuis le stockage au démarrage
-    _loadUserFromStorage();
+    // Nettoyage de la session à chaque démarrage - force le login
+    _clearSessionOnStartup();
+  }
+
+  /// Efface la session au démarrage de l'app
+  ///
+  /// Force l'utilisateur à se reconnecter à chaque lancement de l'application.
+  /// Supprime l'utilisateur et le token d'authentification du stockage local.
+  void _clearSessionOnStartup() {
+    try {
+      _storage.remove(AppConstants.storageKeyUser);
+      _storage.remove(AppConstants.storageKeyToken);
+      currentUser.value = null;
+      isAuthenticated.value = false;
+      print('🧹 [AUTH] Session cleared on app startup - user must login');
+    } catch (e) {
+      print('❌ [AUTH] Error clearing session on startup: $e');
+    }
   }
 
   /// Charge l'utilisateur depuis le stockage local au démarrage de l'app

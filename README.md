@@ -170,7 +170,8 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 
 **Sécurité :**
 - ✅ PIN hashé (SHA256)
-- ✅ Sessions avec timeout
+- ✅ Session effacée au démarrage (reconnexion obligatoire à chaque lancement)
+- ✅ Session active pendant l'exécution de l'app (pas d'expiration)
 - ✅ Séparation des rôles (User/Admin)
 - ✅ Vérification backend de tous les droits
 

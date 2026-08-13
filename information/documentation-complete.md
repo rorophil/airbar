@@ -1,7 +1,7 @@
 # Documentation Consolidée - Application AirBar
 **Application de gestion d'un bar d'aéro-club avec Flutter + Serverpod**
 
-**Dates:** Session initiale 3 mars 2026 | Développements 7 mars 2026
+**Dates:** Session initiale 3 mars 2026 | Développements 7 mars 2026 | Mise à jour 14 août 2026
 
 ---
 
@@ -658,6 +658,54 @@ ID, Type, Montant, Utilisateur, Date, Balance Après, Notes
 
 ---
 
+### Désactivation Persistance Session - 14 août 2026
+
+**Problème:** L'application rouvrait sur la dernière page visitée au lieu de la page de login à chaque lancement
+
+**Solution implémentée:**
+
+**Modification AuthService:**
+- Remplacement de `_loadUserFromStorage()` par `_clearSessionOnStartup()` dans `onInit()`
+- Suppression automatique de l'utilisateur et du token Serverpod au démarrage
+- Initialisation `currentUser = null` et `isAuthenticated = false`
+
+**Comportement après modification:**
+- ✅ App ouvre **toujours sur la page de login** à chaque lancement
+- ✅ Session **effacée automatiquement** au démarrage
+- ✅ Utilisateur doit se **reconnecter à chaque lancement**
+- ✅ Session reste **active pendant l'exécution** de l'app
+- ✅ Pas d'expiration de session pendant l'utilisation
+
+**Fichier modifié:**
+- `lib/app/services/auth_service.dart` — Méthode `_clearSessionOnStartup()` ajoutée
+
+**Console logs au démarrage:**
+```
+🧹 [AUTH] Session cleared on app startup - user must login
+💦 [SPLASH] SplashController initialized
+⏱️ [SPLASH] Waiting 2 seconds...
+🔐 [SPLASH] Checking authentication...
+❌ [SPLASH] User not authenticated, navigating to LOGIN
+✅ [SPLASH] Navigation to LOGIN completed
+```
+
+**Raisons de cette approche:**
+- Sécurité renforcée (pas de session persistante indéfinie)
+- Simplicité (pas de gestion d'expiration complexe)
+- Fiabilité (pas de dépendance sur les événements lifecycle)
+- Prévisibilité (comportement cohérent sur toutes les plateformes)
+
+**Alternative non retenue:**
+- Détection de fermeture via lifecycle (événements `AppLifecycleState.detached` pas fiables)
+- Nettoyage à la fermeture plutôt qu'au démarrage (timing incertain)
+
+**Impact utilisateur:**
+- Connexion requise à chaque lancement de l'app
+- Aucun impact sur l'utilisation pendant la session active
+- Comportement identique pour admin et utilisateurs réguliers
+
+---
+
 ### Corrections Critiques - 7 mars 2026
 
 #### 1. Hash PIN pour Checkout ⚠️ CRITIQUE
@@ -1224,9 +1272,16 @@ Primaire: Bleu (édition, neutre)
 - [ ] HTTPS pour communication serveur (actuellement HTTP)
 - [ ] Rate limiting sur endpoints sensibles
 - [ ] Logs d'audit des actions admin
-- [ ] Expiration sessions avec timeout
 - [ ] Chiffrement données sensibles au repos
 - [ ] Validation input plus stricte (injection SQL/XSS)
+
+**Gestion de session (mise à jour 14 août 2026):**
+- ✅ Session **effacée automatiquement** à chaque démarrage
+- ✅ Pas de persistance entre lancements (sécurité renforcée)
+- ✅ Utilisateur doit se reconnecter à chaque lancement
+- ✅ Session active pendant l'exécution sans expiration
+- ❌ Pas d'option "Rester connecté" configurable (volontairement)
+- ❌ Pas d'expiration temporelle pendant la session active
 
 ---
 
@@ -1255,7 +1310,9 @@ Primaire: Bleu (édition, neutre)
 **Authentification:**
 - [ ] Login avec PIN correct/incorrect
 - [ ] Redirection user vs admin
-- [ ] Session persistence après restart
+- [ ] Session **nettoyée** après restart (comportement attendu depuis 14 août 2026)
+- [ ] Reconnexion obligatoire après fermeture complète de l'app
+- [ ] Session active maintenue en arrière-plan (app non fermée)
 
 **Checkout:**
 - [ ] Paiement avec PIN correct

@@ -2,7 +2,7 @@
 
 **Application de gestion de bar d'aéro-club**  
 **Stack:** Flutter + Serverpod + PostgreSQL + GetX  
-**Dernière mise à jour:** 7 juin 2026
+**Dernière mise à jour:** 14 août 2026
 
 ---
 
@@ -305,6 +305,68 @@ if (session.auth?.userId == null) {
 }
 // Ajouter vérification du rôle si nécessaire
 ```
+
+### Gestion de Session au Démarrage
+
+**IMPORTANT:** L'application **ne persiste JAMAIS la session** entre les lancements.
+
+**Comportement actuel (depuis août 2026):**
+- ✅ La session est **effacée automatiquement** à chaque démarrage de l'app
+- ✅ L'utilisateur doit **se reconnecter** à chaque lancement
+- ✅ L'app ouvre **toujours sur la page de login**, jamais sur la dernière page visitée
+- ✅ La session reste **active pendant l'exécution** de l'app (pas d'expiration)
+
+**Implémentation:**
+
+```dart
+// AuthService (lib/app/services/auth_service.dart)
+@override
+void onInit() {
+  super.onInit();
+  // Nettoyage de la session à chaque démarrage - force le login
+  _clearSessionOnStartup();
+}
+
+/// Efface la session au démarrage de l'app
+void _clearSessionOnStartup() {
+  try {
+    _storage.remove(AppConstants.storageKeyUser);
+    _storage.remove(AppConstants.storageKeyToken);
+    currentUser.value = null;
+    isAuthenticated.value = false;
+    print('🧹 [AUTH] Session cleared on app startup - user must login');
+  } catch (e) {
+    print('❌ [AUTH] Error clearing session on startup: $e');
+  }
+}
+```
+
+**Flux de démarrage:**
+1. App démarre → `AuthService.onInit()` nettoie GetStorage
+2. `SplashController` vérifie `isAuthenticated` → `false`
+3. Navigation automatique vers `LOGIN`
+4. Utilisateur se connecte → Session active pendant l'utilisation
+5. Fermeture de l'app → Session sera nettoyée au prochain démarrage
+
+**Raisons de cette approche:**
+- Sécurité renforcée (pas de session persistante indéfinie)
+- Simplicité (pas de gestion d'expiration complexe)
+- Fiabilité (pas de dépendance sur les événements lifecycle)
+- Prévisibilité (comportement cohérent sur toutes les plateformes)
+
+**Données stockées pendant la session active:**
+- `AppConstants.storageKeyUser` — JSON de l'utilisateur connecté
+- `AppConstants.storageKeyToken` — Token d'authentification Serverpod
+- Cache produits/catégories (indépendant de l'authentification)
+
+**Méthode `clearUser()` (logout manuel):**
+```dart
+void clearUser() {
+  setUser(null);
+  _storage.remove(AppConstants.storageKeyToken);
+}
+```
+Cette méthode reste utilisée pour la déconnexion explicite via le bouton "Déconnexion".
 
 ---
 
