@@ -7,18 +7,47 @@ Application Flutter complète de gestion de bar pour aéro-club avec système de
 ![GetX](https://img.shields.io/badge/GetX-4.6.5-8A2BE2)
 ![Serverpod](https://img.shields.io/badge/Serverpod-3.3.1-FF6B35)
 
+## 📚 Documentation Utilisateur
+
+**Pour les utilisateurs finaux de l'application :**
+
+- 🚀 **[Guide de Démarrage Rapide](DEMARRAGE_RAPIDE.md)** - Commencez en 5 minutes
+- 📖 **[Guide Utilisateur Complet](GUIDE_UTILISATEUR.md)** - Documentation exhaustive
+- 🛒 **[Modes d&#39;Achat](MODES_ACHAT.md)** - Différence achat personnel vs mode caisse
+
+**Pour les développeurs :**
+
+- 🔧 **[Workflow de Développement](WORKFLOW_DEV.md)** - Processus de développement
+- ⚡ **[Quick Start](QUICK_START.md)** - Démarrage rapide développeur
+- 📋 **[Dépendances](DEPENDENCIES.md)** - Liste des dépendances
+
+---
+
+## 🔐 Authentification
+
+AirBar utilise un **système de sécurité à deux niveaux** :
+
+1. **Email + Mot de passe** : Pour se connecter à l'application
+2. **Code PIN (4 chiffres)** : Pour valider les achats
+
+Cette double authentification garantit la sécurité des comptes et des transactions.
+
 ## 🎯 Fonctionnalités
 
 ### Pour les Membres
-- ✅ Authentification par code PIN (4 chiffres)
+
+- ✅ Authentification par email et mot de passe
+- ✅ Validation des achats par code PIN (4 chiffres)
 - ✅ Consultation du solde de compte
 - ✅ Navigation par catégories de produits
 - ✅ **Produits en vrac** avec portions multiples (ex: bière fût → 25cl/33cl/50cl)
 - ✅ Panier d'achat avec gestion des quantités
 - ✅ Checkout instantané avec débit du solde
 - ✅ Historique des transactions
+- ✅ **Mode caisse** pour ventes au comptant (clients de passage)
 
 ### Pour les Administrateurs
+
 - 🔐 Gestion complète des utilisateurs (création, modification, solde)
 - 📦 Gestion des produits et catégories
 - 🍺 **Gestion par unités physiques** (fûts, caisses) avec tracking d'unité entamée
@@ -113,6 +142,7 @@ class ProductRepository {
 Le système gère les produits en vrac par **unités physiques réelles** :
 
 **Exemple : Fût de bière 6L**
+
 ```dart
 Product(
   name: 'Fût Jupiler',
@@ -146,11 +176,13 @@ ProductPortion(
 ### Gestion Intelligente du Stock
 
 **Scénario 1 : L'unité entamée suffit**
+
 - Client achète 2×25cl (0.5L)
 - `currentUnitRemaining: 4.25L → 3.75L`
 - Pas d'ouverture de nouveau fût
 
 **Scénario 2 : Ouverture d'un nouveau fût**
+
 - Client achète 20×25cl (5L)
 - `currentUnitRemaining: 4.25L` insuffisant
 - Système ouvre 1 nouveau fût
@@ -169,6 +201,7 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 ```
 
 **Sécurité :**
+
 - ✅ PIN hashé (SHA256)
 - ✅ Session effacée au démarrage (reconnexion obligatoire à chaque lancement)
 - ✅ Session active pendant l'exécution de l'app (pas d'expiration)
@@ -180,6 +213,7 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 ### Module Utilisateur
 
 #### 1. Shop (Boutique)
+
 - Grille de produits avec images
 - Filtrage par catégorie
 - Recherche
@@ -187,6 +221,7 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 - Ajout rapide au panier
 
 #### 2. Cart (Panier)
+
 - Liste des articles avec nom + portion
 - Prix effectif par article (prix de la portion)
 - Modification des quantités
@@ -194,6 +229,7 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 - Total avec compte à rebours du solde
 
 #### 3. Transactions
+
 - Historique complet
 - Détails par transaction
 - Affichage des portions achetées
@@ -201,23 +237,27 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 ### Module Admin
 
 #### 1. Dashboard
+
 - Vue d'ensemble (utilisateurs, produits, transactions)
 - Statistiques rapides
 - Accès rapide aux fonctions principales
 
 #### 2. Users Management
+
 - Liste des utilisateurs avec solde
 - Création/modification
 - Crédit/débit de compte
 - Gestion des rôles
 
 #### 3. Products Management
+
 - CRUD produits
 - **Mode vrac avec portions**
 - Upload d'images
 - Gestion du stock par unités
 
 #### 4. Stock Management
+
 - Vue globale du stock
 - Réapprovisionnement (ajout d'unités)
 - Ajustements d'inventaire
@@ -227,13 +267,9 @@ final hashedPin = sha256.convert(utf8.encode(pin)).toString();
 
 Le dossier `information/` contient :
 
-1. **`documentation-complete.md`**  
-   Documentation initiale complète du projet (architecture, modèles, endpoints)
-
-2. **`guide-produits-en-vrac.md`**  
-   Guide utilisateur pour la création et gestion des produits en vrac
-
-3. **`synthese-evolution-stock-mars-2026.md`**  
+1. **`documentation-complete.md`**Documentation initiale complète du projet (architecture, modèles, endpoints)
+2. **`guide-produits-en-vrac.md`**Guide utilisateur pour la création et gestion des produits en vrac
+3. **`synthese-evolution-stock-mars-2026.md`**
    Synthèse technique détaillée de l'évolution vers la gestion par unités physiques
 
 ## 🧪 Tests
@@ -282,6 +318,7 @@ dependencies:
 ### Mars 2026 : Gestion par Unités Physiques
 
 **Migration majeure** du système de stock :
+
 - ✅ Passage de quantités fractionnelles à unités physiques
 - ✅ Tracking de l'unité actuellement ouverte
 - ✅ Ouverture automatique de nouvelles unités
@@ -289,6 +326,7 @@ dependencies:
 - ✅ Remboursements avec reconversion automatique
 
 **Impact :**
+
 - Inventaire physique = inventaire informatique
 - Gestion simplifiée pour les opérateurs
 - Alertes pertinentes sur unités complètes
@@ -297,6 +335,7 @@ dependencies:
 ## 📝 Contributeurs
 
 Développé pour la gestion moderne d'un bar d'aéro-club avec focus sur :
+
 - 🎯 UX simplifiée (portions inline, checkout rapide)
 - 📦 Réalisme de la gestion de stock
 - 🔒 Sécurité (auth, rôles, validation backend)
@@ -304,6 +343,7 @@ Développé pour la gestion moderne d'un bar d'aéro-club avec focus sur :
 
 ---
 
-**Version:** 2.0  
-**Dernière mise à jour:** 10 mars 2026  
+**Version:** 2.0
+**Dernière mise à jour:** 16/08/2026
+
 **License:** Private
