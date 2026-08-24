@@ -164,7 +164,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
             color: isSelected ? AppColors.primary : Colors.grey.shade300,
             width: 2,
           ),
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         child: Column(
           children: [
@@ -203,7 +203,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
             decoration: InputDecoration(
               hintText: 'Entrez votre code PIN',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(8.r),
               ),
               suffixIcon: IconButton(
                 icon: Icon(

@@ -88,7 +88,7 @@ class ServerConfigView extends GetView<SettingsController> {
                 hintText: 'Ex: 192.168.1.100 ou localhost',
                 prefixIcon: const Icon(Icons.dns),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 filled: true,
                 fillColor: Colors.grey.shade50,
@@ -110,7 +110,7 @@ class ServerConfigView extends GetView<SettingsController> {
                 hintText: 'Ex: 8080',
                 prefixIcon: const Icon(Icons.settings_ethernet),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 filled: true,
                 fillColor: Colors.grey.shade50,
@@ -145,7 +145,7 @@ class ServerConfigView extends GetView<SettingsController> {
                 style: OutlinedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
               ),
@@ -175,7 +175,7 @@ class ServerConfigView extends GetView<SettingsController> {
                 style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16.h),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
               ),
@@ -216,7 +216,7 @@ class ServerConfigView extends GetView<SettingsController> {
                       () => Text(
                         'URL: ${configService.serverUrl}',
                         style: TextStyle(
-                          fontSize: 13.sp,
+                          fontSize: 14.sp,
                           fontFamily: 'monospace',
                           color: Colors.grey.shade800,
                         ),

@@ -76,7 +76,7 @@ class ProductsView extends GetView<ProductsController> {
                       : const SizedBox.shrink(),
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 filled: true,
                 fillColor: AppColors.surface,
@@ -193,7 +193,7 @@ class _ProductCard extends GetView<ProductsController> {
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -234,7 +234,7 @@ class _ProductCard extends GetView<ProductsController> {
                       Text(
                         controller.getCategoryName(product.categoryId),
                         style: TextStyle(
-                          fontSize: 13.sp,
+                          fontSize: 14.sp,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -282,12 +282,12 @@ class _ProductCard extends GetView<ProductsController> {
                     color: product.isActive
                         ? AppColors.success
                         : AppColors.textSecondary,
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Text(
                     product.isActive ? 'Actif' : 'Inactif',
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
                       color: AppColors.textWhite,
                     ),
@@ -301,7 +301,7 @@ class _ProductCard extends GetView<ProductsController> {
               Text(
                 product.description!,
                 style: TextStyle(
-                  fontSize: 13.sp,
+                  fontSize: 14.sp,
                   color: AppColors.textSecondary,
                 ),
                 maxLines: 2,

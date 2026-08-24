@@ -71,7 +71,7 @@ class CategoriesView extends GetView<CategoriesController> {
                         : const SizedBox.shrink(),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 onChanged: controller.updateSearchQuery,
@@ -136,7 +136,7 @@ class _CategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Row(
@@ -187,7 +187,7 @@ class _CategoryCard extends StatelessWidget {
                   Text(
                     'Ordre: ${category.displayOrder}',
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 14.sp,
                       color: AppColors.textHint,
                     ),
                   ),

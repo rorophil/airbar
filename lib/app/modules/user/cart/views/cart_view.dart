@@ -167,7 +167,7 @@ class CartView extends GetView<CartController> {
                           backgroundColor: AppColors.primary,
                           foregroundColor: AppColors.textWhite,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.r),
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
                         ),
                       ),
@@ -231,9 +231,7 @@ class _CartItemCard extends GetView<CartController> {
 
       return Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         child: Padding(
           padding: EdgeInsets.all(12.w),
           child: Row(

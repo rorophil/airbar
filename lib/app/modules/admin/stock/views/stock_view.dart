@@ -70,7 +70,7 @@ class StockView extends GetView<StockController> {
                         : const SizedBox.shrink(),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 onChanged: controller.updateSearchQuery,
@@ -89,7 +89,7 @@ class StockView extends GetView<StockController> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF9800).withOpacity(0.1),
                   border: Border.all(color: const Color(0xFFFF9800), width: 1),
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 child: Row(
                   children: [
@@ -169,7 +169,7 @@ class _StockCard extends GetView<StockController> {
 
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -242,7 +242,7 @@ class _StockCard extends GetView<StockController> {
                         Text(
                           'Quantité actuelle',
                           style: TextStyle(
-                            fontSize: 12.sp,
+                            fontSize: 14.sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -278,7 +278,7 @@ class _StockCard extends GetView<StockController> {
                           child: Text(
                             stockStatus,
                             style: TextStyle(
-                              fontSize: 10.sp,
+                              fontSize: 14.sp,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -311,7 +311,7 @@ class _StockCard extends GetView<StockController> {
                         Text(
                           'Seuil d\'alerte',
                           style: TextStyle(
-                            fontSize: 12.sp,
+                            fontSize: 14.sp,
                             color: product.trackStock
                                 ? AppColors.textSecondary
                                 : Colors.grey[400],
@@ -373,7 +373,7 @@ class _StockCard extends GetView<StockController> {
                       child: Text(
                         'Gestion de stock désactivée pour ce produit',
                         style: TextStyle(
-                          fontSize: 13.sp,
+                          fontSize: 14.sp,
                           color: Colors.grey[700],
                           fontStyle: FontStyle.italic,
                         ),

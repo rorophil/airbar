@@ -81,7 +81,7 @@ class LoginView extends GetView<LoginController> {
                     labelText: AppStrings.email,
                     prefixIcon: const Icon(Icons.email_outlined),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   validator: controller.validateEmail,
@@ -109,7 +109,7 @@ class LoginView extends GetView<LoginController> {
                         onPressed: controller.togglePasswordVisibility,
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                     validator: controller.validatePassword,
@@ -163,7 +163,7 @@ class LoginView extends GetView<LoginController> {
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(vertical: 16.h),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                     child: controller.isLoading.value
@@ -192,7 +192,7 @@ class LoginView extends GetView<LoginController> {
                   'Contactez l\'administrateur pour obtenir vos identifiants',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -211,7 +211,7 @@ class LoginView extends GetView<LoginController> {
                         vertical: 12.h,
                       ),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),

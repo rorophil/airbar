@@ -71,7 +71,7 @@ class UserFormView extends GetView<UserFormController> {
                   labelText: AppStrings.email,
                   prefixIcon: const Icon(Icons.email),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
@@ -99,7 +99,7 @@ class UserFormView extends GetView<UserFormController> {
                           onPressed: controller.togglePasswordVisibility,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                       obscureText: controller.obscurePassword.value,
@@ -117,7 +117,7 @@ class UserFormView extends GetView<UserFormController> {
                   labelText: 'Prénom',
                   prefixIcon: const Icon(Icons.person),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 validator: (value) => controller.validateName(value, 'Prénom'),
@@ -132,7 +132,7 @@ class UserFormView extends GetView<UserFormController> {
                   labelText: 'Nom',
                   prefixIcon: const Icon(Icons.person_outline),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 validator: (value) => controller.validateName(value, 'Nom'),
@@ -159,7 +159,7 @@ class UserFormView extends GetView<UserFormController> {
                           onPressed: controller.togglePinVisibility,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                       keyboardType: TextInputType.number,
@@ -180,7 +180,7 @@ class UserFormView extends GetView<UserFormController> {
                     labelText: 'Rôle',
                     prefixIcon: const Icon(Icons.admin_panel_settings),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   items: const [
@@ -230,7 +230,7 @@ class UserFormView extends GetView<UserFormController> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textWhite,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),
