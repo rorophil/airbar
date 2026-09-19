@@ -15,6 +15,7 @@ import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/services/auth_service.dart';
 import 'app/services/connectivity_service.dart';
+import 'app/services/inactivity_service.dart';
 import 'app/services/storage_service.dart';
 import 'app/services/server_config_service.dart';
 
@@ -44,8 +45,9 @@ void main() async {
   // 2. Initialisation du client Serverpod avec la config sauvegardée
   await ServerpodClientProvider.initialize();
 
-  // 3. Services globaux (authentification et connectivité)
+  // 3. Services globaux (authentification, inactivité et connectivité)
   Get.put(AuthService());
+  Get.put(InactivityService());
   Get.put(ConnectivityService());
 
   // 4. Repositories (couche d'accès aux données)
@@ -90,6 +92,15 @@ class MyApp extends StatelessWidget {
           initialRoute: AppRoutes.SPLASH, // Route de démarrage
           getPages: AppPages.routes, // Définition de toutes les routes
           debugShowCheckedModeBanner: false, // Masquer le bandeau debug
+          builder: (context, appChild) {
+            // Toute interaction pointeur repousse la déconnexion automatique
+            return Listener(
+              behavior: HitTestBehavior.translucent,
+              onPointerDown: (_) => Get.find<InactivityService>().resetTimer(),
+              onPointerMove: (_) => Get.find<InactivityService>().resetTimer(),
+              child: appChild,
+            );
+          },
         );
       },
     );

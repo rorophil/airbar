@@ -159,6 +159,32 @@ class ServerConfigView extends GetView<SettingsController> {
               ],
             ),
 
+            SizedBox(height: 24.h),
+
+            // Champ délai d'inactivité avant déconnexion automatique
+            Text(
+              'Délai d\'inactivité (minutes)',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8.h),
+            TextField(
+              controller: controller.inactivityController,
+              decoration: InputDecoration(
+                hintText: 'Ex: 5 (0 = désactivé)',
+                prefixIcon: const Icon(Icons.timer_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(3),
+              ],
+            ),
+
             SizedBox(height: 32.h),
 
             // Bouton de test de connexion

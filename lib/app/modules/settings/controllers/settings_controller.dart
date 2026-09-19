@@ -32,6 +32,9 @@ class SettingsController extends GetxController {
   /// Controller du champ port
   late final TextEditingController portController;
 
+  /// Controller du champ délai d'inactivité (minutes, 0 = désactivé)
+  late final TextEditingController inactivityController;
+
   /// Indicateur de test de connexion en cours
   final isLoading = false.obs;
 
@@ -46,6 +49,9 @@ class SettingsController extends GetxController {
     portController = TextEditingController(
       text: _configService.serverPort.toString(),
     );
+    inactivityController = TextEditingController(
+      text: _configService.inactivityTimeoutMinutes.toString(),
+    );
   }
 
   @override
@@ -53,6 +59,7 @@ class SettingsController extends GetxController {
     // Libération des controllers de texte
     hostController.dispose();
     portController.dispose();
+    inactivityController.dispose();
     super.onClose();
   }
 
@@ -94,11 +101,27 @@ class SettingsController extends GetxController {
       return;
     }
 
+    // Validation: délai d'inactivité entre 0 (désactivé) et 120 minutes
+    final inactivityMinutes = int.tryParse(inactivityController.text.trim());
+    if (inactivityMinutes == null ||
+        inactivityMinutes < 0 ||
+        inactivityMinutes > 120) {
+      Get.snackbar(
+        'Erreur',
+        'Veuillez entrer un délai d\'inactivité valide (0-120)',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     try {
       isSaving.value = true;
 
       // Sauvegarde de la nouvelle configuration
       await _configService.saveServerConfig(host: host, port: port);
+      await _configService.saveInactivityTimeout(inactivityMinutes);
 
       // Réinitialisation du client Serverpod avec la nouvelle URL
       await ServerpodClientProvider.reinitialize();
@@ -136,6 +159,9 @@ class SettingsController extends GetxController {
   Future<void> resetToDefault() async {
     hostController.text = ServerConfigService.defaultHost;
     portController.text = ServerConfigService.defaultPort.toString();
+    inactivityController.text = ServerConfigService
+        .defaultInactivityTimeoutMinutes
+        .toString();
   }
 
   /// Tester la connexion au serveur
