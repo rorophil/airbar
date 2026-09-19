@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import '../../../services/server_config_service.dart';
+import '../../../services/connectivity_service.dart';
 import '../../../data/providers/serverpod_client_provider.dart';
 
 /// Controller du module Settings
@@ -137,30 +140,61 @@ class SettingsController extends GetxController {
 
   /// Tester la connexion au serveur
   ///
-  /// Tente une connexion au serveur avec les paramètres actuels.
+  /// Tente une connexion au serveur avec les paramètres actuels du formulaire.
   ///
-  /// TODO: Implémenter un vrai test de connexion (endpoint health check)
-  /// Actuellement fait juste un délai simulé.
+  /// Vérifie d'abord la connectivité réseau de l'appareil, puis effectue une
+  /// vraie requête HTTP vers la racine du serveur avec un timeout de 10s.
   ///
   /// Affiche un snackbar de succès ou d'erreur selon le résultat.
   Future<void> testConnection() async {
+    final host = hostController.text.trim();
+    final port = int.tryParse(portController.text.trim());
+
+    if (host.isEmpty || port == null || port < 1 || port > 65535) {
+      Get.snackbar(
+        'Erreur',
+        'Adresse ou port invalide',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
+    // Vérification de la connectivité réseau avant tout appel (évite un blocage hors-ligne)
+    if (!Get.find<ConnectivityService>().requiresConnection(
+      'tester la connexion',
+    )) {
+      return;
+    }
+
     try {
       isLoading.value = true;
 
-      // TODO: Implémenter un test de connexion réel
-      await Future.delayed(const Duration(seconds: 1));
+      final response = await http
+          .get(Uri.parse('http://$host:$port/'))
+          .timeout(const Duration(seconds: 10));
 
+      // Le serveur Serverpod a répondu, peu importe le code de statut exact
       Get.snackbar(
         'Succès',
-        'Connexion au serveur réussie',
+        'Connexion au serveur réussie (code ${response.statusCode})',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } on TimeoutException {
+      Get.snackbar(
+        'Erreur',
+        'Le serveur ne répond pas (délai dépassé)',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
         'Erreur',
-        'Impossible de se connecter au serveur',
+        'Impossible de joindre le serveur à cette adresse',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.red,
         colorText: Colors.white,

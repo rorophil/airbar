@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:get/get.dart';
 import '../../services/auth_service.dart';
+import '../../services/connectivity_service.dart';
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 
@@ -31,9 +33,16 @@ class AuthRepository {
   /// Note: En cas de succès, l'utilisateur est automatiquement enregistré
   /// dans [AuthService] pour un accès global.
   Future<Map<String, dynamic>> login(String email, String password) async {
+    // Vérification de la connectivité réseau avant tout appel (évite un blocage hors-ligne)
+    if (!Get.find<ConnectivityService>().requiresConnection('la connexion')) {
+      return {'success': false, 'error': 'Pas de connexion internet.'};
+    }
+
     try {
       // Appel à l'endpoint d'authentification backend
-      final user = await _client.auth.login(email, password);
+      final user = await _client.auth
+          .login(email, password)
+          .timeout(const Duration(seconds: 10));
 
       if (user != null) {
         // Enregistrement de l'utilisateur dans le service global
@@ -47,6 +56,12 @@ class AuthRepository {
       return {
         'success': false,
         'error': 'Email ou mot de passe incorrect, ou compte désactivé',
+      };
+    } on TimeoutException {
+      return {
+        'success': false,
+        'error':
+            'Le serveur ne répond pas (délai dépassé). Vérifiez la configuration serveur.',
       };
     } catch (e) {
       // Capture les erreurs réseau ou serveur
