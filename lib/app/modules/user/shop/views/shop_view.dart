@@ -35,6 +35,7 @@ class ShopView extends GetView<ShopController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: kToolbarHeight + 16.h,
         title: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
