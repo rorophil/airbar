@@ -297,7 +297,7 @@ class _StockCard extends GetView<StockController> {
                     decoration: BoxDecoration(
                       color: product.trackStock
                           ? AppColors.background
-                          : Colors.grey[100],
+                          : AppColors.surface,
                       borderRadius: BorderRadius.circular(8.r),
                       border: Border.all(
                         color: product.trackStock

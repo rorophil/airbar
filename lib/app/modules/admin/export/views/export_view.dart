@@ -210,7 +210,7 @@ class ExportView extends GetView<ExportController> {
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
-                  side: const BorderSide(color: AppColors.textHint),
+                  side: BorderSide(color: AppColors.textHint),
                 ),
                 onTap: () => controller.selectStartDate(context),
               ),
@@ -233,7 +233,7 @@ class ExportView extends GetView<ExportController> {
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
-                  side: const BorderSide(color: AppColors.textHint),
+                  side: BorderSide(color: AppColors.textHint),
                 ),
                 onTap: () => controller.selectEndDate(context),
               ),

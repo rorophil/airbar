@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import '../../../core/values/app_colors.dart';
 import '../../../services/server_config_service.dart';
 import '../../../services/connectivity_service.dart';
 import '../../../services/theme_service.dart';
@@ -37,297 +38,301 @@ class ServerConfigView extends GetView<SettingsController> {
     final connectivityService = Get.find<ConnectivityService>();
     final themeService = Get.find<ThemeService>();
 
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Get.back(),
+    return Obx(() {
+      return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Get.back(),
+          ),
+          title: const Text('Configuration du serveur'),
+          centerTitle: true,
         ),
-        title: const Text('Configuration du serveur'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(24.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Bandeau d'avertissement si l'appareil n'a pas de connexion réseau
-            Obx(() {
-              if (connectivityService.isOnline.value) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: EdgeInsets.only(bottom: 16.h),
-                child: Card(
-                  color: Colors.orange.shade50,
-                  child: Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.wifi_off,
-                          color: Colors.orange.shade800,
-                          size: 24.sp,
-                        ),
-                        SizedBox(width: 12.w),
-                        Expanded(
-                          child: Text(
-                            'Hors ligne — vérifiez votre connexion internet',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: Colors.orange.shade800,
+        body: SingleChildScrollView(
+          padding: EdgeInsets.all(24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Bandeau d'avertissement si l'appareil n'a pas de connexion réseau
+              Obx(() {
+                if (connectivityService.isOnline.value) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: EdgeInsets.only(bottom: 16.h),
+                  child: Card(
+                    color: Colors.orange.shade50,
+                    child: Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.wifi_off,
+                            color: Colors.orange.shade800,
+                            size: 24.sp,
+                          ),
+                          SizedBox(width: 12.w),
+                          Expanded(
+                            child: Text(
+                              'Hors ligne — vérifiez votre connexion internet',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.orange.shade800,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }),
-
-            // Carte d'information pour guider l'utilisateur
-            Card(
-              color: Colors.blue.shade50,
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Colors.blue.shade700,
-                      size: 24.sp,
-                    ),
-                    SizedBox(width: 12.w),
-                    Expanded(
-                      child: Text(
-                        'Configurez l\'adresse IP et le port du serveur AirBar',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          color: Colors.blue.shade700,
-                        ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-            SizedBox(height: 32.h),
-
-            // Champ adresse du serveur
-            Text(
-              'Adresse du serveur',
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 8.h),
-            TextField(
-              controller: controller.hostController,
-              decoration: InputDecoration(
-                hintText: 'Ex: 192.168.1.100 ou localhost',
-                prefixIcon: const Icon(Icons.dns),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              keyboardType: TextInputType.text,
-            ),
-
-            SizedBox(height: 24.h),
-
-            // Champ port du serveur
-            Text(
-              'Port',
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 8.h),
-            TextField(
-              controller: controller.portController,
-              decoration: InputDecoration(
-                hintText: 'Ex: 8080',
-                prefixIcon: const Icon(Icons.settings_ethernet),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(5),
-              ],
-            ),
-
-            SizedBox(height: 24.h),
-
-            // Champ délai d'inactivité avant déconnexion automatique
-            Text(
-              'Délai d\'inactivité (minutes)',
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 8.h),
-            TextField(
-              controller: controller.inactivityController,
-              decoration: InputDecoration(
-                hintText: 'Ex: 5 (0 = désactivé)',
-                prefixIcon: const Icon(Icons.timer_outlined),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                filled: true,
-                fillColor: Colors.grey.shade50,
-              ),
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(3),
-              ],
-            ),
-
-            SizedBox(height: 24.h),
-
-            // Sélecteur du thème de l'application (clair / sombre / automatique)
-            Text(
-              'Apparence',
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 8.h),
-            Obx(
-              () => SegmentedButton<ThemeMode>(
-                segments: const [
-                  ButtonSegment(
-                    value: ThemeMode.system,
-                    label: Text('Automatique'),
-                    icon: Icon(Icons.brightness_auto),
                   ),
-                  ButtonSegment(
-                    value: ThemeMode.light,
-                    label: Text('Clair'),
-                    icon: Icon(Icons.light_mode),
+                );
+              }),
+
+              // Carte d'information pour guider l'utilisateur
+              Card(
+                color: Colors.blue.shade50,
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.blue.shade700,
+                        size: 24.sp,
+                      ),
+                      SizedBox(width: 12.w),
+                      Expanded(
+                        child: Text(
+                          'Configurez l\'adresse IP et le port du serveur AirBar',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: Colors.blue.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  ButtonSegment(
-                    value: ThemeMode.dark,
-                    label: Text('Sombre'),
-                    icon: Icon(Icons.dark_mode),
+                ),
+              ),
+
+              SizedBox(height: 32.h),
+
+              // Champ adresse du serveur
+              Text(
+                'Adresse du serveur',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8.h),
+              TextField(
+                controller: controller.hostController,
+                decoration: InputDecoration(
+                  hintText: 'Ex: 192.168.1.100 ou localhost',
+                  prefixIcon: const Icon(Icons.dns),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                ),
+                keyboardType: TextInputType.text,
+              ),
+
+              SizedBox(height: 24.h),
+
+              // Champ port du serveur
+              Text(
+                'Port',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8.h),
+              TextField(
+                controller: controller.portController,
+                decoration: InputDecoration(
+                  hintText: 'Ex: 8080',
+                  prefixIcon: const Icon(Icons.settings_ethernet),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(5),
                 ],
-                selected: {themeService.themeMode.value},
-                onSelectionChanged: (selection) {
-                  themeService.changeThemeMode(selection.first);
-                },
               ),
-            ),
 
-            SizedBox(height: 32.h),
+              SizedBox(height: 24.h),
 
-            // Bouton de test de connexion
-            Obx(
-              () => OutlinedButton.icon(
-                onPressed: controller.isLoading.value
-                    ? null
-                    : controller.testConnection,
-                icon: controller.isLoading.value
-                    ? SizedBox(
-                        width: 20.w,
-                        height: 20.h,
-                        child: const CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.wifi_find),
-                label: Text(
-                  controller.isLoading.value
-                      ? 'Test en cours...'
-                      : 'Tester la connexion',
-                ),
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  shape: RoundedRectangleBorder(
+              // Champ délai d'inactivité avant déconnexion automatique
+              Text(
+                'Délai d\'inactivité (minutes)',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+              ),
+              SizedBox(height: 8.h),
+              TextField(
+                controller: controller.inactivityController,
+                decoration: InputDecoration(
+                  hintText: 'Ex: 5 (0 = désactivé)',
+                  prefixIcon: const Icon(Icons.timer_outlined),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.r),
                   ),
+                  filled: true,
+                  fillColor: AppColors.surface,
                 ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
               ),
-            ),
 
-            SizedBox(height: 16.h),
+              SizedBox(height: 24.h),
 
-            // Bouton de sauvegarde
-            Obx(
-              () => ElevatedButton.icon(
-                onPressed: controller.isSaving.value
-                    ? null
-                    : controller.saveConfiguration,
-                icon: controller.isSaving.value
-                    ? SizedBox(
-                        width: 20.w,
-                        height: 20.h,
-                        child: const CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.save),
-                label: Text(
-                  controller.isSaving.value ? 'Sauvegarde...' : 'Sauvegarder',
-                ),
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                ),
+              // Sélecteur du thème de l'application (clair / sombre / automatique)
+              Text(
+                'Apparence',
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
               ),
-            ),
-
-            SizedBox(height: 16.h),
-
-            // Reset button
-            TextButton.icon(
-              onPressed: controller.resetToDefault,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Réinitialiser par défaut'),
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.symmetric(vertical: 16.h),
-              ),
-            ),
-
-            SizedBox(height: 32.h),
-
-            // Current config display
-            Card(
-              color: Colors.grey.shade100,
-              child: Padding(
-                padding: EdgeInsets.all(16.w),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Configuration actuelle',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey.shade700,
-                      ),
+              SizedBox(height: 8.h),
+              Obx(
+                () => SegmentedButton<ThemeMode>(
+                  segments: const [
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      label: Text('Automatique'),
+                      icon: Icon(Icons.brightness_auto),
                     ),
-                    SizedBox(height: 8.h),
-                    Obx(
-                      () => Text(
-                        'URL: ${configService.serverUrl}',
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: 'monospace',
-                          color: Colors.grey.shade800,
-                        ),
-                      ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      label: Text('Clair'),
+                      icon: Icon(Icons.light_mode),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      label: Text('Sombre'),
+                      icon: Icon(Icons.dark_mode),
                     ),
                   ],
+                  selected: {themeService.themeMode.value},
+                  onSelectionChanged: (selection) {
+                    themeService.changeThemeMode(selection.first);
+                  },
                 ),
               ),
-            ),
-          ],
+
+              SizedBox(height: 32.h),
+
+              // Bouton de test de connexion
+              Obx(
+                () => OutlinedButton.icon(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : controller.testConnection,
+                  icon: controller.isLoading.value
+                      ? SizedBox(
+                          width: 20.w,
+                          height: 20.h,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.wifi_find),
+                  label: Text(
+                    controller.isLoading.value
+                        ? 'Test en cours...'
+                        : 'Tester la connexion',
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Bouton de sauvegarde
+              Obx(
+                () => ElevatedButton.icon(
+                  onPressed: controller.isSaving.value
+                      ? null
+                      : controller.saveConfiguration,
+                  icon: controller.isSaving.value
+                      ? SizedBox(
+                          width: 20.w,
+                          height: 20.h,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Icon(Icons.save),
+                  label: Text(
+                    controller.isSaving.value ? 'Sauvegarde...' : 'Sauvegarder',
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 16.h),
+
+              // Reset button
+              TextButton.icon(
+                onPressed: controller.resetToDefault,
+                icon: const Icon(Icons.refresh),
+                label: const Text('Réinitialiser par défaut'),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                ),
+              ),
+
+              SizedBox(height: 32.h),
+
+              // Current config display
+              Card(
+                color: AppColors.surface,
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Configuration actuelle',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(height: 8.h),
+                      Obx(
+                        () => Text(
+                          'URL: ${configService.serverUrl}',
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontFamily: 'monospace',
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

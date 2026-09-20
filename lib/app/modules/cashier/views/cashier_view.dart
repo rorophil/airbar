@@ -295,7 +295,7 @@ class CashierView extends GetView<CashierController> {
       margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       padding: EdgeInsets.all(8.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Row(

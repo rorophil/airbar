@@ -149,7 +149,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
-                    side: const BorderSide(color: AppColors.textHint),
+                    side: BorderSide(color: AppColors.textHint),
                   ),
                 ),
               ),
@@ -428,7 +428,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   activeColor: AppColors.success,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
-                    side: const BorderSide(color: AppColors.textHint),
+                    side: BorderSide(color: AppColors.textHint),
                   ),
                 ),
               ),
@@ -451,7 +451,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.r),
-                    side: const BorderSide(color: AppColors.textHint),
+                    side: BorderSide(color: AppColors.textHint),
                   ),
                 ),
               ),

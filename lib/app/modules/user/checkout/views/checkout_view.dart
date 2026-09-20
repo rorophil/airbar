@@ -282,7 +282,7 @@ class CheckoutView extends GetView<CheckoutController> {
                     label: const Text(AppStrings.cancel),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.textSecondary,
-                      side: const BorderSide(color: AppColors.textSecondary),
+                      side: BorderSide(color: AppColors.textSecondary),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.r),
                       ),

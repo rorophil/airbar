@@ -5,6 +5,7 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../controllers/users_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
+import '../../../../services/theme_service.dart';
 
 /// Vue du module de gestion des utilisateurs (Admin)
 ///
@@ -128,10 +129,12 @@ class _UserCard extends GetView<UsersController> {
       opacity: user.isActive ? 1.0 : 0.5,
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
-        color: user.isActive ? AppColors.surface : Colors.grey.shade200,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
+        color: user.isActive
+            ? AppColors.surface
+            : (Get.find<ThemeService>().isDarkMode.value
+                  ? Colors.grey.shade800
+                  : Colors.grey.shade200),
         child: Padding(
           padding: EdgeInsets.all(16.w),
           child: Column(
