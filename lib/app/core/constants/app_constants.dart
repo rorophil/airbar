@@ -20,6 +20,9 @@ class AppConstants {
   /// Clé de cache pour la liste des catégories
   static const String keyCategories = 'cached_categories';
 
+  /// Clé de stockage pour le mode de thème choisi (light/dark/system)
+  static const String storageKeyThemeMode = 'theme_mode';
+
   // === Cache Duration ===
   /// Durée de validité du cache des produits (30 minutes)
   static const Duration productsCacheDuration = Duration(minutes: 30);

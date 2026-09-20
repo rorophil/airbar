@@ -18,6 +18,7 @@ import 'app/services/connectivity_service.dart';
 import 'app/services/inactivity_service.dart';
 import 'app/services/storage_service.dart';
 import 'app/services/server_config_service.dart';
+import 'app/services/theme_service.dart';
 
 /// Point d'entrée de l'application AirBar
 ///
@@ -45,10 +46,11 @@ void main() async {
   // 2. Initialisation du client Serverpod avec la config sauvegardée
   await ServerpodClientProvider.initialize();
 
-  // 3. Services globaux (authentification, inactivité et connectivité)
+  // 3. Services globaux (authentification, inactivité, connectivité et thème)
   Get.put(AuthService());
   Get.put(InactivityService());
   Get.put(ConnectivityService());
+  Get.put(ThemeService());
 
   // 4. Repositories (couche d'accès aux données)
   // Enregistrés en permanent pour être partagés entre tous les modules
@@ -73,7 +75,8 @@ void main() async {
 ///
 /// Thèmes:
 /// - Light theme: Thème clair avec couleurs AirBar
-/// - Dark theme: Disponible mais non activé par défaut
+/// - Dark theme: Thème sombre avec couleurs AirBar
+/// - Mode actif piloté par [ThemeService] (clair/sombre/automatique)
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -84,23 +87,29 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true, // Adaptation minimale du texte
       splitScreenMode: true, // Support du mode écran partagé
       builder: (context, child) {
-        return GetMaterialApp(
-          title: AppStrings.appName,
-          theme: AppTheme.lightTheme, // Thème clair
-          darkTheme: AppTheme.darkTheme, // Thème sombre (non utilisé)
-          themeMode: ThemeMode.light, // Mode clair forcé
-          initialRoute: AppRoutes.SPLASH, // Route de démarrage
-          getPages: AppPages.routes, // Définition de toutes les routes
-          debugShowCheckedModeBanner: false, // Masquer le bandeau debug
-          builder: (context, appChild) {
-            // Toute interaction pointeur repousse la déconnexion automatique
-            return Listener(
-              behavior: HitTestBehavior.translucent,
-              onPointerDown: (_) => Get.find<InactivityService>().resetTimer(),
-              onPointerMove: (_) => Get.find<InactivityService>().resetTimer(),
-              child: appChild,
-            );
-          },
+        return Obx(
+          () => GetMaterialApp(
+            title: AppStrings.appName,
+            theme: AppTheme.lightTheme, // Thème clair
+            darkTheme: AppTheme.darkTheme, // Thème sombre
+            themeMode: Get.find<ThemeService>()
+                .themeMode
+                .value, // Choix utilisateur (clair/sombre/auto)
+            initialRoute: AppRoutes.SPLASH, // Route de démarrage
+            getPages: AppPages.routes, // Définition de toutes les routes
+            debugShowCheckedModeBanner: false, // Masquer le bandeau debug
+            builder: (context, appChild) {
+              // Toute interaction pointeur repousse la déconnexion automatique
+              return Listener(
+                behavior: HitTestBehavior.translucent,
+                onPointerDown: (_) =>
+                    Get.find<InactivityService>().resetTimer(),
+                onPointerMove: (_) =>
+                    Get.find<InactivityService>().resetTimer(),
+                child: appChild,
+              );
+            },
+          ),
         );
       },
     );

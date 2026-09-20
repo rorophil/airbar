@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../services/server_config_service.dart';
 import '../../../services/connectivity_service.dart';
+import '../../../services/theme_service.dart';
 import '../controllers/settings_controller.dart';
 
 /// Vue du module Settings (Configuration serveur)
@@ -34,6 +35,7 @@ class ServerConfigView extends GetView<SettingsController> {
   Widget build(BuildContext context) {
     final configService = Get.find<ServerConfigService>();
     final connectivityService = Get.find<ConnectivityService>();
+    final themeService = Get.find<ThemeService>();
 
     return Scaffold(
       appBar: AppBar(
@@ -183,6 +185,40 @@ class ServerConfigView extends GetView<SettingsController> {
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(3),
               ],
+            ),
+
+            SizedBox(height: 24.h),
+
+            // Sélecteur du thème de l'application (clair / sombre / automatique)
+            Text(
+              'Apparence',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8.h),
+            Obx(
+              () => SegmentedButton<ThemeMode>(
+                segments: const [
+                  ButtonSegment(
+                    value: ThemeMode.system,
+                    label: Text('Automatique'),
+                    icon: Icon(Icons.brightness_auto),
+                  ),
+                  ButtonSegment(
+                    value: ThemeMode.light,
+                    label: Text('Clair'),
+                    icon: Icon(Icons.light_mode),
+                  ),
+                  ButtonSegment(
+                    value: ThemeMode.dark,
+                    label: Text('Sombre'),
+                    icon: Icon(Icons.dark_mode),
+                  ),
+                ],
+                selected: {themeService.themeMode.value},
+                onSelectionChanged: (selection) {
+                  themeService.changeThemeMode(selection.first);
+                },
+              ),
             ),
 
             SizedBox(height: 32.h),
