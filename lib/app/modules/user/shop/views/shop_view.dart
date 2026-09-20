@@ -35,7 +35,22 @@ class ShopView extends GetView<ShopController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.shop),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(AppStrings.shop),
+            Obx(
+              () => Text(
+                'Votre solde est de ${controller.userBalance.toStringAsFixed(2)} €',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ],
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
         actions: [
