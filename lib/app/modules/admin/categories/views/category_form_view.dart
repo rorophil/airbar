@@ -68,7 +68,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
                   labelText: 'Nom de la catégorie',
                   prefixIcon: const Icon(Icons.category),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 validator: controller.validateName,
@@ -83,7 +83,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
                   labelText: 'Description',
                   prefixIcon: const Icon(Icons.description),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 maxLines: 3,
@@ -98,7 +98,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
                   labelText: 'Ordre d\'affichage',
                   prefixIcon: const Icon(Icons.format_list_numbered),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -136,7 +136,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
                                 : AppColors.textHint,
                             width: isSelected ? 2 : 1,
                           ),
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                         child: Icon(
                           _getIconData(iconName),
@@ -180,7 +180,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textWhite,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),

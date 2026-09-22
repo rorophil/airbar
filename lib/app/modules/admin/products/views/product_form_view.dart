@@ -77,7 +77,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   labelText: 'Nom du produit',
                   prefixIcon: const Icon(Icons.shopping_bag),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 validator: controller.validateName,
@@ -92,7 +92,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   labelText: 'Description',
                   prefixIcon: const Icon(Icons.description),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 maxLines: 3,
@@ -108,7 +108,7 @@ class ProductFormView extends GetView<ProductFormController> {
                     labelText: 'Catégorie',
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   items: controller.categories
@@ -148,7 +148,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   },
                   activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                     side: const BorderSide(color: AppColors.textHint),
                   ),
                 ),
@@ -172,7 +172,7 @@ class ProductFormView extends GetView<ProductFormController> {
                         : null,
                     prefixIcon: const Icon(Icons.euro),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   keyboardType: const TextInputType.numberWithOptions(
@@ -203,7 +203,7 @@ class ProductFormView extends GetView<ProductFormController> {
                         : null,
                     prefixIcon: const Icon(Icons.inventory),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   keyboardType: TextInputType.number,
@@ -234,7 +234,7 @@ class ProductFormView extends GetView<ProductFormController> {
                         : null,
                     prefixIcon: const Icon(Icons.warning),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                   keyboardType: TextInputType.number,
@@ -261,7 +261,7 @@ class ProductFormView extends GetView<ProductFormController> {
                               hintText: 'Ex: litres, kg, ml',
                               prefixIcon: const Icon(Icons.straighten),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
                             ),
                           ),
@@ -278,7 +278,7 @@ class ProductFormView extends GetView<ProductFormController> {
                                   'Volume/poids total d\'une unité complète',
                               prefixIcon: const Icon(Icons.local_drink),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
                             ),
                             keyboardType: const TextInputType.numberWithOptions(
@@ -305,7 +305,7 @@ class ProductFormView extends GetView<ProductFormController> {
                                 Icons.inventory_2_outlined,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12.r),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
                             ),
                             keyboardType: const TextInputType.numberWithOptions(
@@ -319,7 +319,7 @@ class ProductFormView extends GetView<ProductFormController> {
                           Card(
                             color: AppColors.surface,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12.r),
+                              borderRadius: BorderRadius.circular(8.r),
                             ),
                             child: Padding(
                               padding: EdgeInsets.all(16.w),
@@ -427,7 +427,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   },
                   activeColor: AppColors.success,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                     side: const BorderSide(color: AppColors.textHint),
                   ),
                 ),
@@ -450,7 +450,7 @@ class ProductFormView extends GetView<ProductFormController> {
                   },
                   activeColor: AppColors.primary,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                     side: const BorderSide(color: AppColors.textHint),
                   ),
                 ),
@@ -485,7 +485,7 @@ class ProductFormView extends GetView<ProductFormController> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textWhite,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),

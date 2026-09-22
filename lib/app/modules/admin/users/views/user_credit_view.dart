@@ -124,7 +124,7 @@ class UserCreditView extends GetView<UserCreditController> {
                 hintText: 'Positif pour créditer, négatif pour débiter',
                 prefixIcon: const Icon(Icons.euro),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 filled: true,
                 fillColor: AppColors.surface,
@@ -237,7 +237,7 @@ class UserCreditView extends GetView<UserCreditController> {
                 hintText: 'Ajoutez une note explicative...',
                 prefixIcon: const Icon(Icons.note),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 filled: true,
                 fillColor: AppColors.surface,
@@ -274,7 +274,7 @@ class UserCreditView extends GetView<UserCreditController> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textWhite,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                 ),
@@ -294,7 +294,7 @@ class UserCreditView extends GetView<UserCreditController> {
                   foregroundColor: AppColors.textSecondary,
                   side: const BorderSide(color: AppColors.textSecondary),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
               ),

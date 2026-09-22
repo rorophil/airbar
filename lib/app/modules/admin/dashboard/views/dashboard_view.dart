@@ -167,14 +167,14 @@ class _DashboardCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(8.r),
         child: Container(
           padding: EdgeInsets.all(8.w),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12.r),
+            borderRadius: BorderRadius.circular(8.r),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -189,7 +189,7 @@ class _DashboardCard extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 13.sp,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.bold,
                   color: AppColors.textWhite,
                 ),
@@ -199,7 +199,7 @@ class _DashboardCard extends StatelessWidget {
               Text(
                 subtitle,
                 style: TextStyle(
-                  fontSize: 9.sp,
+                  fontSize: 14.sp,
                   color: AppColors.textWhite.withOpacity(0.9),
                 ),
                 textAlign: TextAlign.center,

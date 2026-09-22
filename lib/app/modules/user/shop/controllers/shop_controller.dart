@@ -349,6 +349,9 @@ class ShopController extends GetxController {
   /// Utilisé pour afficher/masquer le bouton d'accès au dashboard admin.
   bool get isAdmin => _authService.isAdmin;
 
+  /// Solde actuel de l'utilisateur connecté
+  double get userBalance => _authService.currentUser.value?.balance ?? 0.0;
+
   /// Récupérer la catégorie d'un produit
   ///
   /// [product] Le produit dont on veut la catégorie

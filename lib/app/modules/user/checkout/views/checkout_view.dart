@@ -265,7 +265,7 @@ class CheckoutView extends GetView<CheckoutController> {
                         backgroundColor: AppColors.primary,
                         foregroundColor: AppColors.textWhite,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                     ),
@@ -284,7 +284,7 @@ class CheckoutView extends GetView<CheckoutController> {
                       foregroundColor: AppColors.textSecondary,
                       side: const BorderSide(color: AppColors.textSecondary),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),

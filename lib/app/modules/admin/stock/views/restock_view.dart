@@ -68,7 +68,7 @@ class RestockView extends GetView<RestockController> {
               if (controller.product != null) ...[
                 Card(
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Padding(
                     padding: EdgeInsets.all(16.w),
@@ -78,7 +78,7 @@ class RestockView extends GetView<RestockController> {
                         Text(
                           'Produit',
                           style: TextStyle(
-                            fontSize: 12.sp,
+                            fontSize: 14.sp,
                             color: AppColors.textSecondary,
                           ),
                         ),
@@ -122,7 +122,7 @@ class RestockView extends GetView<RestockController> {
                   labelText: 'Quantité à ajouter',
                   prefixIcon: const Icon(Icons.add_box),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 keyboardType: TextInputType.number,
@@ -138,7 +138,7 @@ class RestockView extends GetView<RestockController> {
                   labelText: 'Notes (facultatif)',
                   prefixIcon: const Icon(Icons.notes),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   hintText: 'Ex: Fournisseur, numéro de commande...',
                 ),
@@ -174,7 +174,7 @@ class RestockView extends GetView<RestockController> {
                       backgroundColor: AppColors.primary,
                       foregroundColor: AppColors.textWhite,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.r),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),

@@ -80,7 +80,7 @@ class TransactionsView extends GetView<TransactionsController> {
                         : const SizedBox.shrink(),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                 ),
                 onChanged: controller.updateSearchQuery,
@@ -177,7 +177,7 @@ class TransactionsView extends GetView<TransactionsController> {
                               controller.startDate.value != null
                                   ? 'Du ${DateFormat('dd/MM/yy').format(controller.startDate.value!)}'
                                   : 'Date début',
-                              style: TextStyle(fontSize: 12.sp),
+                              style: TextStyle(fontSize: 14.sp),
                             ),
                             style: OutlinedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
@@ -218,7 +218,7 @@ class TransactionsView extends GetView<TransactionsController> {
                               controller.endDate.value != null
                                   ? 'Au ${DateFormat('dd/MM/yy').format(controller.endDate.value!)}'
                                   : 'Date fin',
-                              style: TextStyle(fontSize: 12.sp),
+                              style: TextStyle(fontSize: 14.sp),
                             ),
                             style: OutlinedButton.styleFrom(
                               padding: EdgeInsets.symmetric(
@@ -250,7 +250,7 @@ class TransactionsView extends GetView<TransactionsController> {
                       Text(
                         'Nombre de transactions:',
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -339,7 +339,7 @@ class _TransactionCard extends GetView<TransactionsController> {
 
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
@@ -360,7 +360,7 @@ class _TransactionCard extends GetView<TransactionsController> {
                   child: Text(
                     typeLabel,
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
                       color: typeColor,
                     ),
@@ -397,7 +397,7 @@ class _TransactionCard extends GetView<TransactionsController> {
                 Text(
                   DateFormat('dd/MM/yyyy HH:mm').format(transaction.timestamp),
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -416,7 +416,7 @@ class _TransactionCard extends GetView<TransactionsController> {
                       ? controller.getUserName(transaction.userId!)
                       : 'Client anonyme',
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -437,7 +437,7 @@ class _TransactionCard extends GetView<TransactionsController> {
                   Text(
                     'Vendeur: ${controller.getSellerName(transaction.sellerId!)}',
                     style: TextStyle(
-                      fontSize: 12.sp,
+                      fontSize: 14.sp,
                       color: AppColors.textSecondary,
                       fontWeight: FontWeight.w500,
                     ),
@@ -458,7 +458,7 @@ class _TransactionCard extends GetView<TransactionsController> {
                     child: Text(
                       transaction.notes!,
                       style: TextStyle(
-                        fontSize: 12.sp,
+                        fontSize: 14.sp,
                         color: AppColors.textSecondary,
                         fontStyle: FontStyle.italic,
                       ),

@@ -44,7 +44,7 @@ class CashierView extends GetView<CashierController> {
                         hintText: 'Rechercher un produit...',
                         prefixIcon: const Icon(Icons.search),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12.r),
+                          borderRadius: BorderRadius.circular(8.r),
                         ),
                       ),
                       onChanged: controller.updateSearchQuery,
@@ -316,7 +316,7 @@ class CashierView extends GetView<CashierController> {
                 Text(
                   '${item.effectivePrice.toStringAsFixed(2)} €',
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     color: AppColors.textSecondary,
                   ),
                 ),
@@ -380,10 +380,10 @@ class _ProductCard extends GetView<CashierController> {
     return Card(
       elevation: 3,
       margin: EdgeInsets.only(bottom: 12.h),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: InkWell(
         onTap: () => _showProductDetails(context),
-        borderRadius: BorderRadius.circular(12.r),
+        borderRadius: BorderRadius.circular(8.r),
         child: Padding(
           padding: EdgeInsets.all(12.w),
           child: Row(
@@ -414,7 +414,7 @@ class _ProductCard extends GetView<CashierController> {
                     Text(
                       product.name,
                       style: TextStyle(
-                        fontSize: 15.sp,
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                       ),
                       maxLines: 2,
@@ -429,7 +429,7 @@ class _ProductCard extends GetView<CashierController> {
                       Text(
                         product.description!,
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           color: AppColors.textSecondary,
                         ),
                         maxLines: 1,
@@ -462,7 +462,7 @@ class _ProductCard extends GetView<CashierController> {
                               Text(
                                 '${product.stockQuantity}',
                                 style: TextStyle(
-                                  fontSize: 13.sp,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w600,
                                   color: _getStockColor(),
                                 ),
@@ -550,7 +550,7 @@ class _BulkProductCard extends GetView<CashierController> {
     return Card(
       elevation: 3,
       margin: EdgeInsets.only(bottom: 12.h),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       child: Padding(
         padding: EdgeInsets.all(12.w),
         child: Column(
@@ -599,7 +599,7 @@ class _BulkProductCard extends GetView<CashierController> {
                         child: Text(
                           'Produit en vrac',
                           style: TextStyle(
-                            fontSize: 10.sp,
+                            fontSize: 14.sp,
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
@@ -638,7 +638,7 @@ class _BulkProductCard extends GetView<CashierController> {
                 child: Text(
                   'Contenance: ${product.bulkTotalQuantity} ${product.bulkUnit}',
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     fontStyle: FontStyle.italic,
                     color: AppColors.textSecondary,
                   ),
@@ -654,7 +654,7 @@ class _BulkProductCard extends GetView<CashierController> {
                 child: Text(
                   'Aucune portion disponible',
                   style: TextStyle(
-                    fontSize: 12.sp,
+                    fontSize: 14.sp,
                     color: AppColors.error,
                     fontStyle: FontStyle.italic,
                   ),
@@ -697,7 +697,7 @@ class _BulkProductCard extends GetView<CashierController> {
                               Text(
                                 '${portion.quantity} ${product.bulkUnit ?? ""}',
                                 style: TextStyle(
-                                  fontSize: 11.sp,
+                                  fontSize: 14.sp,
                                   color: AppColors.textSecondary,
                                 ),
                               ),
@@ -709,7 +709,7 @@ class _BulkProductCard extends GetView<CashierController> {
                             Text(
                               '${portion.price.toStringAsFixed(2)} €',
                               style: TextStyle(
-                                fontSize: 15.sp,
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.bold,
                                 color: AppColors.primary,
                               ),
@@ -789,7 +789,7 @@ class _BulkProductCard extends GetView<CashierController> {
             SizedBox(height: 8.h),
             Text(
               'Quantité: ${portion.quantity} ${product.bulkUnit ?? ""}',
-              style: TextStyle(fontSize: 13.sp),
+              style: TextStyle(fontSize: 14.sp),
             ),
             SizedBox(height: 16.h),
             TextField(
@@ -1052,7 +1052,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
                   child: Text(
                     'Produit en vrac',
                     style: TextStyle(
-                      fontSize: 10.sp,
+                      fontSize: 14.sp,
                       color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
@@ -1080,7 +1080,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
               Text(
                 'Contenance: ${product.bulkTotalQuantity} ${product.bulkUnit}',
                 style: TextStyle(
-                  fontSize: 13.sp,
+                  fontSize: 14.sp,
                   fontStyle: FontStyle.italic,
                   color: AppColors.textSecondary,
                 ),
@@ -1156,7 +1156,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
                                     Text(
                                       portion.name,
                                       style: TextStyle(
-                                        fontSize: 15.sp,
+                                        fontSize: 16.sp,
                                         fontWeight: FontWeight.w600,
                                         color: isSelected
                                             ? AppColors.primary
@@ -1166,7 +1166,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
                                     Text(
                                       '${portion.quantity} ${product.bulkUnit ?? ""}',
                                       style: TextStyle(
-                                        fontSize: 12.sp,
+                                        fontSize: 14.sp,
                                         color: AppColors.textSecondary,
                                       ),
                                     ),

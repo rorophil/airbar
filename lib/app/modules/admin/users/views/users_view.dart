@@ -69,7 +69,7 @@ class UsersView extends GetView<UsersController> {
                       : const SizedBox.shrink(),
                 ),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
                 filled: true,
                 fillColor: AppColors.surface,
@@ -129,7 +129,7 @@ class _UserCard extends GetView<UsersController> {
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.r),
+          borderRadius: BorderRadius.circular(8.r),
         ),
         color: user.isActive ? AppColors.surface : Colors.grey.shade200,
         child: Padding(
@@ -147,7 +147,7 @@ class _UserCard extends GetView<UsersController> {
                   ),
                   decoration: BoxDecoration(
                     color: AppColors.error,
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -161,7 +161,7 @@ class _UserCard extends GetView<UsersController> {
                       Text(
                         'Utilisateur désactivé',
                         style: TextStyle(
-                          fontSize: 12.sp,
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textWhite,
                         ),
@@ -223,12 +223,12 @@ class _UserCard extends GetView<UsersController> {
                       color: user.role == UserRole.admin
                           ? AppColors.primary
                           : AppColors.accent,
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(
                       user.role == UserRole.admin ? 'Admin' : 'User',
                       style: TextStyle(
-                        fontSize: 12.sp,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.bold,
                         color: AppColors.textWhite,
                       ),

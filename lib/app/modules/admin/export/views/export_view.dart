@@ -77,7 +77,7 @@ class ExportView extends GetView<ExportController> {
             Card(
               color: AppColors.warning.withOpacity(0.1),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(8.r),
               ),
               child: Padding(
                 padding: EdgeInsets.all(16.w),
@@ -133,7 +133,7 @@ class ExportView extends GetView<ExportController> {
                     backgroundColor: AppColors.warning,
                     foregroundColor: AppColors.textWhite,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                 ),
@@ -159,7 +159,7 @@ class ExportView extends GetView<ExportController> {
             Card(
               color: AppColors.primary.withOpacity(0.1),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.r),
+                borderRadius: BorderRadius.circular(8.r),
               ),
               child: Padding(
                 padding: EdgeInsets.all(16.w),
@@ -209,7 +209,7 @@ class ExportView extends GetView<ExportController> {
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                   side: const BorderSide(color: AppColors.textHint),
                 ),
                 onTap: () => controller.selectStartDate(context),
@@ -232,7 +232,7 @@ class ExportView extends GetView<ExportController> {
                 ),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12.r),
+                  borderRadius: BorderRadius.circular(8.r),
                   side: const BorderSide(color: AppColors.textHint),
                 ),
                 onTap: () => controller.selectEndDate(context),
@@ -327,7 +327,7 @@ class ExportView extends GetView<ExportController> {
                     backgroundColor: AppColors.primary,
                     foregroundColor: AppColors.textWhite,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.r),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
                 ),
