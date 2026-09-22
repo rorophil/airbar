@@ -3,6 +3,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../core/constants/app_constants.dart';
 import '../data/repositories/user_repository.dart';
+import 'inactivity_service.dart';
 
 /// Service de gestion de l'état d'authentification
 ///
@@ -76,6 +77,16 @@ class AuthService extends GetxService {
       _storage.write(AppConstants.storageKeyUser, user.toJson());
     } else {
       _storage.remove(AppConstants.storageKeyUser);
+    }
+
+    // Démarre le minuteur d'inactivité à la connexion, l'arrête à la déconnexion
+    if (Get.isRegistered<InactivityService>()) {
+      final inactivityService = Get.find<InactivityService>();
+      if (user != null) {
+        inactivityService.resetTimer();
+      } else {
+        inactivityService.cancelTimer();
+      }
     }
   }
 

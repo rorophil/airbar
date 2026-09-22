@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../services/server_config_service.dart';
+import '../../../services/connectivity_service.dart';
 import '../controllers/settings_controller.dart';
 
 /// Vue du module Settings (Configuration serveur)
@@ -21,7 +22,7 @@ import '../controllers/settings_controller.dart';
 /// - Card Config actuelle: Affiche l'URL en cours d'utilisation
 ///
 /// Interactions:
-/// - Tap Tester → Tente une connexion au serveur (TODO: implémenter vraiment)
+/// - Tap Tester → Requête HTTP réelle vers le serveur (timeout 10s)
 /// - Tap Sauvegarder → Validation + Sauvegarde + Reinit client + Retour
 /// - Tap Réinitialiser → Remplit champs avec valeurs par défaut
 ///
@@ -32,6 +33,7 @@ class ServerConfigView extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final configService = Get.find<ServerConfigService>();
+    final connectivityService = Get.find<ConnectivityService>();
 
     return Scaffold(
       appBar: AppBar(
@@ -47,6 +49,41 @@ class ServerConfigView extends GetView<SettingsController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // Bandeau d'avertissement si l'appareil n'a pas de connexion réseau
+            Obx(() {
+              if (connectivityService.isOnline.value) {
+                return const SizedBox.shrink();
+              }
+              return Padding(
+                padding: EdgeInsets.only(bottom: 16.h),
+                child: Card(
+                  color: Colors.orange.shade50,
+                  child: Padding(
+                    padding: EdgeInsets.all(16.w),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.wifi_off,
+                          color: Colors.orange.shade800,
+                          size: 24.sp,
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Text(
+                            'Hors ligne — vérifiez votre connexion internet',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.orange.shade800,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+
             // Carte d'information pour guider l'utilisateur
             Card(
               color: Colors.blue.shade50,
@@ -119,6 +156,32 @@ class ServerConfigView extends GetView<SettingsController> {
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(5),
+              ],
+            ),
+
+            SizedBox(height: 24.h),
+
+            // Champ délai d'inactivité avant déconnexion automatique
+            Text(
+              'Délai d\'inactivité (minutes)',
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+            SizedBox(height: 8.h),
+            TextField(
+              controller: controller.inactivityController,
+              decoration: InputDecoration(
+                hintText: 'Ex: 5 (0 = désactivé)',
+                prefixIcon: const Icon(Icons.timer_outlined),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade50,
+              ),
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(3),
               ],
             ),
 
