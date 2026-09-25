@@ -22,6 +22,8 @@ import '../modules/admin/users/bindings/user_form_binding.dart';
 import '../modules/admin/users/views/user_form_view.dart';
 import '../modules/admin/users/bindings/user_credit_binding.dart';
 import '../modules/admin/users/views/user_credit_view.dart';
+import '../modules/admin/users/bindings/user_cart_binding.dart';
+import '../modules/admin/users/views/user_cart_view.dart';
 import '../modules/admin/products/bindings/products_binding.dart';
 import '../modules/admin/products/views/products_view.dart';
 import '../modules/admin/products/bindings/product_form_binding.dart';
@@ -160,6 +162,13 @@ class AppPages {
       name: AppRoutes.ADMIN_USER_CREDIT,
       page: () => const UserCreditView(),
       binding: UserCreditBinding(),
+      middlewares: [AdminMiddleware()],
+    ),
+    // Gestion des utilisateurs: consultation/vidage/forçage du panier
+    GetPage(
+      name: AppRoutes.ADMIN_USER_CART,
+      page: () => const UserCartView(),
+      binding: UserCartBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des produits: liste

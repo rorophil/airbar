@@ -92,14 +92,11 @@ class CashierCheckoutController extends GetxController {
         arguments: {'transaction': transaction, 'items': cart},
       );
     } catch (e) {
+      // Message renvoyé par le serveur (BusinessException) si disponible,
+      // sinon message générique
       String errorMessage = 'Une erreur est survenue';
-
-      if (e.toString().contains('PIN incorrect')) {
-        errorMessage = 'Code PIN incorrect';
-      } else if (e.toString().contains('Stock insuffisant')) {
-        errorMessage = 'Stock insuffisant pour un ou plusieurs produits';
-      } else if (e.toString().contains('non trouvé')) {
-        errorMessage = 'Produit introuvable';
+      if (e is BusinessException) {
+        errorMessage = e.message;
       }
 
       Get.snackbar('Erreur', errorMessage, snackPosition: SnackPosition.BOTTOM);

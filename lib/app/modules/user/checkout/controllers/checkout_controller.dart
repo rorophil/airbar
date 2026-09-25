@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/transaction_repository.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../routes/app_routes.dart';
@@ -138,20 +139,16 @@ class CheckoutController extends GetxController {
       // Navigation vers la boutique (nettoie la pile: cart + checkout)
       Get.offAllNamed(AppRoutes.USER_SHOP);
     } catch (e) {
-      // Analyse de l'erreur pour message utilisateur clair
+      // Message renvoyé par le serveur (BusinessException) si disponible,
+      // sinon message générique
       String errorMessage = 'Erreur lors du paiement';
 
-      if (e.toString().contains('PIN')) {
-        errorMessage = 'Code PIN incorrect';
-      } else if (e.toString().contains('balance') ||
-          e.toString().contains('insufficient')) {
-        errorMessage = 'Solde insuffisant';
-      } else if (e.toString().contains('stock')) {
-        errorMessage = 'Stock insuffisant pour un ou plusieurs articles';
+      if (e is BusinessException) {
+        errorMessage = e.message;
       }
 
       // Snackbar spécial pour solde insuffisant (plus visible)
-      if (errorMessage == 'Solde insuffisant') {
+      if (errorMessage.contains('Solde insuffisant')) {
         Get.snackbar(
           'Solde insuffisant',
           'Votre solde est insuffisant pour effectuer cet achat',

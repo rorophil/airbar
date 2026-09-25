@@ -128,9 +128,7 @@ class _UserCard extends GetView<UsersController> {
       opacity: user.isActive ? 1.0 : 0.5,
       child: Card(
         elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
         color: user.isActive ? AppColors.surface : Colors.grey.shade200,
         child: Padding(
           padding: EdgeInsets.all(16.w),
@@ -245,7 +243,9 @@ class _UserCard extends GetView<UsersController> {
                   Icon(
                     Icons.account_balance_wallet,
                     size: 18.sp,
-                    color: AppColors.success,
+                    color: user.balance <= 0
+                        ? AppColors.error
+                        : AppColors.success,
                   ),
                   SizedBox(width: 8.w),
                   Text(
@@ -253,7 +253,9 @@ class _UserCard extends GetView<UsersController> {
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.success,
+                      color: user.balance <= 0
+                          ? AppColors.error
+                          : AppColors.success,
                     ),
                   ),
                 ],
@@ -290,6 +292,17 @@ class _UserCard extends GetView<UsersController> {
                     ),
                   ),
                   SizedBox(width: 8.w),
+                  Obx(() {
+                    final count = controller.cartItemCounts[user.id] ?? 0;
+                    return IconButton(
+                      onPressed: () => controller.openUserCart(user),
+                      icon: const Icon(Icons.shopping_cart),
+                      color: count > 0 ? AppColors.warning : AppColors.textHint,
+                      tooltip: count > 0
+                          ? 'Voir le panier ($count article${count > 1 ? 's' : ''})'
+                          : 'Voir le panier',
+                    );
+                  }),
                   if (user.isActive)
                     IconButton(
                       onPressed: () => controller.deactivateUser(user),

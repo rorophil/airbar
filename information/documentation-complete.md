@@ -1,7 +1,7 @@
 # Documentation Consolidée - Application AirBar
 **Application de gestion d'un bar d'aéro-club avec Flutter + Serverpod**
 
-**Dates:** Session initiale 3 mars 2026 | Développements 7 mars 2026 | Mise à jour 14 août 2026
+**Dates:** Session initiale 3 mars 2026 | Développements 7 mars 2026 | Mise à jour 14 août 2026 | Actualisation 25 septembre 2026
 
 ---
 
@@ -54,10 +54,13 @@ airbar_backend/
 **Fichier:** `lib/src/endpoints/auth/auth_endpoint.dart`
 
 **Méthodes:**
-- `login(String pin)` → User - Connexion par code PIN
-- `validatePin(int userId, String pin)` → bool - Validation PIN pour transactions
+- `login(String email, String password)` → User? - Connexion par email + mot de passe (hash SHA256 comparé à `User.passwordHash`)
+- `validatePin(int userId, String pin)` → bool - Validation du code PIN (4 chiffres) pour confirmer une transaction (checkout)
+- `changePin(int userId, String oldPin, String newPin)` - Changement du code PIN
 
-**Sécurité:** Hash SHA256 des codes PIN, jamais stockés en clair
+**Sécurité:** Hash SHA256 du mot de passe et du PIN, jamais stockés en clair
+
+**Important:** Le login se fait avec **email + mot de passe** ; le **code PIN (4 chiffres)** sert uniquement à valider les transactions (checkout membre, forçage admin) et n'est jamais utilisé pour se connecter.
 
 ---
 
@@ -121,11 +124,37 @@ airbar_backend/
 **Fichier:** `lib/src/endpoints/shop/cart_endpoint.dart`
 
 **Méthodes:**
-- `getUserCart(int userId)` → List<CartItem>
-- `addToCart(int userId, int productId, int quantity)` → CartItem
+- `getCart(int userId)` → List<CartItem>
+- `addToCart(int userId, int productId, int quantity, int? productPortionId)` → CartItem - Supporte les portions pour produits en vrac
 - `updateCartItem(int cartItemId, int quantity)` → CartItem
-- `removeCartItem(int cartItemId)`
+- `removeFromCart(int cartItemId)`
 - `clearCart(int userId)` - Vidage complet du panier
+- `getAllCartItems()` → List<CartItem> (admin) - **Nouveau 25 septembre 2026**: récupère tous les paniers de tous les membres en un seul appel (utilisé pour l'icône panier dans la liste des utilisateurs)
+
+---
+
+#### ProductPortionEndpoint - Gestion des Portions (Produits en Vrac)
+**Fichier:** `lib/src/endpoints/shop/product_portion_endpoint.dart`
+
+**Méthodes:**
+- `getProductPortions(int productId)` → List<ProductPortion>
+- `getPortionById(int portionId)` → ProductPortion?
+- `createPortion()` - Création d'une portion (ex: "25cl", "50cl") pour un produit en vrac
+- `updatePortion()` - Mise à jour d'une portion
+- `deletePortion(int portionId)`
+
+**Contexte:** Un produit en vrac (`isBulkProduct = true`, ex: un fût de bière) est vendu par portions (25cl, 50cl...). Chaque portion a son propre prix et sa quantité en unité de base (litres, kg...). Voir `guide-produits-en-vrac.md` pour la logique complète de déduction de stock.
+
+---
+
+#### CashierEndpoint - Mode Caisse (Ventes non-membres)
+**Fichier:** `lib/src/endpoints/cashier/cashier_endpoint.dart`
+
+**Méthodes:**
+- `processCashSale(int sellerId, List<CashSaleItemData> items, PaymentMethod paymentMethod)` → Transaction - Vente directe (espèces/carte) sans passer par le panier personnel d'un membre
+- `getSellerTransactions(int sellerId)` → List<Transaction> - Historique des ventes réalisées par un membre en mode caisse
+
+**Contexte:** Permet à un membre en permanence de bar de vendre des produits à des non-membres. `Transaction.userId` est alors `null`, `Transaction.sellerId` identifie le vendeur et `Transaction.paymentMethod` précise le mode de règlement (`cash` ou `card`).
 
 ---
 
@@ -151,6 +180,12 @@ airbar_backend/
   - Créations des TransactionItems
   - Mouvements de stock
   - Vidage du panier
+- `adminForceCheckout(int userId, int adminId, String adminPin)` → Transaction - **Nouveau 25 septembre 2026**
+  - Réservé aux administrateurs, validé par le PIN de l'admin (pas celui du membre)
+  - Exécute le panier du membre même si son solde est insuffisant (le compte peut devenir négatif)
+  - Le contrôle de stock reste appliqué (échec si stock insuffisant)
+  - Ajoute une note d'audit "Panier forcé par admin #id" sur la transaction
+  - Partage la logique atomique avec `checkout()` via la méthode privée `_executeCheckout()`
 - `getUserTransactions(int userId)` → List<Transaction>
 - `getAllTransactions()` → List<Transaction> (admin)
 - `refundTransaction(int transactionId, String notes)` - Remboursement
@@ -158,51 +193,85 @@ airbar_backend/
 
 **Correction critique 7 mars:** Implémentation correcte du hash SHA256 dans `_hashPassword()` (identique à auth_endpoint)
 
+**Correction critique 25 septembre 2026:** Toutes les erreurs métier (`checkout`, `adminForceCheckout`, `_executeCheckout`) lèvent désormais `BusinessException` au lieu d'un `Exception()` Dart brut — voir "Gestion des erreurs métier" ci-dessous.
+
+---
+
+### Gestion des erreurs métier (BusinessException)
+
+**Important:** Serverpod ne transmet **jamais** au client le message d'un `throw Exception('...')` Dart classique — il est remplacé par un message générique ("Internal server error", statusCode 500). Tout code frontend qui tente de parser `e.toString()` pour en extraire un message ne fonctionne donc pas avec une exception brute.
+
+**Solution (25 septembre 2026):** exception sérialisable déclarée dans `lib/src/exceptions/business_exception.spy.yaml`:
+```yaml
+exception: BusinessException
+fields:
+  message: String
+```
+
+- Tous les `throw Exception('...')` de `transaction_endpoint.dart` et `cashier_endpoint.dart` ont été remplacés par `throw protocol.BusinessException(message: '...')`
+- Côté frontend, les blocs `catch` fragiles (`e.toString().contains('...')`) ont été remplacés par `if (e is BusinessException) errorMessage = e.message;` dans `checkout_controller.dart`, `user_cart_controller.dart` et `cashier_checkout_controller.dart`
+- **Règle:** tout nouvel endpoint qui doit renvoyer un message d'erreur exploitable côté client doit lever `BusinessException`, jamais `Exception()` brut
+
 ---
 
 ### Modèles de Données
 
-**10 modèles Serverpod:**
+**Modèles Serverpod actuels** (fichiers `.spy.yaml` dans `lib/src/models/`):
 
-1. **User** - Utilisateur
-   - id, name, email, role (UserRole), balance, hashedPin
-   - createdAt, updatedAt
+1. **User** (`models/auth/user.spy.yaml`)
+   - `email, passwordHash, role (UserRole), balance (default 0.0), pin, firstName, lastName, isActive (default true), createdAt, updatedAt`
+   - Index unique sur `email`
 
-2. **UserRole** - Enum
-   - user, admin
+2. **UserRole** - Enum: `user, admin`
 
-3. **Product** - Produit
-   - id, name, description, price, categoryId
-   - stockQuantity, minStockAlert, isActive
-   - iconName, imageUrl, createdAt, updatedAt
+3. **Product** (`models/shop/product.spy.yaml`)
+   - `name, description?, price, categoryId, stockQuantity (default 0), minStockAlert (default 5)`
+   - `currentUnitRemaining?` - quantité restante dans l'unité entamée (produits en vrac)
+   - `imageUrl?, isActive (default true), isDeleted (default false)`
+   - `trackStock (default true)` - désactive la gestion de stock si `false` (produits libre-service)
+   - `isBulkProduct (default false), bulkUnit?` (ex: "litres", "kg"), `bulkTotalQuantity?` (capacité d'une unité, ex: 6L par fût)
+   - `createdAt, updatedAt`
 
-4. **ProductCategory** - Catégorie
-   - id, name, description, iconName
-   - displayOrder, createdAt, updatedAt
+4. **ProductCategory** (`models/shop/product_category.spy.yaml`)
+   - `name, description?, iconName?, displayOrder (default 0), isActive (default true), createdAt, updatedAt`
 
-5. **CartItem** - Article panier
-   - id, userId, productId, quantity
-   - createdAt, updatedAt
+5. **ProductPortion** (`models/shop/product_portion.spy.yaml`) - Portions d'un produit en vrac (ex: 25cl, 50cl)
+   - `productId, name` (ex: "25cl"), `quantity` (en unité de base, ex: 0.25L), `price, displayOrder (default 0), isActive (default true), createdAt, updatedAt`
 
-6. **Transaction** - Transaction
-   - id, userId, type (TransactionType)
-   - totalAmount, timestamp, notes
-   - balanceAfter
+6. **CartItem** (`models/shop/cart_item.spy.yaml`)
+   - `userId, productId, productPortionId?` (portion choisie pour un produit en vrac), `quantity (default 1), addedAt`
 
-7. **TransactionType** - Enum
-   - purchase, credit, refund
+7. **Transaction** (`models/transactions/transaction.spy.yaml`)
+   - `userId?` (null pour une vente caisse à un non-membre)
+   - `type (TransactionType), totalAmount, timestamp, notes?, refundedTransactionId?`
+   - `sellerId?` - membre vendeur (mode caisse)
+   - `paymentMethod? (PaymentMethod)` - mode de règlement (mode caisse)
+   - `balanceAfter?` - solde après transaction (achats membres uniquement)
 
-8. **TransactionItem** - Article transaction
-   - id, transactionId, productId
-   - quantity, unitPrice, itemTotal
+8. **TransactionType** - Enum: `purchase, credit, refund, cashSale`
 
-9. **StockMovement** - Mouvement stock
-   - id, productId, type (StockMovementType)
-   - quantity, previousStock, newStock
-   - adminUserId, reason, notes, timestamp
+9. **PaymentMethod** - Enum: `cash, card` (mode de règlement pour les ventes caisse)
 
-10. **StockMovementType** - Enum
-    - purchase, restock, adjustment
+10. **TransactionItem** (`models/transactions/transaction_item.spy.yaml`) - Snapshot du produit au moment de l'achat
+    - `transactionId, productId, productName, quantity, unitPrice, subtotal`
+    - `stockDeduction? (default 0)` - quantité réellement déduite du stock (produits en vrac avec portions)
+
+11. **StockMovement** (`models/stock/stock_movement.spy.yaml`)
+    - `productId, quantity (double), movementType (MovementType), userId, timestamp, notes?`
+
+12. **MovementType** - Enum: `restock, sale, adjustment, refund`
+
+13. **CashSaleItemData** (`models/cashier/cash_sale_item_data.spy.yaml`) - DTO d'entrée pour `processCashSale`
+    - `productId, quantity, productPortionId?`
+
+14. **BusinessException** (`exceptions/business_exception.spy.yaml`) - **Nouveau 25 septembre 2026**
+    - Exception sérialisable (`exception: BusinessException`, et non `class:`), champ `message: String`
+    - Seul type d'exception dont le message atteint réellement le client Flutter (voir "Gestion des erreurs métier" ci-dessus)
+
+**Notes importantes:**
+- Le stock total disponible d'un produit en vrac = `(stockQuantity × bulkTotalQuantity) + currentUnitRemaining`
+- `trackStock = false` désactive toute validation/déduction de stock pour un produit (ex: café, eau en libre-service)
+- `Product.isDeleted` complète `isActive` pour le soft delete (voir section 6)
 
 ---
 
@@ -266,9 +335,9 @@ Tous suivent le pattern:
 **Localisation:** `lib/app/modules/login/`
 
 **Fonctionnalités:**
-- Saisie code PIN (6 chiffres)
-- Authentification via AuthRepository
-- Navigation vers shop (user) ou dashboard (admin)
+- Saisie **email + mot de passe** (et non un code PIN)
+- Authentification via AuthRepository (`AuthEndpoint.login(email, password)`)
+- Navigation vers shop (user) ou dashboard (admin) selon le rôle
 - Bouton "Configuration serveur" en bas
 
 **Amélioration 7 mars:** Accès direct à la configuration serveur
@@ -307,6 +376,7 @@ Tous suivent le pattern:
 - Suppression d'articles
 - Calcul du total automatique
 - Navigation vers checkout
+- Support des **produits en vrac** avec portions (ex: 25cl, 50cl) via `productPortionId`
 
 **Correction critique 7 mars:**
 - Fix reactivité des boutons +/-
@@ -334,6 +404,25 @@ onPressed: () {
 
 **Correction critique 7 mars:**
 Backend - Hash PIN corrigé pour validation correcte
+
+---
+
+#### Module Caisse (Cashier / POS)
+**Localisation:** `lib/app/modules/cashier/`
+
+**Fonctionnalités:**
+- Vente directe pour non-membres, accessible à tout membre authentifié (icône `point_of_sale` depuis la boutique)
+- Interface split-screen: liste produits (gauche) + panier de la vente en cours (droite)
+- Support produits réguliers et produits en vrac (sélection de portion via dialog)
+- Choix du mode de paiement: espèces (`cash`) ou carte (`card`)
+- Génération d'un reçu (impression/partage PDF)
+
+**Structure:**
+- `CashierController` - gestion du panier de la caisse (classe `CashSaleItem`), chargement produits/catégories/portions
+- `CashierCheckoutController` - validation paiement + PIN vendeur
+- `CashierReceiptController` - affichage et export du reçu
+
+**Backend associé:** `CashierEndpoint.processCashSale()` crée une `Transaction` avec `userId = null`, `sellerId` = membre vendeur, `paymentMethod` renseigné
 
 ---
 
@@ -372,6 +461,19 @@ Backend - Hash PIN corrigé pour validation correcte
 - Affichage rôle et solde
 - Création/édition utilisateurs
 - Ajustement de solde (crédit/débit)
+- **Consultation et gestion du panier d'un membre** (nouveau 25 septembre 2026, voir ci-dessous)
+
+**Nouveau 25 septembre 2026 - Panneau panier admin:**
+
+Icône panier (`Icons.shopping_cart`) ajoutée sur chaque carte utilisateur, colorée en orange (`AppColors.warning`) si le panier du membre n'est pas vide, grise (`AppColors.textHint`) sinon. Les compteurs sont chargés en une seule requête (`CartRepository.getAllCartItems()`) au démarrage du module et après chaque action.
+
+Au clic, ouvre `UserCartView` (route `ADMIN_USER_CART`) qui affiche le contenu du panier du membre en lecture seule et propose deux actions:
+- **Vider le panier** (`CartRepository.clearCart`) - suppression sans impact sur le solde, avec confirmation
+- **Forcer l'exécution** - débite le compte du membre même en cas de solde insuffisant (le solde peut devenir négatif), via `TransactionRepository.adminForceCheckout()`. Nécessite le PIN de l'administrateur connecté (pas celui du membre). Le stock reste vérifié: l'opération échoue si le stock est insuffisant. Un dialog affiche le montant à débiter, le solde actuel et le solde résultant (rouge si négatif) avant confirmation.
+
+**Fichiers ajoutés:**
+- `controllers/user_cart_controller.dart`, `views/user_cart_view.dart`, `bindings/user_cart_binding.dart`
+- `UsersController`: `cartItemCounts` (RxMap), `loadCartCounts()`, `openUserCart(User user)`
 
 **Amélioration majeure 7 mars:**
 
@@ -580,7 +682,7 @@ ID, Type, Montant, Utilisateur, Date, Balance Après, Notes
 
 **État final:**
 - 0 erreur de compilation
-- 11 modules complets (user + admin)
+- 12 modules complets (user + admin + caisse)
 - Application fonctionnelle end-to-end
 
 ---
@@ -1021,6 +1123,83 @@ Webserver listening on http://localhost:8082
 
 ---
 
+### Produits en Vrac, Portions et Gestion Fine du Stock
+
+**Fonctionnalité présente depuis les premières versions du backend, non documentée jusqu'ici.**
+
+Un produit peut être marqué `isBulkProduct = true` (ex: un fût de bière de 6L). Il est alors vendu par **portions** (`ProductPortion`, ex: "25cl", "50cl") plutôt qu'à l'unité. Le stock est suivi à deux niveaux:
+- `stockQuantity` : nombre d'unités complètes non entamées (ex: 5 fûts)
+- `currentUnitRemaining` : quantité restante dans l'unité entamée (ex: 4.25L)
+
+**Stock total disponible = (stockQuantity × bulkTotalQuantity) + currentUnitRemaining**
+
+Lors du checkout, la déduction ouvre automatiquement de nouvelles unités si l'unité entamée ne suffit pas (calcul `ceil()` du nombre d'unités à ouvrir). Voir `information/guide-produits-en-vrac.md` pour le détail des scénarios de calcul.
+
+**Produits sans gestion de stock (`trackStock = false`):** pour les produits en libre-service (café, eau...), toute validation/déduction de stock et alerte de stock faible est ignorée.
+
+---
+
+### Module Caisse (Cashier / POS) - ~7 juin 2026
+
+**Objectif:** Permettre à un membre en permanence de bar de vendre des produits à des non-membres, sans passer par un panier personnel.
+
+**Ajouts backend:**
+- `CashierEndpoint.processCashSale()` — crée une `Transaction` avec `userId = null`, `sellerId` (membre vendeur) et `paymentMethod` (`cash` ou `card`)
+- `TransactionType.cashSale` ajouté à l'énumération
+- Migration ajoutant les colonnes `sellerId`, `paymentMethod`, `balanceAfter` à la table `transactions`
+
+**Ajouts frontend:**
+- Module `lib/app/modules/cashier/` avec interface split-screen (produits / panier de vente)
+- Génération et export PDF du reçu de vente
+
+---
+
+### Panier Admin - Forçage de Paiement - 25 septembre 2026
+
+**Besoin:** Un administrateur doit pouvoir consulter le panier en cours d'un membre, le vider, ou forcer son exécution (débit du compte) même si le solde du membre est insuffisant — utile en fin de permanence pour "liquider" les paniers laissés ouverts.
+
+**Backend:**
+- `CartEndpoint.getAllCartItems()` — retourne tous les articles de tous les paniers en un seul appel (admin uniquement), utilisé pour le comptage par utilisateur
+- `TransactionEndpoint` refactorisé: extraction de la logique atomique commune dans `_executeCheckout()`, paramétrée par `enforceBalanceCheck` et `notes`
+  - `checkout()` conserve le comportement existant (PIN du membre, solde obligatoire)
+  - `adminForceCheckout(userId, adminId, adminPin)` (nouveau): valide le PIN et le rôle admin, ignore la vérification de solde mais conserve la vérification de stock, ajoute une note d'audit sur la transaction
+
+**Frontend:**
+- Icône panier sur chaque carte utilisateur (module Utilisateurs), colorée en orange si le panier n'est pas vide, grise sinon (`UsersController.cartItemCounts`)
+- Nouvelle vue `UserCartView` (route `ADMIN_USER_CART`): aperçu en lecture seule du panier du membre, avec deux actions:
+  - **Vider le panier** — `CartRepository.clearCart()`, sans impact sur le solde
+  - **Forcer l'exécution** — dialog de confirmation (montant à débiter, solde actuel, solde résultant coloré en rouge si négatif, saisie du PIN admin) puis `TransactionRepository.adminForceCheckout()`
+
+**Fichiers ajoutés:** `user_cart_controller.dart`, `user_cart_view.dart`, `user_cart_binding.dart` dans `lib/app/modules/admin/users/`
+
+**Vérification:** `dart analyze` (backend) et `flutter analyze` (frontend) sans erreur après `serverpod generate` + `flutter pub get`.
+
+---
+
+### Messages d'Erreur Métier Invisibles dans les Snackbars - 25 septembre 2026 ⚠️ CRITIQUE
+
+**Problème:** Les messages d'erreur précis levés côté backend (`Code PIN administrateur incorrect`, `Stock insuffisant pour ...`, `Le panier est vide`, etc.) ne s'affichaient jamais dans les snackbars frontend — un message générique apparaissait systématiquement à la place (ex: "Impossible de forcer le paiement").
+
+**Cause:** Serverpod ne transmet **jamais** au client le message d'un `throw Exception('...')` Dart classique (non déclaré dans le protocole) : il est remplacé par un message générique "Internal server error" (statusCode 500). Le code frontend qui faisait `e.toString().contains('PIN administrateur')` ne pouvait donc jamais matcher.
+
+**Solution:**
+1. Nouveau modèle d'exception sérialisable `lib/src/exceptions/business_exception.spy.yaml` (backend):
+   ```yaml
+   exception: BusinessException
+   fields:
+     message: String
+   ```
+2. `serverpod generate` pour propager la classe au protocole partagé et au client
+3. Remplacement de tous les `throw Exception('...')` par `throw protocol.BusinessException(message: '...')` dans `transaction_endpoint.dart` et `cashier_endpoint.dart`
+4. Côté frontend, remplacement des `catch (e) { if (e.toString().contains(...)) ... }` fragiles par `if (e is BusinessException) errorMessage = e.message;` dans `checkout_controller.dart`, `user_cart_controller.dart` et `cashier_checkout_controller.dart`
+
+**Impact:**
+- ✅ Les snackbars affichent désormais le message métier exact renvoyé par le serveur
+- ✅ Plus fiable qu'un parsing de `toString()` (indépendant du texte exact du message)
+- ⚠️ Règle à respecter pour tout nouvel endpoint: toujours lever `BusinessException`, jamais `Exception()` brut, si le message doit être visible côté client
+
+---
+
 ## 5. Guide Technique
 
 ### Routes Configurées
@@ -1035,6 +1214,13 @@ static const USER_CART = '/user/cart';
 static const USER_CHECKOUT = '/user/checkout';
 ```
 
+**Routes caisse (accessibles à tout membre authentifié):**
+```dart
+static const CASHIER = '/cashier';
+static const CASHIER_CHECKOUT = '/cashier/checkout';
+static const CASHIER_RECEIPT = '/cashier/receipt';
+```
+
 **Routes admin:**
 ```dart
 // Dashboard
@@ -1044,6 +1230,7 @@ static const ADMIN_DASHBOARD = '/admin/dashboard';
 static const ADMIN_USERS = '/admin/users';
 static const ADMIN_USER_FORM = '/admin/users/form';
 static const ADMIN_USER_CREDIT = '/admin/users/credit';
+static const ADMIN_USER_CART = '/admin/users/cart';  // Nouveau 25 septembre 2026
 
 // Produits
 static const ADMIN_PRODUCTS = '/admin/products';
@@ -1308,7 +1495,7 @@ Primaire: Bleu (édition, neutre)
 **Tests critiques à effectuer:**
 
 **Authentification:**
-- [ ] Login avec PIN correct/incorrect
+- [ ] Login avec email/mot de passe correct/incorrect
 - [ ] Redirection user vs admin
 - [ ] Session **nettoyée** après restart (comportement attendu depuis 14 août 2026)
 - [ ] Reconnexion obligatoire après fermeture complète de l'app
@@ -1321,6 +1508,7 @@ Primaire: Bleu (édition, neutre)
 - [ ] Vérification débit compte
 - [ ] Vérification mouvements stock
 - [ ] Vérification vidage panier
+- [ ] Vérifier que le message d'erreur exact (`BusinessException.message`) s'affiche dans le snackbar, pas un message générique
 
 **Gestion stock:**
 - [ ] Ajustement stock via "Gérer le stock"
@@ -1462,7 +1650,7 @@ Si une étape échoue, tout est annulé (rollback).
 - Gestion erreurs
 
 **Frontend - Modules:** 100% ✅
-- 11 modules complets (4 user + 7 admin)
+- 12 modules complets (4 user + 1 caisse + 7 admin)
 - Routes configurées
 - Navigation fluide
 - Design cohérent
@@ -1473,6 +1661,8 @@ Si une étape échoue, tout est annulé (rollback).
 - Cache intelligent
 - Configuration serveur dynamique
 - Navigation bidirectionnelle admin
+- Produits en vrac (portions) et mode caisse opérationnels
+- Gestion admin du panier des membres (consultation, vidage, forçage de paiement)
 
 **Tests:** 20% ⚠️
 - Tests manuels effectués
@@ -1505,10 +1695,12 @@ Si une étape échoue, tout est annulé (rollback).
 - ✅ `/auth` - Authentification
 - ✅ `/user` - Gestion utilisateurs
 - ✅ `/product` - Gestion produits (avec updateStock)
+- ✅ `/productPortion` - Portions de produits en vrac
 - ✅ `/category` - Gestion catégories (avec gestion orphelins)
-- ✅ `/cart` - Gestion panier
+- ✅ `/cart` - Gestion panier (avec getAllCartItems admin)
 - ✅ `/stock` - Mouvements de stock
-- ✅ `/transaction` - Transactions (hash PIN corrigé)
+- ✅ `/transaction` - Transactions (hash PIN corrigé, adminForceCheckout)
+- ✅ `/cashier` - Ventes caisse (non-membres)
 
 **Logs:** `/tmp/backend.log`
 
@@ -1566,4 +1758,4 @@ L'application AirBar est **fonctionnelle et prête pour utilisation** dans un en
 
 ---
 
-**Documentation consolidée - Dernière mise à jour: 7 mars 2026**
+**Documentation consolidée - Dernière mise à jour: 25 septembre 2026**

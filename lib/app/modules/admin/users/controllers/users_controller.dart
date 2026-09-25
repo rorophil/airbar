@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/user_repository.dart';
+import '../../../../data/repositories/cart_repository.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/app_strings.dart';
 
@@ -27,6 +28,9 @@ class UsersController extends GetxController {
   /// Repository d'accès aux données utilisateurs
   final UserRepository _userRepository = Get.find();
 
+  /// Repository d'accès aux paniers (pour le comptage et l'aperçu admin)
+  final CartRepository _cartRepository = Get.find();
+
   /// Indicateur de chargement en cours
   final RxBool isLoading = false.obs;
 
@@ -39,11 +43,49 @@ class UsersController extends GetxController {
   /// Requête de recherche actuelle
   final RxString searchQuery = ''.obs;
 
+  /// Nombre d'articles dans le panier de chaque utilisateur (userId -> nombre d'articles)
+  final RxMap<int, int> cartItemCounts = <int, int>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
     // Chargement initial des utilisateurs au démarrage du controller
     loadUsers();
+    loadCartCounts();
+  }
+
+  /// Charge le nombre d'articles présents dans le panier de chaque utilisateur
+  ///
+  /// Utilisé pour colorer l'icône panier dans la liste des utilisateurs
+  /// (orange si le panier n'est pas vide, gris sinon).
+  Future<void> loadCartCounts() async {
+    try {
+      final allItems = await _cartRepository.getAllCartItems();
+      final counts = <int, int>{};
+      for (final item in allItems) {
+        final userId = item.userId as int;
+        counts[userId] = (counts[userId] ?? 0) + 1;
+      }
+      cartItemCounts.value = counts;
+    } catch (e) {
+      // Non bloquant: l'icône panier restera simplement grise en cas d'erreur
+      print('Erreur chargement des paniers: $e');
+    }
+  }
+
+  /// Ouvre la vue du panier d'un utilisateur (admin)
+  ///
+  /// Permet de consulter le panier, le vider, ou forcer son exécution.
+  /// Recharge la liste des utilisateurs et les compteurs de panier au retour.
+  void openUserCart(User user) async {
+    final result = await Get.toNamed(
+      AppRoutes.ADMIN_USER_CART,
+      arguments: {'user': user},
+    );
+    if (result == true) {
+      await loadUsers();
+      await loadCartCounts();
+    }
   }
 
   /// Charger tous les utilisateurs depuis le serveur
@@ -566,5 +608,6 @@ class UsersController extends GetxController {
   /// Refresh users list
   Future<void> refresh() async {
     await loadUsers();
+    await loadCartCounts();
   }
 }

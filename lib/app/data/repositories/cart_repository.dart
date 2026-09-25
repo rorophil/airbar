@@ -152,6 +152,21 @@ class CartRepository {
     }
   }
 
+  /// Récupère tous les articles de tous les paniers (admin uniquement)
+  ///
+  /// Utilisé pour prévisualiser/gérer les paniers des membres depuis
+  /// la liste des utilisateurs (comptage par utilisateur, ouverture panier).
+  ///
+  /// Throws: Exception en cas d'erreur serveur
+  Future<List<dynamic>> getAllCartItems() async {
+    try {
+      return await _client.cart.getAllCartItems();
+    } catch (e) {
+      print('Get all cart items error: $e');
+      rethrow;
+    }
+  }
+
   /// Calcule le montant total du panier
   ///
   /// [cartItems] Liste des articles du panier
