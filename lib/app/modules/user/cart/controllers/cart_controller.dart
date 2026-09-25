@@ -95,6 +95,9 @@ class CartController extends GetxController {
   /// Montant total du panier (calculé automatiquement)
   final total = 0.0.obs;
 
+  /// Solde actuel de l'utilisateur connecté
+  double get userBalance => _authService.currentUser.value?.balance ?? 0.0;
+
   @override
   void onInit() {
     super.onInit();

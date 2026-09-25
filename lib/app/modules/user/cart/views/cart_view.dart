@@ -39,7 +39,22 @@ class CartView extends GetView<CartController> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Get.back(),
         ),
-        title: const Text(AppStrings.cart),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(AppStrings.cart),
+            Obx(
+              () => Text(
+                'Votre solde est de ${controller.userBalance.toStringAsFixed(2)} €',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+            ),
+          ],
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.textWhite,
         actions: [

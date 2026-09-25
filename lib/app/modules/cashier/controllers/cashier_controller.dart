@@ -104,6 +104,13 @@ class CashierController extends GetxController {
 
   int get sellerId => _authService.currentUser.value!.id!;
 
+  /// Nom complet du caissier connecté
+  String get cashierName {
+    final user = _authService.currentUser.value;
+    if (user == null) return '';
+    return '${user.firstName} ${user.lastName}';
+  }
+
   @override
   void onInit() {
     super.onInit();

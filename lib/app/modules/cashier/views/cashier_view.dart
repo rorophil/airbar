@@ -13,7 +13,19 @@ class CashierView extends GetView<CashierController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mode Caisse'),
+        title: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Mode Caisse'),
+            Obx(
+              () => Text(
+                controller.cashierName,
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         actions: [
@@ -246,8 +258,12 @@ class CashierView extends GetView<CashierController> {
                         Row(
                           children: [
                             Expanded(
-                              child: OutlinedButton(
+                              flex: 2,
+                              child: ElevatedButton(
                                 onPressed: controller.clearCart,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.background,
+                                ),
                                 child: const Text('Vider'),
                               ),
                             ),
@@ -259,7 +275,10 @@ class CashierView extends GetView<CashierController> {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                 ),
-                                child: const Text('Valider la vente'),
+                                child: const Text(
+                                  'Valider',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
                             ),
                           ],
