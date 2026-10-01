@@ -25,6 +25,13 @@ import '../../../../core/values/app_colors.dart';
 ///    - Colonnes CSV: ID, Date, Utilisateur, Type, Montant, Solde après, Notes
 ///    - Nom fichier: "Transactions du DD-MM-YYYY au DD-MM-YYYY.csv"
 ///
+/// 3. Export de l'inventaire des produits:
+///    - Case à cocher "Inclure les produits désactivés"
+///    - Bouton "Exporter l'inventaire"
+///    - Colonnes CSV: ID, Nom, Catégorie, Description, Prix, Stock géré,
+///      Produit en vrac, Stock actuel, Seuil Alerte, Unité, Statut, Actif
+///    - Nom fichier: "Inventaire produits DD-MM-YYYY.csv"
+///
 /// Composants interface:
 /// - Cards groupant les exports par type
 /// - DatePicker pour sélection périodes
@@ -325,6 +332,106 @@ class ExportView extends GetView<ExportController> {
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.textWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 48.h),
+
+            // Divider
+            Divider(thickness: 2, color: AppColors.textHint),
+
+            SizedBox(height: 32.h),
+
+            // Product inventory section
+            Text(
+              'Export de l\'inventaire',
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Info card
+            Card(
+              color: AppColors.primaryDark.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.inventory_2_outlined,
+                      color: AppColors.primaryDark,
+                      size: 30.sp,
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Text(
+                        'Exportez l\'inventaire complet des produits dans un fichier CSV',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Include inactive products toggle
+            Obx(
+              () => CheckboxListTile(
+                value: controller.includeInactiveProducts.value,
+                onChanged: (value) =>
+                    controller.toggleIncludeInactiveProducts(value ?? false),
+                title: const Text('Inclure les produits désactivés'),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                  side: const BorderSide(color: AppColors.textHint),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // Export inventory button
+            Obx(
+              () => SizedBox(
+                height: 60.h,
+                child: ElevatedButton.icon(
+                  onPressed: controller.isExporting.value
+                      ? null
+                      : controller.exportProductInventory,
+                  icon: controller.isExporting.value
+                      ? SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: const CircularProgressIndicator(
+                            color: AppColors.textWhite,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.inventory_2_outlined, size: 30),
+                  label: Text(
+                    controller.isExporting.value
+                        ? 'Export en cours...'
+                        : 'Exporter l\'inventaire',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryDark,
                     foregroundColor: AppColors.textWhite,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.r),
