@@ -53,6 +53,7 @@ class ExportController extends GetxController {
   final selectedType = Rxn<TransactionType>();
   final users = <User>[].obs;
   final categories = <ProductCategory>[].obs;
+  final includeInactiveUsers = false.obs;
 
   /// Select start date
   Future<void> selectStartDate(BuildContext context) async {
@@ -261,6 +262,88 @@ class ExportController extends GetxController {
       isExporting.value = false;
       print('DEBUG: isExporting set to false');
     }
+  }
+
+  /// Toggle whether deactivated users are included in the balances export
+  void toggleIncludeInactiveUsers(bool value) {
+    includeInactiveUsers.value = value;
+  }
+
+  /// Export user account balances
+  Future<void> exportUserBalances() async {
+    print('=== DEBUG: exportUserBalances called ===');
+
+    try {
+      isExporting.value = true;
+
+      final List<User> allUsers = List<User>.from(
+        await _userRepository.getAllUsers(),
+      );
+
+      final List<User> filteredUsers = includeInactiveUsers.value
+          ? allUsers
+          : allUsers.where((u) => u.isActive).toList();
+      filteredUsers.sort((a, b) => a.lastName.compareTo(b.lastName));
+
+      if (filteredUsers.isEmpty) {
+        Get.snackbar(
+          'Information',
+          'Aucun utilisateur à exporter',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final csvContent = _generateUserBalancesCSV(filteredUsers);
+
+      final dateFormat = DateFormat('dd-MM-yyyy');
+      final dateStr = dateFormat.format(DateTime.now());
+      final fileName = 'Soldes utilisateurs $dateStr.csv';
+
+      final savedPath = await _saveFile(csvContent, fileName);
+
+      if (savedPath != null) {
+        Get.snackbar(
+          'Succès',
+          'Export terminé: ${filteredUsers.length} utilisateur(s) exporté(s)\nFichier: $savedPath',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('DEBUG: Error occurred: $e');
+      print('DEBUG: Stack trace: $stackTrace');
+      Get.snackbar(
+        'Erreur',
+        'Impossible d\'exporter les soldes utilisateurs: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isExporting.value = false;
+    }
+  }
+
+  /// Generate CSV content for user balances
+  String _generateUserBalancesCSV(List<User> users) {
+    final buffer = StringBuffer();
+
+    buffer.writeln('ID,Prénom,Nom,Email,Rôle,Solde,Statut');
+
+    for (final user in users) {
+      buffer.writeln(
+        [
+          user.id,
+          user.firstName.replaceAll(',', ';'),
+          user.lastName.replaceAll(',', ';'),
+          user.email.replaceAll(',', ';'),
+          user.role == UserRole.admin ? 'Admin' : 'User',
+          user.balance.toStringAsFixed(2),
+          user.isActive ? 'Actif' : 'Inactif',
+        ].join(','),
+      );
+    }
+
+    return buffer.toString();
   }
 
   /// Generate CSV content for products

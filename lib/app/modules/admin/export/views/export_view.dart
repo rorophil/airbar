@@ -333,6 +333,106 @@ class ExportView extends GetView<ExportController> {
                 ),
               ),
             ),
+
+            SizedBox(height: 48.h),
+
+            // Divider
+            Divider(thickness: 2, color: AppColors.textHint),
+
+            SizedBox(height: 32.h),
+
+            // User balances section
+            Text(
+              'Export des soldes utilisateurs',
+              style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Info card
+            Card(
+              color: AppColors.success.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(16.w),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.account_balance_wallet_outlined,
+                      color: AppColors.success,
+                      size: 30.sp,
+                    ),
+                    SizedBox(width: 16.w),
+                    Expanded(
+                      child: Text(
+                        'Exportez le solde de chaque utilisateur dans un fichier CSV',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16.h),
+
+            // Include inactive users toggle
+            Obx(
+              () => CheckboxListTile(
+                value: controller.includeInactiveUsers.value,
+                onChanged: (value) =>
+                    controller.toggleIncludeInactiveUsers(value ?? false),
+                title: const Text('Inclure les utilisateurs désactivés'),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                  side: const BorderSide(color: AppColors.textHint),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 24.h),
+
+            // Export user balances button
+            Obx(
+              () => SizedBox(
+                height: 60.h,
+                child: ElevatedButton.icon(
+                  onPressed: controller.isExporting.value
+                      ? null
+                      : controller.exportUserBalances,
+                  icon: controller.isExporting.value
+                      ? SizedBox(
+                          width: 24.w,
+                          height: 24.w,
+                          child: const CircularProgressIndicator(
+                            color: AppColors.textWhite,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(Icons.account_balance_wallet, size: 30),
+                  label: Text(
+                    controller.isExporting.value
+                        ? 'Export en cours...'
+                        : 'Exporter les soldes utilisateurs',
+                    style: TextStyle(fontSize: 18.sp),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.success,
+                    foregroundColor: AppColors.textWhite,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
