@@ -19,7 +19,8 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.11.0
+  sdk: ^3.12.2
+  flutter: ^3.44.4
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -39,8 +40,7 @@ dependencies:
   get: ^4.6.6
   
   # Serverpod
-  serverpod_flutter: ^3.3.1
-  serverpod_auth_client: ^3.3.1
+  serverpod_flutter: 4.0.3
   airbar_backend_client:
     path: ../airbar_backend/airbar_backend_client
   

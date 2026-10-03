@@ -82,10 +82,6 @@ class AuthRepository {
   /// de bloquer le processus de déconnexion.
   Future<void> logout() async {
     try {
-      // Suppression de la clé d'authentification Serverpod
-      await _client.authenticationKeyManager!.remove();
-
-      // Nettoyage des données utilisateur du service global
       _authService.clearUser();
     } catch (e) {
       // Log de l'erreur mais on ne bloque pas le processus de déconnexion
@@ -127,35 +123,6 @@ class AuthRepository {
     } catch (e) {
       print('Change PIN error: $e');
       return false;
-    }
-  }
-
-  /// Vérifie si un utilisateur est actuellement authentifié
-  ///
-  /// Returns: `true` si une clé d'authentification valide existe,
-  /// `false` sinon
-  Future<bool> isAuthenticated() async {
-    try {
-      // Récupération de la clé d'authentification stockée
-      final authKey = await _client.authenticationKeyManager!.get();
-      return authKey != null;
-    } catch (e) {
-      // En cas d'erreur, considérer comme non authentifié
-      return false;
-    }
-  }
-
-  /// Récupère la clé d'authentification actuelle
-  ///
-  /// Returns: La clé d'authentification si elle existe, `null` sinon
-  ///
-  /// Note: Cette méthode est rarement utilisée directement. Préférer
-  /// [isAuthenticated] pour vérifier l'état d'authentification.
-  Future<String?> getAuthKey() async {
-    try {
-      return await _client.authenticationKeyManager!.get();
-    } catch (e) {
-      return null;
     }
   }
 }
