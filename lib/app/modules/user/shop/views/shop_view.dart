@@ -43,6 +43,12 @@ class ShopView extends GetView<ShopController> {
             const Text(AppStrings.shop),
             Obx(
               () => Text(
+                controller.userName,
+                style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+              ),
+            ),
+            Obx(
+              () => Text(
                 'Votre solde est de ${controller.userBalance.toStringAsFixed(2)} €',
                 style: TextStyle(
                   fontSize: 18.sp,

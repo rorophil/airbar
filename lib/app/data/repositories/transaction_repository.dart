@@ -62,6 +62,34 @@ class TransactionRepository {
     }
   }
 
+  /// Force le checkout du panier d'un membre (admin uniquement)
+  ///
+  /// [userId] L'ID du membre dont le panier doit être exécuté
+  /// [adminId] L'ID de l'admin qui force l'action
+  /// [adminPin] Le code PIN de l'admin pour confirmation
+  ///
+  /// Contrairement à [checkout], le solde du membre peut devenir négatif
+  /// (la vérification de solde est ignorée), mais le stock reste vérifié.
+  ///
+  /// Throws: Exception si le PIN admin est incorrect, le panier est vide,
+  /// ou le stock est insuffisant
+  Future<dynamic> adminForceCheckout({
+    required int userId,
+    required int adminId,
+    required String adminPin,
+  }) async {
+    try {
+      return await _client.transaction.adminForceCheckout(
+        userId,
+        adminId,
+        adminPin,
+      );
+    } catch (e) {
+      print('Admin force checkout error: $e');
+      rethrow;
+    }
+  }
+
   /// Récupère l'historique des transactions d'un utilisateur
   ///
   /// [userId] L'ID de l'utilisateur

@@ -64,6 +64,9 @@ abstract class AppRoutes {
   /// Formulaire de crédit/débit de compte utilisateur
   static const ADMIN_USER_CREDIT = '/admin/users/credit';
 
+  /// Panier d'un utilisateur (vue/vidage/forçage checkout par un admin)
+  static const ADMIN_USER_CART = '/admin/users/cart';
+
   /// Liste des produits
   static const ADMIN_PRODUCTS = '/admin/products';
 

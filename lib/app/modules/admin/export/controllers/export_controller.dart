@@ -53,6 +53,8 @@ class ExportController extends GetxController {
   final selectedType = Rxn<TransactionType>();
   final users = <User>[].obs;
   final categories = <ProductCategory>[].obs;
+  final includeInactiveUsers = false.obs;
+  final includeInactiveProducts = false.obs;
 
   /// Select start date
   Future<void> selectStartDate(BuildContext context) async {
@@ -261,6 +263,211 @@ class ExportController extends GetxController {
       isExporting.value = false;
       print('DEBUG: isExporting set to false');
     }
+  }
+
+  /// Toggle whether deactivated users are included in the balances export
+  void toggleIncludeInactiveUsers(bool value) {
+    includeInactiveUsers.value = value;
+  }
+
+  /// Toggle whether deactivated products are included in the inventory export
+  void toggleIncludeInactiveProducts(bool value) {
+    includeInactiveProducts.value = value;
+  }
+
+  /// Export full product inventory
+  Future<void> exportProductInventory() async {
+    try {
+      isExporting.value = true;
+
+      final results = await Future.wait([
+        _productRepository.getAllProducts(forceRefresh: true),
+        _categoryRepository.getAllCategories(forceRefresh: true),
+      ]);
+
+      final List<Product> allProducts = List<Product>.from(results[0]);
+      categories.value = List<ProductCategory>.from(results[1]);
+
+      final List<Product> filteredProducts = includeInactiveProducts.value
+          ? allProducts
+          : allProducts.where((p) => p.isActive).toList();
+      filteredProducts.sort((a, b) => a.name.compareTo(b.name));
+
+      if (filteredProducts.isEmpty) {
+        Get.snackbar(
+          'Information',
+          'Aucun produit à exporter',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final csvContent = _generateInventoryCSV(filteredProducts);
+
+      final dateFormat = DateFormat('dd-MM-yyyy');
+      final dateStr = dateFormat.format(DateTime.now());
+      final fileName = 'Inventaire produits $dateStr.csv';
+
+      final savedPath = await _saveFile(csvContent, fileName);
+
+      if (savedPath != null) {
+        Get.snackbar(
+          'Succès',
+          'Export terminé: ${filteredProducts.length} produit(s) exporté(s)\nFichier: $savedPath',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('DEBUG: Error occurred: $e');
+      print('DEBUG: Stack trace: $stackTrace');
+      Get.snackbar(
+        'Erreur',
+        'Impossible d\'exporter l\'inventaire: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isExporting.value = false;
+    }
+  }
+
+  /// Export user account balances
+  Future<void> exportUserBalances() async {
+    print('=== DEBUG: exportUserBalances called ===');
+
+    try {
+      isExporting.value = true;
+
+      final List<User> allUsers = List<User>.from(
+        await _userRepository.getAllUsers(),
+      );
+
+      final List<User> filteredUsers = includeInactiveUsers.value
+          ? allUsers
+          : allUsers.where((u) => u.isActive).toList();
+      filteredUsers.sort((a, b) => a.lastName.compareTo(b.lastName));
+
+      if (filteredUsers.isEmpty) {
+        Get.snackbar(
+          'Information',
+          'Aucun utilisateur à exporter',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      final csvContent = _generateUserBalancesCSV(filteredUsers);
+
+      final dateFormat = DateFormat('dd-MM-yyyy');
+      final dateStr = dateFormat.format(DateTime.now());
+      final fileName = 'Soldes utilisateurs $dateStr.csv';
+
+      final savedPath = await _saveFile(csvContent, fileName);
+
+      if (savedPath != null) {
+        Get.snackbar(
+          'Succès',
+          'Export terminé: ${filteredUsers.length} utilisateur(s) exporté(s)\nFichier: $savedPath',
+          snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 5),
+        );
+      }
+    } catch (e, stackTrace) {
+      print('DEBUG: Error occurred: $e');
+      print('DEBUG: Stack trace: $stackTrace');
+      Get.snackbar(
+        'Erreur',
+        'Impossible d\'exporter les soldes utilisateurs: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } finally {
+      isExporting.value = false;
+    }
+  }
+
+  /// Generate CSV content for the full product inventory
+  String _generateInventoryCSV(List<Product> products) {
+    final buffer = StringBuffer();
+
+    buffer.writeln(
+      'ID,Nom,Catégorie,Description,Prix,Stock géré,Produit en vrac,'
+      'Stock actuel,Seuil Alerte,Unité,Statut,Actif',
+    );
+
+    for (final product in products) {
+      final categoryName = _getCategoryName(product.categoryId);
+
+      String currentStock = 'N/A';
+      String alertThreshold = 'N/A';
+      String status = 'N/A';
+
+      // Stock fields are only meaningful when stock tracking is enabled
+      if (product.trackStock) {
+        if (product.isBulkProduct && product.bulkTotalQuantity != null) {
+          final totalStock =
+              (product.stockQuantity * product.bulkTotalQuantity!) +
+              (product.currentUnitRemaining ?? 0);
+          final threshold = product.minStockAlert * product.bulkTotalQuantity!;
+          currentStock =
+              '${totalStock.toStringAsFixed(2)} ${product.bulkUnit ?? ""}';
+          alertThreshold =
+              '${threshold.toStringAsFixed(2)} ${product.bulkUnit ?? ""}';
+          status = totalStock == 0
+              ? 'RUPTURE'
+              : (totalStock <= threshold ? 'STOCK FAIBLE' : 'OK');
+        } else {
+          currentStock = product.stockQuantity.toString();
+          alertThreshold = product.minStockAlert.toString();
+          status = product.stockQuantity == 0
+              ? 'RUPTURE'
+              : (product.stockQuantity <= product.minStockAlert
+                    ? 'STOCK FAIBLE'
+                    : 'OK');
+        }
+      }
+
+      buffer.writeln(
+        [
+          product.id,
+          product.name.replaceAll(',', ';'),
+          categoryName.replaceAll(',', ';'),
+          (product.description ?? '').replaceAll(',', ';'),
+          product.price.toStringAsFixed(2),
+          product.trackStock ? 'Oui' : 'Non',
+          product.isBulkProduct ? 'Oui' : 'Non',
+          currentStock,
+          alertThreshold,
+          product.isBulkProduct ? product.bulkUnit ?? '' : 'unités',
+          status,
+          product.isActive ? 'Oui' : 'Non',
+        ].join(','),
+      );
+    }
+
+    return buffer.toString();
+  }
+
+  /// Generate CSV content for user balances
+  String _generateUserBalancesCSV(List<User> users) {
+    final buffer = StringBuffer();
+
+    buffer.writeln('ID,Prénom,Nom,Email,Rôle,Solde,Statut');
+
+    for (final user in users) {
+      buffer.writeln(
+        [
+          user.id,
+          user.firstName.replaceAll(',', ';'),
+          user.lastName.replaceAll(',', ';'),
+          user.email.replaceAll(',', ';'),
+          user.role == UserRole.admin ? 'Admin' : 'User',
+          user.balance.toStringAsFixed(2),
+          user.isActive ? 'Actif' : 'Inactif',
+        ].join(','),
+      );
+    }
+
+    return buffer.toString();
   }
 
   /// Generate CSV content for products
