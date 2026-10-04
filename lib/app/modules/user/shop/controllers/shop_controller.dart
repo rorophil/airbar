@@ -352,6 +352,13 @@ class ShopController extends GetxController {
   /// Solde actuel de l'utilisateur connecté
   double get userBalance => _authService.currentUser.value?.balance ?? 0.0;
 
+  /// Nom complet de l'utilisateur connecté
+  String get userName {
+    final user = _authService.currentUser.value;
+    if (user == null) return '';
+    return '${user.firstName} ${user.lastName}';
+  }
+
   /// Récupérer la catégorie d'un produit
   ///
   /// [product] Le produit dont on veut la catégorie
