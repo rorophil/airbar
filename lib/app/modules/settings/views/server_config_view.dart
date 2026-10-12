@@ -187,6 +187,39 @@ class ServerConfigView extends GetView<SettingsController> {
 
             SizedBox(height: 32.h),
 
+            // Switch de connexion sécurisée (HTTPS + certificate pinning)
+            Obx(
+              () => Card(
+                color: controller.useHttps.value
+                    ? Colors.green.shade50
+                    : Colors.orange.shade50,
+                child: SwitchListTile(
+                  value: controller.useHttps.value,
+                  onChanged: (value) => controller.useHttps.value = value,
+                  title: Text(
+                    'Connexion sécurisée (HTTPS)',
+                    style: TextStyle(
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  subtitle: Text(
+                    'À désactiver uniquement pour le développement local. '
+                    'Toujours activer pour les serveurs de test et de production.',
+                    style: TextStyle(fontSize: 12.sp),
+                  ),
+                  secondary: Icon(
+                    controller.useHttps.value ? Icons.lock : Icons.lock_open,
+                    color: controller.useHttps.value
+                        ? Colors.green.shade700
+                        : Colors.orange.shade800,
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(height: 16.h),
+
             // Bouton de test de connexion
             Obx(
               () => OutlinedButton.icon(

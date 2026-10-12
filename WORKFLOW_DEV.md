@@ -49,8 +49,8 @@ C:\Users\...\airbar\           # App Flutter UNIQUEMENT
 ```yaml
 dependencies:
   # Serverpod
-  serverpod_flutter: ^3.3.1
-  serverpod_auth_client: ^3.3.1
+  serverpod_flutter: ^4.0.3
+  serverpod_auth_client: ^4.0.3
   airbar_backend_client:
     path: ../airbar_backend/airbar_backend_client  # ✅ LOCAL
 ```

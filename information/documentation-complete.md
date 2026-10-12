@@ -14,7 +14,7 @@ AirBar est une application complète de gestion de bar pour aéro-club, permetta
 ### Architecture
 
 **Stack Technique:**
-- **Backend:** Serverpod 3.3.1 (Framework Dart full-stack)
+- **Backend:** Serverpod 4.0.3 (Framework Dart full-stack)
 - **Frontend:** Flutter avec GetX
 - **Base de données:** PostgreSQL (via Serverpod)
 - **Pattern:** Repository Pattern avec cache local
@@ -1111,7 +1111,7 @@ flutter pub get
 
 **Vérification logs:**
 ```
-SERVERPOD version: 3.3.1
+SERVERPOD version: 4.0.3
 Webserver listening on http://localhost:8082
 ✅ Admin account(s) found: 2
 ```
@@ -1283,13 +1283,13 @@ dependencies:
   airbar_backend_client:
     path: ../airbar_backend/airbar_backend_client
   
-  serverpod_flutter: ^3.3.1
+  serverpod_flutter: ^4.0.3
 ```
 
 **Backend dependencies:**
 ```yaml
 dependencies:
-  serverpod: ^3.3.1
+  serverpod: ^4.0.3
   crypto: ^3.0.3  # Hash SHA256
 ```
 
@@ -1688,7 +1688,7 @@ Si une étape échoue, tout est annulé (rollback).
 
 **URL actuelle:** `http://localhost:8080`  
 **Status:** ✅ Opérationnel  
-**Version:** Serverpod 3.3.1  
+**Version:** Serverpod 4.0.3  
 **Base de données:** PostgreSQL (via Docker Compose)
 
 **Endpoints actifs:**

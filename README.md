@@ -5,7 +5,7 @@ Application Flutter complète de gestion de bar pour aéro-club avec système de
 ![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)
 ![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)
 ![GetX](https://img.shields.io/badge/GetX-4.6.5-8A2BE2)
-![Serverpod](https://img.shields.io/badge/Serverpod-3.3.1-FF6B35)
+![Serverpod](https://img.shields.io/badge/Serverpod-4.0.3-FF6B35)
 
 ## 📚 Documentation Utilisateur
 
@@ -92,7 +92,7 @@ http://localhost:8080  # Pour développement local
 
 - **Framework:** Flutter 3.x
 - **State Management:** GetX 4.6.5
-- **Backend Client:** Serverpod Client 3.3.1
+- **Backend Client:** Serverpod Client 4.0.3
 - **Routing:** GetX Navigation
 - **Storage:** GetStorage + SharedPreferences
 - **UI:** Material Design 3 avec ScreenUtil (responsive)
@@ -296,8 +296,8 @@ dependencies:
   # Backend
   airbar_backend_client:
     path: ../airbar_backend/airbar_backend_client
-  serverpod_auth_client: ^3.3.1
-  serverpod_flutter: ^3.3.1
+  serverpod_auth_client: ^4.0.3
+  serverpod_flutter: ^4.0.3
   
   # UI
   flutter_screenutil: ^5.9.0

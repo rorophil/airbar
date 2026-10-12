@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/io_client.dart';
 import '../../../services/server_config_service.dart';
 import '../../../services/connectivity_service.dart';
 import '../../../data/providers/serverpod_client_provider.dart';
@@ -41,6 +43,9 @@ class SettingsController extends GetxController {
   /// Indicateur de sauvegarde de configuration en cours
   final isSaving = false.obs;
 
+  /// Connexion sécurisée HTTPS activée (observable, lié au switch des réglages)
+  final useHttps = ServerConfigService.defaultUseHttps.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -52,6 +57,7 @@ class SettingsController extends GetxController {
     inactivityController = TextEditingController(
       text: _configService.inactivityTimeoutMinutes.toString(),
     );
+    useHttps.value = _configService.useHttps;
   }
 
   @override
@@ -120,7 +126,11 @@ class SettingsController extends GetxController {
       isSaving.value = true;
 
       // Sauvegarde de la nouvelle configuration
-      await _configService.saveServerConfig(host: host, port: port);
+      await _configService.saveServerConfig(
+        host: host,
+        port: port,
+        useHttps: useHttps.value,
+      );
       await _configService.saveInactivityTimeout(inactivityMinutes);
 
       // Réinitialisation du client Serverpod avec la nouvelle URL
@@ -162,6 +172,7 @@ class SettingsController extends GetxController {
     inactivityController.text = ServerConfigService
         .defaultInactivityTimeoutMinutes
         .toString();
+    useHttps.value = ServerConfigService.defaultUseHttps;
   }
 
   /// Tester la connexion au serveur
@@ -197,9 +208,25 @@ class SettingsController extends GetxController {
     try {
       isLoading.value = true;
 
-      final response = await http
-          .get(Uri.parse('http://$host:$port/'))
-          .timeout(const Duration(seconds: 10));
+      final scheme = useHttps.value ? 'https' : 'http';
+      final uri = Uri.parse('$scheme://$host:$port/');
+      final http.Response response;
+      if (useHttps.value) {
+        // Connexion HTTPS avec le même pinning que le client Serverpod
+        // (CA publiques exclues : withTrustedRoots: false dans le contexte).
+        final context = await ServerpodClientProvider.pinnedSecurityContext;
+        final httpClient = HttpClient(context: context);
+        final ioClient = IOClient(httpClient);
+        try {
+          response = await ioClient
+              .get(uri)
+              .timeout(const Duration(seconds: 10));
+        } finally {
+          ioClient.close();
+        }
+      } else {
+        response = await http.get(uri).timeout(const Duration(seconds: 10));
+      }
 
       // Le serveur Serverpod a répondu, peu importe le code de statut exact
       Get.snackbar(

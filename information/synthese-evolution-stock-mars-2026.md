@@ -646,7 +646,7 @@ backend_log.txt
 
 ### Compatibilité
 
-- ✅ Serverpod 3.3.1
+- ✅ Serverpod 4.0.3
 - ✅ Flutter 3.x
 - ✅ PostgreSQL 14+
 - ✅ Dart 3.x

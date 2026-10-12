@@ -26,7 +26,7 @@ airbar_backend/
 ## 🏗️ Stack Technique
 
 ### Backend
-- **Framework:** Serverpod 3.3.1
+- **Framework:** Serverpod 4.0.3
 - **Base de données:** PostgreSQL 14+ (via docker-compose port 8090)
 - **Cache:** Redis 6.2.6 (via docker-compose port 8091)
 - **Sécurité:** Hashing SHA256 des codes PIN
