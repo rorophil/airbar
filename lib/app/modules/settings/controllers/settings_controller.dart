@@ -175,6 +175,17 @@ class SettingsController extends GetxController {
     useHttps.value = ServerConfigService.defaultUseHttps;
   }
 
+  /// Active/désactive la connexion sécurisée et bascule le port affiché
+  /// (443 en HTTPS, 8080 en HTTP) en conséquence.
+  void onHttpsChanged(bool value) {
+    useHttps.value = value;
+    portController.text =
+        (value
+                ? ServerConfigService.defaultHttpsPort
+                : ServerConfigService.defaultPort)
+            .toString();
+  }
+
   /// Tester la connexion au serveur
   ///
   /// Tente une connexion au serveur avec les paramètres actuels du formulaire.
