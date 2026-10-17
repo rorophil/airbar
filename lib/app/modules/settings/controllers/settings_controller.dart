@@ -175,6 +175,17 @@ class SettingsController extends GetxController {
     useHttps.value = ServerConfigService.defaultUseHttps;
   }
 
+  /// Active/désactive la connexion sécurisée et bascule le port affiché
+  /// (443 en HTTPS, 8080 en HTTP) en conséquence, sans frappe de l'utilisateur.
+  void onHttpsChanged(bool value) {
+    useHttps.value = value;
+    portController.text =
+        (value
+                ? ServerConfigService.defaultHttpsPort
+                : ServerConfigService.defaultPort)
+            .toString();
+  }
+
   /// Tester la connexion au serveur
   ///
   /// Tente une connexion au serveur avec les paramètres actuels du formulaire.
@@ -245,6 +256,8 @@ class SettingsController extends GetxController {
         colorText: Colors.white,
       );
     } catch (e) {
+      // Log de la cause réelle (cert pinning, host injoignable, etc.) pour le diagnostic
+      debugPrint('❌ [SETTINGS] testConnection a échoué: $e');
       Get.snackbar(
         'Erreur',
         'Impossible de joindre le serveur à cette adresse',

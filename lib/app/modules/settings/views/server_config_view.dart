@@ -195,7 +195,7 @@ class ServerConfigView extends GetView<SettingsController> {
                     : Colors.orange.shade50,
                 child: SwitchListTile(
                   value: controller.useHttps.value,
-                  onChanged: (value) => controller.useHttps.value = value,
+                  onChanged: controller.onHttpsChanged,
                   title: Text(
                     'Connexion sécurisée (HTTPS)',
                     style: TextStyle(
