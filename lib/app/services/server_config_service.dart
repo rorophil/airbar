@@ -17,9 +17,6 @@ class ServerConfigService extends GetxService {
   static const int defaultPort = 8080;
   static const bool defaultUseHttps = false;
 
-  /// Port HTTPS standard (utilisé derrière Caddy en staging/production)
-  static const int defaultHttpsPort = 443;
-
   /// Délai d'inactivité par défaut avant déconnexion automatique (0 = désactivé)
   static const int defaultInactivityTimeoutMinutes = 5;
 
