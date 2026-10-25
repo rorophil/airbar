@@ -800,6 +800,37 @@ String _hashPin(String pin) {
 
 **Solution:** Voir section "Validation de Stock" (calculer availableStock)
 
+### 6. "Gradle build failed due to Java/Gradle incompatibility" (Android)
+
+**Symptômes:** `flutter run`/`flutter build apk` échoue avec un message du type
+"The Java version used for the build is X, which is incompatible with Gradle Y"
+
+**Cause:** Flutter utilise automatiquement le JDK bundlé avec la dernière
+installation d'Android Studio (souvent très récent, ex. JDK 25), qui est trop
+récent pour le Gradle wrapper du projet (ex. 8.14). Rien à voir avec le
+`sourceCompatibility`/`targetCompatibility` de `android/app/build.gradle.kts`
+(généralement Java 17) — c'est le JDK qui **exécute** Gradle, pas celui ciblé
+par le code.
+
+**Solution (recommandée, sans toucher au projet):**
+```bash
+# 1. Installer un JDK 17 via la formule Homebrew (pas le cask, pour éviter sudo)
+brew install openjdk@17
+
+# 2. Configurer Flutter pour l'utiliser
+flutter config --jdk-dir="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
+
+# 3. Vérifier
+flutter doctor -v   # "Java binary at" doit pointer vers le JDK 17
+
+# 4. Confirmer avec un vrai build
+flutter build apk --debug
+```
+
+Alternative plus risquée: monter `android/gradle/wrapper/gradle-wrapper.properties`
+vers Gradle ≥ 9.1.0 (nécessite souvent aussi de monter l'Android Gradle Plugin
+et Kotlin en conséquence).
+
 ---
 
 ## 📝 Checklist Avant Commit
