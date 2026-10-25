@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
@@ -21,30 +22,28 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
-      body: Obx(() {
-        return SingleChildScrollView(
-          padding: EdgeInsets.all(16.w),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Récapitulatif du panier
-              _buildCartSummary(),
-              SizedBox(height: 24.h),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Récapitulatif du panier
+            _buildCartSummary(),
+            SizedBox(height: 24.h),
 
-              // Sélection du mode de paiement
-              _buildPaymentMethodSelector(),
-              SizedBox(height: 24.h),
+            // Sélection du mode de paiement
+            _buildPaymentMethodSelector(),
+            SizedBox(height: 24.h),
 
-              // Champ PIN vendeur
-              _buildPinField(),
-              SizedBox(height: 32.h),
+            // Champ PIN vendeur
+            _buildPinField(),
+            SizedBox(height: 32.h),
 
-              // Boutons d'action
-              _buildActionButtons(),
-            ],
-          ),
-        );
-      }),
+            // Boutons d'action
+            _buildActionButtons(),
+          ],
+        ),
+      ),
     );
   }
 
@@ -191,33 +190,59 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
 
   Widget _buildPinField() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Code PIN vendeur',
+          'Entrez votre code PIN',
           style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
         ),
-        SizedBox(height: 12.h),
+        SizedBox(height: 16.h),
         Obx(
-          () => TextField(
-            decoration: InputDecoration(
-              hintText: 'Entrez votre code PIN',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8.r),
-              ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  controller.showPin.value
-                      ? Icons.visibility_off
-                      : Icons.visibility,
+          () => Center(
+            child: SizedBox(
+              width: 220.w,
+              child: TextField(
+                controller: controller.pinController,
+                autofocus: true,
+                obscureText: !controller.showPin.value,
+                keyboardType: TextInputType.number,
+                textInputAction: TextInputAction.done,
+                textAlign: TextAlign.center,
+                maxLength: 4,
+                enableSuggestions: false,
+                autocorrect: false,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                style: TextStyle(
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 8,
                 ),
-                onPressed: controller.togglePinVisibility,
+                decoration: InputDecoration(
+                  counterText: '',
+                  hintText: '••••',
+                  prefixIcon: const Icon(Icons.pin),
+                  suffixIcon: IconButton(
+                    tooltip: controller.showPin.value ? 'Masquer' : 'Afficher',
+                    icon: Icon(
+                      controller.showPin.value
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    onPressed: controller.togglePinVisibility,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                ),
+                onChanged: controller.updatePin,
+                onSubmitted: (_) {
+                  if (controller.canProceed && !controller.isProcessing.value) {
+                    controller.processSale();
+                  }
+                },
               ),
             ),
-            obscureText: !controller.showPin.value,
-            keyboardType: TextInputType.number,
-            maxLength: 4,
-            onChanged: controller.updatePin,
           ),
         ),
       ],
@@ -225,29 +250,58 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
   }
 
   Widget _buildActionButtons() {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: OutlinedButton(
-            onPressed: controller.isProcessing.value ? null : controller.cancel,
-            child: const Text('Annuler'),
-          ),
-        ),
-        SizedBox(width: 16.w),
-        Expanded(
-          flex: 2,
-          child: Obx(
-            () => ElevatedButton(
+        Obx(
+          () => SizedBox(
+            height: 44.h,
+            child: ElevatedButton.icon(
               onPressed: controller.isProcessing.value || !controller.canProceed
                   ? null
                   : controller.processSale,
+              icon: controller.isProcessing.value
+                  ? SizedBox(
+                      width: 20.w,
+                      height: 20.w,
+                      child: const CircularProgressIndicator(
+                        color: AppColors.textWhite,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Icon(Icons.check_circle),
+              label: Text(
+                controller.isProcessing.value
+                    ? 'Traitement...'
+                    : 'Confirmer la vente',
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
-                padding: EdgeInsets.symmetric(vertical: 16.h),
+                foregroundColor: AppColors.textWhite,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
               ),
-              child: controller.isProcessing.value
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Confirmer la vente'),
+            ),
+          ),
+        ),
+        SizedBox(height: 10.h),
+        SizedBox(
+          height: 44.h,
+          child: Obx(
+            () => OutlinedButton.icon(
+              onPressed: controller.isProcessing.value
+                  ? null
+                  : controller.cancel,
+              icon: const Icon(Icons.cancel),
+              label: const Text('Annuler'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textSecondary,
+                side: const BorderSide(color: AppColors.textSecondary),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/product_form_controller.dart';
@@ -73,6 +74,7 @@ class ProductFormView extends GetView<ProductFormController> {
               // Name
               TextFormField(
                 controller: controller.nameController,
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   labelText: 'Nom du produit',
                   prefixIcon: const Icon(Icons.shopping_bag),
@@ -207,6 +209,7 @@ class ProductFormView extends GetView<ProductFormController> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: controller.trackStock.value
                       ? controller.validateStock
                       : null,
@@ -238,6 +241,7 @@ class ProductFormView extends GetView<ProductFormController> {
                     ),
                   ),
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: controller.trackStock.value
                       ? controller.validateMinStock
                       : null,

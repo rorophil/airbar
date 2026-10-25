@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/product_repository.dart';
@@ -267,6 +268,7 @@ class ProductsController extends GetxController {
             TextField(
               controller: stockController,
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: const InputDecoration(
                 labelText: 'Nouvelle quantité',
                 border: OutlineInputBorder(),

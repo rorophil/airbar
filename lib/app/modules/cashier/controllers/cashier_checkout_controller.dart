@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../data/repositories/cashier_repository.dart';
@@ -17,6 +18,7 @@ class CashierCheckoutController extends GetxController {
   // État réactif
   final pin = ''.obs;
   final showPin = false.obs;
+  final pinController = TextEditingController();
   final selectedPaymentMethod = Rx<PaymentMethod?>(null);
   final isProcessing = false.obs;
 
@@ -39,6 +41,12 @@ class CashierCheckoutController extends GetxController {
   /// Met à jour le PIN
   void updatePin(String value) {
     pin.value = value;
+  }
+
+  @override
+  void onClose() {
+    pinController.dispose();
+    super.onClose();
   }
 
   /// Toggle visibilité du PIN
@@ -101,6 +109,11 @@ class CashierCheckoutController extends GetxController {
 
       Get.snackbar('Erreur', errorMessage, snackPosition: SnackPosition.BOTTOM);
     } finally {
+      // PIN effacé après chaque tentative (succès ou échec)
+      if (!isClosed) {
+        pin.value = '';
+        pinController.clear();
+      }
       isProcessing.value = false;
     }
   }

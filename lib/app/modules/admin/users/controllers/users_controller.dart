@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../data/repositories/cart_repository.dart';
@@ -436,6 +437,7 @@ class UsersController extends GetxController {
                   controller: pinController,
                   obscureText: !isPinVisible,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   maxLength: 6,
                   decoration: InputDecoration(
                     labelText: 'Nouveau code PIN',
@@ -457,6 +459,7 @@ class UsersController extends GetxController {
                   controller: confirmPinController,
                   obscureText: !isConfirmPinVisible,
                   keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   maxLength: 6,
                   decoration: InputDecoration(
                     labelText: 'Confirmer le code PIN',

@@ -76,6 +76,9 @@ class LoginView extends GetView<LoginController> {
                 TextFormField(
                   controller: controller.emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textCapitalization: TextCapitalization.none,
+                  autocorrect: false,
+                  enableSuggestions: false,
                   textInputAction: TextInputAction.next,
                   decoration: InputDecoration(
                     labelText: AppStrings.email,
@@ -94,6 +97,9 @@ class LoginView extends GetView<LoginController> {
                   () => TextFormField(
                     controller: controller.passwordController,
                     obscureText: controller.obscurePassword.value,
+                    textCapitalization: TextCapitalization.none,
+                    autocorrect: false,
+                    enableSuggestions: false,
                     textInputAction: TextInputAction.done,
                     onFieldSubmitted: (_) =>
                         controller.login(), // Enter → Connexion

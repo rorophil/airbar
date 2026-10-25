@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
@@ -71,26 +72,32 @@ class ShopView extends GetView<ShopController> {
                 ),
                 if (controller.cartItemCount.value > 0)
                   Positioned(
-                    right: 8,
-                    top: 8,
-                    child: Container(
-                      padding: EdgeInsets.all(2.w),
-                      decoration: const BoxDecoration(
-                        color: AppColors.error,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 16.w,
-                        minHeight: 16.w,
-                      ),
-                      child: Text(
-                        '${controller.cartItemCount.value}',
-                        style: TextStyle(
-                          color: AppColors.textWhite,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
+                    right: 4,
+                    top: 4,
+                    // Le badge ne doit pas intercepter les clics sur l'icône
+                    child: IgnorePointer(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 1.h,
                         ),
-                        textAlign: TextAlign.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 16.w,
+                          minHeight: 16.w,
+                        ),
+                        child: Text(
+                          '${controller.cartItemCount.value}',
+                          style: TextStyle(
+                            color: AppColors.textWhite,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
@@ -132,6 +139,7 @@ class ShopView extends GetView<ShopController> {
               Padding(
                 padding: EdgeInsets.all(16.w),
                 child: TextField(
+                  textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     hintText: AppStrings.search,
                     prefixIcon: const Icon(Icons.search),
@@ -626,6 +634,7 @@ class _BulkProductCard extends GetView<ShopController> {
             TextField(
               controller: quantityController,
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 labelText: 'Quantité',
                 border: OutlineInputBorder(
@@ -758,6 +767,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
                   child: TextField(
                     controller: quantityController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -996,6 +1006,9 @@ class _ProductDetailsSheet extends GetView<ShopController> {
                         child: TextField(
                           controller: quantityController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(

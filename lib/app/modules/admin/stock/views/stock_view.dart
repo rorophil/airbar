@@ -58,6 +58,7 @@ class StockView extends GetView<StockController> {
             Padding(
               padding: EdgeInsets.all(16.w),
               child: TextField(
+                textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
                   hintText: 'Rechercher un produit...',
                   prefixIcon: const Icon(Icons.search),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
@@ -75,6 +76,9 @@ class UserFormView extends GetView<UserFormController> {
                   ),
                 ),
                 keyboardType: TextInputType.emailAddress,
+                textCapitalization: TextCapitalization.none,
+                autocorrect: false,
+                enableSuggestions: false,
                 validator: controller.validateEmail,
               ),
 
@@ -103,6 +107,9 @@ class UserFormView extends GetView<UserFormController> {
                         ),
                       ),
                       obscureText: controller.obscurePassword.value,
+                      textCapitalization: TextCapitalization.none,
+                      autocorrect: false,
+                      enableSuggestions: false,
                       validator: controller.validatePassword,
                     ),
                     SizedBox(height: 16.h),
@@ -113,6 +120,7 @@ class UserFormView extends GetView<UserFormController> {
               // First name
               TextFormField(
                 controller: controller.firstNameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: 'Prénom',
                   prefixIcon: const Icon(Icons.person),
@@ -128,6 +136,7 @@ class UserFormView extends GetView<UserFormController> {
               // Last name
               TextFormField(
                 controller: controller.lastNameController,
+                textCapitalization: TextCapitalization.words,
                 decoration: InputDecoration(
                   labelText: 'Nom',
                   prefixIcon: const Icon(Icons.person_outline),
@@ -163,6 +172,7 @@ class UserFormView extends GetView<UserFormController> {
                         ),
                       ),
                       keyboardType: TextInputType.number,
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       maxLength: 4,
                       obscureText: controller.obscurePin.value,
                       validator: controller.validatePin,
