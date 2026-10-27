@@ -336,24 +336,25 @@ class _ProductCard extends GetView<ShopController> {
                             color: AppColors.primary,
                           ),
                         ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.inventory_2,
-                              size: 14.sp,
-                              color: _getStockColor(),
-                            ),
-                            SizedBox(width: 4.w),
-                            Text(
-                              '${product.stockQuantity}',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
+                        if (product.trackStock)
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.inventory_2,
+                                size: 14.sp,
                                 color: _getStockColor(),
                               ),
-                            ),
-                          ],
-                        ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                '${product.stockQuantity}',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: _getStockColor(),
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ],
@@ -366,7 +367,7 @@ class _ProductCard extends GetView<ShopController> {
               Icon(
                 Icons.add_shopping_cart,
                 size: 24.sp,
-                color: product.stockQuantity > 0
+                color: (!product.trackStock || product.stockQuantity > 0)
                     ? AppColors.primary
                     : AppColors.textHint,
               ),
@@ -469,24 +470,25 @@ class _BulkProductCard extends GetView<ShopController> {
                   ),
                 ),
                 // Stock indicator
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Icon(
-                      Icons.inventory_2,
-                      size: 18.sp,
-                      color: _getStockColor(),
-                    ),
-                    Text(
-                      '${product.stockQuantity}',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
+                if (product.trackStock)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.inventory_2,
+                        size: 18.sp,
                         color: _getStockColor(),
                       ),
-                    ),
-                  ],
-                ),
+                      Text(
+                        '${product.stockQuantity}',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: _getStockColor(),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
 
@@ -522,7 +524,7 @@ class _BulkProductCard extends GetView<ShopController> {
             else
               ...activePortions.map(
                 (portion) => InkWell(
-                  onTap: product.stockQuantity > 0
+                  onTap: (!product.trackStock || product.stockQuantity > 0)
                       ? () => _showPortionDialog(context, portion)
                       : null,
                   child: Container(
@@ -577,7 +579,9 @@ class _BulkProductCard extends GetView<ShopController> {
                             Icon(
                               Icons.add_shopping_cart,
                               size: 20.sp,
-                              color: product.stockQuantity > 0
+                              color:
+                                  (!product.trackStock ||
+                                      product.stockQuantity > 0)
                                   ? AppColors.primary
                                   : AppColors.textHint,
                             ),
@@ -745,15 +749,16 @@ class _ProductDetailsSheet extends GetView<ShopController> {
             SizedBox(height: 8.h),
 
             // Stock
-            Text(
-              'Stock disponible: ${product.stockQuantity}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: product.stockQuantity > 0
-                    ? AppColors.success
-                    : AppColors.error,
+            if (product.trackStock)
+              Text(
+                'Stock disponible: ${product.stockQuantity}',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: product.stockQuantity > 0
+                      ? AppColors.success
+                      : AppColors.error,
+                ),
               ),
-            ),
 
             SizedBox(height: 24.h),
 
@@ -790,7 +795,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
               width: double.infinity,
               height: 48.h,
               child: ElevatedButton.icon(
-                onPressed: product.stockQuantity > 0
+                onPressed: (!product.trackStock || product.stockQuantity > 0)
                     ? () {
                         final quantity =
                             int.tryParse(quantityController.text) ?? 1;
@@ -889,15 +894,16 @@ class _ProductDetailsSheet extends GetView<ShopController> {
             SizedBox(height: 16.h),
 
             // Stock
-            Text(
-              'Stock disponible: ${product.stockQuantity} ${product.bulkUnit ?? "unité(s)"}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: product.stockQuantity > 0
-                    ? AppColors.success
-                    : AppColors.error,
+            if (product.trackStock)
+              Text(
+                'Stock disponible: ${product.stockQuantity} ${product.bulkUnit ?? "unité(s)"}',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: product.stockQuantity > 0
+                      ? AppColors.success
+                      : AppColors.error,
+                ),
               ),
-            ),
 
             SizedBox(height: 16.h),
 
@@ -1035,7 +1041,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
                 height: 48.h,
                 child: ElevatedButton.icon(
                   onPressed:
-                      (product.stockQuantity > 0 &&
+                      ((!product.trackStock || product.stockQuantity > 0) &&
                           selectedPortion.value != null)
                       ? () {
                           final quantity =

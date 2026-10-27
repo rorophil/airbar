@@ -4,6 +4,7 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/product_repository.dart';
 import '../../../../data/repositories/product_portion_repository.dart';
 import '../../../../data/repositories/category_repository.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/values/app_strings.dart';
 import 'products_controller.dart';
 
@@ -212,8 +213,16 @@ class ProductFormController extends GetxController {
       final price = priceController.text.isEmpty
           ? 0.0
           : double.parse(priceController.text);
-      final stockQuantity = int.parse(stockQuantityController.text);
-      final minStockAlert = int.parse(minStockAlertController.text);
+      // Champs de stock grisés (trackStock = false) : on conserve la valeur
+      // existante, ou 0 / seuil par défaut pour un nouveau produit
+      final stockQuantity =
+          int.tryParse(stockQuantityController.text.trim()) ??
+          productToEdit?.stockQuantity ??
+          0;
+      final minStockAlert =
+          int.tryParse(minStockAlertController.text.trim()) ??
+          productToEdit?.minStockAlert ??
+          AppConstants.defaultMinStockAlert;
 
       final bulkUnit = isBulkProduct.value
           ? bulkUnitController.text.trim()
@@ -246,6 +255,14 @@ class ProductFormController extends GetxController {
         // Update portions if bulk product
         if (isBulkProduct.value) {
           await _updatePortions(productToEdit!.id!);
+        }
+
+        // updateProduct ne gère pas isActive : bascule dédiée si modifié
+        if (isActive.value != productToEdit!.isActive) {
+          await _productRepository.toggleActiveStatus(
+            productToEdit!.id!,
+            isActive.value,
+          );
         }
 
         // Reload products list
@@ -285,6 +302,11 @@ class ProductFormController extends GetxController {
         // Create portions if bulk product
         if (isBulkProduct.value && newProduct.id != null) {
           await _createPortions(newProduct.id!);
+        }
+
+        // createProduct crée toujours un produit actif : désactivation si demandé
+        if (!isActive.value && newProduct.id != null) {
+          await _productRepository.toggleActiveStatus(newProduct.id!, false);
         }
 
         // Reload products list
