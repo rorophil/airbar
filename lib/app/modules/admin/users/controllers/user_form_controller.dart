@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../core/values/app_strings.dart';
 import 'users_controller.dart';
@@ -46,8 +47,13 @@ class UserFormController extends GetxController {
 
   User? userToEdit;
 
+  UserFormController() {
+    Trace.create('UserFormController');
+  }
+
   @override
   void onInit() {
+    Trace.call('UserFormController', 'onInit');
     super.onInit();
 
     // Check if editing
@@ -67,6 +73,7 @@ class UserFormController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('UserFormController');
     emailController.dispose();
     passwordController.dispose();
     firstNameController.dispose();
@@ -77,16 +84,19 @@ class UserFormController extends GetxController {
 
   /// Toggle password visibility
   void togglePasswordVisibility() {
+    Trace.call('UserFormController', 'togglePasswordVisibility');
     obscurePassword.value = !obscurePassword.value;
   }
 
   /// Toggle PIN visibility
   void togglePinVisibility() {
+    Trace.call('UserFormController', 'togglePinVisibility');
     obscurePin.value = !obscurePin.value;
   }
 
   /// Validate and submit form
   Future<void> submit() async {
+    Trace.call('UserFormController', 'submit');
     if (!formKey.currentState!.validate()) {
       return;
     }
@@ -187,6 +197,7 @@ class UserFormController extends GetxController {
 
   /// Validate email
   String? validateEmail(String? value) {
+    Trace.call('UserFormController', 'validateEmail');
     if (value == null || value.isEmpty) {
       return 'Email requis';
     }
@@ -201,6 +212,7 @@ class UserFormController extends GetxController {
 
   /// Validate password
   String? validatePassword(String? value) {
+    Trace.call('UserFormController', 'validatePassword');
     if (isEdit.value) return null; // Password not required for edit
     if (value == null || value.isEmpty) {
       return 'Mot de passe requis';
@@ -213,6 +225,7 @@ class UserFormController extends GetxController {
 
   /// Validate name
   String? validateName(String? value, String fieldName) {
+    Trace.call('UserFormController', 'validateName');
     if (value == null || value.isEmpty) {
       return '$fieldName requis';
     }
@@ -221,6 +234,7 @@ class UserFormController extends GetxController {
 
   /// Validate PIN
   String? validatePin(String? value) {
+    Trace.call('UserFormController', 'validatePin');
     if (isEdit.value) return null; // PIN not required for edit
     if (value == null || value.isEmpty) {
       return 'Code PIN requis';

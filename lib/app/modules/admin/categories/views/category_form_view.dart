@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/category_form_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -36,10 +37,13 @@ import '../../../../core/values/app_strings.dart';
 /// Workflow:
 /// - Remplissage → Validation → Sauvegarde → Retour liste
 class CategoryFormView extends GetView<CategoryFormController> {
-  const CategoryFormView({Key? key}) : super(key: key);
+  CategoryFormView({Key? key}) : super(key: key) {
+    Trace.create('CategoryFormView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CategoryFormView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -197,6 +201,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
   }
 
   IconData _getIconData(String iconName) {
+    Trace.call('CategoryFormView', '_getIconData');
     switch (iconName.toLowerCase()) {
       case 'local_bar':
         return Icons.local_bar;

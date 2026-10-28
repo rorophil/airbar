@@ -4,14 +4,20 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import 'package:intl/intl.dart';
 import 'package:printing/printing.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Service de génération de reçus PDF pour les ventes caisse
 class PdfReceiptService {
   final DateFormat _dateFormat = DateFormat('dd/MM/yyyy HH:mm');
   final NumberFormat _numberFormat = NumberFormat('#,##0.00', 'fr_FR');
 
+  PdfReceiptService() {
+    Trace.create('PdfReceiptService');
+  }
+
   /// Formate un montant avec le symbole € après
   String _formatCurrency(double amount) {
+    Trace.call('PdfReceiptService', '_formatCurrency');
     return '${_numberFormat.format(amount)}€';
   }
 
@@ -21,6 +27,7 @@ class PdfReceiptService {
     required User seller,
     List? items,
   }) async {
+    Trace.call('PdfReceiptService', 'generateReceipt');
     final pdf = pw.Document();
 
     // Charger les polices avec support Unicode
@@ -79,6 +86,7 @@ class PdfReceiptService {
 
   /// Construit l'en-tête du reçu
   pw.Widget _buildHeader() {
+    Trace.call('PdfReceiptService', '_buildHeader');
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -106,6 +114,7 @@ class PdfReceiptService {
 
   /// Construit les informations de vente
   pw.Widget _buildSaleInfo(Transaction transaction, User seller) {
+    Trace.call('PdfReceiptService', '_buildSaleInfo');
     final paymentMethodLabel = transaction.paymentMethod == PaymentMethod.cash
         ? 'Espèces'
         : 'Carte bancaire';
@@ -129,6 +138,7 @@ class PdfReceiptService {
 
   /// Construit le tableau des articles
   pw.Widget _buildItemsTable(List? items) {
+    Trace.call('PdfReceiptService', '_buildItemsTable');
     if (items == null || items.isEmpty) {
       return pw.Text(
         'Aucun article',
@@ -213,6 +223,7 @@ class PdfReceiptService {
     bool isHeader = false,
     pw.TextAlign align = pw.TextAlign.left,
   }) {
+    Trace.call('PdfReceiptService', '_buildTableCell');
     return pw.Padding(
       padding: const pw.EdgeInsets.all(8),
       child: pw.Text(
@@ -228,6 +239,7 @@ class PdfReceiptService {
 
   /// Construit une ligne d'information
   pw.Widget _buildInfoRow(String label, String value) {
+    Trace.call('PdfReceiptService', '_buildInfoRow');
     return pw.Row(
       children: [
         pw.SizedBox(
@@ -244,6 +256,7 @@ class PdfReceiptService {
 
   /// Construit la section total
   pw.Widget _buildTotal(Transaction transaction) {
+    Trace.call('PdfReceiptService', '_buildTotal');
     return pw.Container(
       padding: const pw.EdgeInsets.all(15),
       decoration: pw.BoxDecoration(
@@ -272,6 +285,7 @@ class PdfReceiptService {
 
   /// Construit le pied de page
   pw.Widget _buildFooter(Transaction transaction) {
+    Trace.call('PdfReceiptService', '_buildFooter');
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.center,
       children: [

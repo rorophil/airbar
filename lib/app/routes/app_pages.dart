@@ -63,7 +63,7 @@ class AppPages {
     // Page de démarrage avec logo et chargement initial
     GetPage(
       name: AppRoutes.SPLASH,
-      page: () => const SplashView(),
+      page: () => SplashView(),
       binding: SplashBinding(),
     ),
 
@@ -71,7 +71,7 @@ class AppPages {
     // Authentification par code PIN (4 chiffres)
     GetPage(
       name: AppRoutes.LOGIN,
-      page: () => const LoginView(),
+      page: () => LoginView(),
       binding: LoginBinding(),
     ),
 
@@ -79,7 +79,7 @@ class AppPages {
     // Configuration de l'IP et du port du serveur Serverpod
     GetPage(
       name: AppRoutes.SERVER_CONFIG,
-      page: () => const ServerConfigView(),
+      page: () => ServerConfigView(),
       binding: SettingsBinding(),
     ),
 
@@ -89,21 +89,21 @@ class AppPages {
     // Boutique: affichage des produits par catégorie
     GetPage(
       name: AppRoutes.USER_SHOP,
-      page: () => const ShopView(),
+      page: () => ShopView(),
       binding: ShopBinding(),
       middlewares: [AuthMiddleware()],
     ),
     // Panier: liste des articles sélectionnés avec quantités
     GetPage(
       name: AppRoutes.USER_CART,
-      page: () => const CartView(),
+      page: () => CartView(),
       binding: CartBinding(),
       middlewares: [AuthMiddleware()],
     ),
     // Checkout: validation PIN et confirmation d'achat
     GetPage(
       name: AppRoutes.USER_CHECKOUT,
-      page: () => const CheckoutView(),
+      page: () => CheckoutView(),
       binding: CheckoutBinding(),
       middlewares: [AuthMiddleware()],
     ),
@@ -114,21 +114,21 @@ class AppPages {
     // Mode Caisse: interface de vente avec panier temps réel
     GetPage(
       name: AppRoutes.CASHIER,
-      page: () => const CashierView(),
+      page: () => CashierView(),
       binding: CashierBinding(),
       middlewares: [AuthMiddleware()],
     ),
     // Validation vente caisse: choix paiement (espèces/carte) et PIN vendeur
     GetPage(
       name: AppRoutes.CASHIER_CHECKOUT,
-      page: () => const CashierCheckoutView(),
+      page: () => CashierCheckoutView(),
       binding: CashierBinding(),
       middlewares: [AuthMiddleware()],
     ),
     // Reçu de vente: affichage et options impression/partage PDF
     GetPage(
       name: AppRoutes.CASHIER_RECEIPT,
-      page: () => const CashierReceiptView(),
+      page: () => CashierReceiptView(),
       binding: CashierBinding(),
       middlewares: [AuthMiddleware()],
     ),
@@ -139,91 +139,91 @@ class AppPages {
     // Dashboard: page d'accueil admin avec statistiques
     GetPage(
       name: AppRoutes.ADMIN_DASHBOARD,
-      page: () => const DashboardView(),
+      page: () => DashboardView(),
       binding: DashboardBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: liste
     GetPage(
       name: AppRoutes.ADMIN_USERS,
-      page: () => const UsersView(),
+      page: () => UsersView(),
       binding: UsersBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_USER_FORM,
-      page: () => const UserFormView(),
+      page: () => UserFormView(),
       binding: UserFormBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: crédit/débit de compte
     GetPage(
       name: AppRoutes.ADMIN_USER_CREDIT,
-      page: () => const UserCreditView(),
+      page: () => UserCreditView(),
       binding: UserCreditBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des utilisateurs: consultation/vidage/forçage du panier
     GetPage(
       name: AppRoutes.ADMIN_USER_CART,
-      page: () => const UserCartView(),
+      page: () => UserCartView(),
       binding: UserCartBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des produits: liste
     GetPage(
       name: AppRoutes.ADMIN_PRODUCTS,
-      page: () => const ProductsView(),
+      page: () => ProductsView(),
       binding: ProductsBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des produits: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_PRODUCT_FORM,
-      page: () => const ProductFormView(),
+      page: () => ProductFormView(),
       binding: ProductFormBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des catégories: liste
     GetPage(
       name: AppRoutes.ADMIN_CATEGORIES,
-      page: () => const CategoriesView(),
+      page: () => CategoriesView(),
       binding: CategoriesBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion des catégories: formulaire création/édition
     GetPage(
       name: AppRoutes.ADMIN_CATEGORY_FORM,
-      page: () => const CategoryFormView(),
+      page: () => CategoryFormView(),
       binding: CategoryFormBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion du stock: vue d'ensemble et alertes
     GetPage(
       name: AppRoutes.ADMIN_STOCK,
-      page: () => const StockView(),
+      page: () => StockView(),
       binding: StockBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Gestion du stock: réapprovisionnement d'un produit
     GetPage(
       name: AppRoutes.ADMIN_STOCK_RESTOCK,
-      page: () => const RestockView(),
+      page: () => RestockView(),
       binding: RestockBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Historique complet des transactions
     GetPage(
       name: AppRoutes.ADMIN_TRANSACTIONS,
-      page: () => const TransactionsView(),
+      page: () => TransactionsView(),
       binding: TransactionsBinding(),
       middlewares: [AdminMiddleware()],
     ),
     // Export de données (produits, transactions) en CSV
     GetPage(
       name: AppRoutes.ADMIN_EXPORT,
-      page: () => const ExportView(),
+      page: () => ExportView(),
       binding: ExportBinding(),
       middlewares: [AdminMiddleware()],
     ),

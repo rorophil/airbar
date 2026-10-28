@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/product_form_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -47,10 +48,13 @@ import '../../../../core/values/app_strings.dart';
 /// - Prix requis si produit régulier
 /// - Si produit en vrac: unité, quantité totale, au moins 1 portion
 class ProductFormView extends GetView<ProductFormController> {
-  const ProductFormView({Key? key}) : super(key: key);
+  ProductFormView({Key? key}) : super(key: key) {
+    Trace.create('ProductFormView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('ProductFormView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

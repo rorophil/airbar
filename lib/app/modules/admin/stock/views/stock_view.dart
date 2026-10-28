@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/stock_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
@@ -41,10 +42,13 @@ import '../../../../core/values/app_colors.dart';
 /// - Recherche → Filtrage instantané
 /// - Pull to refresh → Rechargement données
 class StockView extends GetView<StockController> {
-  const StockView({Key? key}) : super(key: key);
+  StockView({Key? key}) : super(key: key) {
+    Trace.create('StockView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('StockView', 'build');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gestion du stock'),
@@ -161,10 +165,13 @@ class _StockCard extends GetView<StockController> {
   final Product product;
   final VoidCallback onRestock;
 
-  const _StockCard({required this.product, required this.onRestock});
+  _StockCard({required this.product, required this.onRestock}) {
+    Trace.create('_StockCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_StockCard', 'build');
     final stockColor = controller.getStockColor(product);
     final stockStatus = controller.getStockStatus(product);
 

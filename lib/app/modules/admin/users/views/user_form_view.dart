@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/user_form_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -39,10 +40,13 @@ import '../../../../core/values/app_strings.dart';
 /// Workflow:
 /// - Remplissage champs → Validation → Soumission → Message succès → Retour liste
 class UserFormView extends GetView<UserFormController> {
-  const UserFormView({Key? key}) : super(key: key);
+  UserFormView({Key? key}) : super(key: key) {
+    Trace.create('UserFormView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('UserFormView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

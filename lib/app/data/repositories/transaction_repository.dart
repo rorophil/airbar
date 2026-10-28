@@ -1,5 +1,6 @@
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion des transactions
 ///
@@ -22,6 +23,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// sont des données financières sensibles qui doivent toujours être
 /// à jour et traçables.
 class TransactionRepository {
+  TransactionRepository() {
+    Trace.create('TransactionRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -54,6 +59,7 @@ class TransactionRepository {
   ///
   /// Note: Si une étape échoue, TOUT est annulé (transaction atomique)
   Future<dynamic> checkout({required int userId, required String pin}) async {
+    Trace.call('TransactionRepository', 'checkout');
     try {
       return await _client.transaction.checkout(userId, pin);
     } catch (e) {
@@ -78,6 +84,7 @@ class TransactionRepository {
     required int adminId,
     required String adminPin,
   }) async {
+    Trace.call('TransactionRepository', 'adminForceCheckout');
     try {
       return await _client.transaction.adminForceCheckout(
         userId,
@@ -113,6 +120,7 @@ class TransactionRepository {
     int limit = 50,
     int offset = 0,
   }) async {
+    Trace.call('TransactionRepository', 'getUserTransactions');
     try {
       return await _client.transaction.getUserTransactions(
         userId,
@@ -146,6 +154,7 @@ class TransactionRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
+    Trace.call('TransactionRepository', 'getAllTransactions');
     try {
       return await _client.transaction.getAllTransactions(
         limit: limit,
@@ -184,6 +193,7 @@ class TransactionRepository {
     required int transactionId,
     required String notes,
   }) async {
+    Trace.call('TransactionRepository', 'refundTransaction');
     try {
       return await _client.transaction.refundTransaction(transactionId, notes);
     } catch (e) {
@@ -203,6 +213,7 @@ class TransactionRepository {
   ///
   /// Note: Utilisé pour afficher le détail d'une transaction dans l'historique
   Future<List<dynamic>> getTransactionItems(int transactionId) async {
+    Trace.call('TransactionRepository', 'getTransactionItems');
     try {
       return await _client.transaction.getTransactionItems(transactionId);
     } catch (e) {

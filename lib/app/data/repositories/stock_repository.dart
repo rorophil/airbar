@@ -1,5 +1,6 @@
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion du stock
 ///
@@ -20,6 +21,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// Note: Ce repository ne gère PAS de cache car le stock change
 /// fréquemment et doit toujours être à jour.
 class StockRepository {
+  StockRepository() {
+    Trace.create('StockRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -50,6 +55,7 @@ class StockRepository {
     required int adminUserId,
     String? notes,
   }) async {
+    Trace.call('StockRepository', 'restockProduct');
     try {
       return await _client.stock.restockProduct(
         productId,
@@ -91,6 +97,7 @@ class StockRepository {
     required int adminUserId,
     required String reason,
   }) async {
+    Trace.call('StockRepository', 'adjustStock');
     try {
       return await _client.stock.adjustStock(
         productId,
@@ -130,6 +137,7 @@ class StockRepository {
     DateTime? startDate,
     DateTime? endDate,
   }) async {
+    Trace.call('StockRepository', 'getStockHistory');
     try {
       return await _client.stock.getStockHistory(
         productId,
@@ -163,6 +171,7 @@ class StockRepository {
     int limit = 50,
     int offset = 0,
   }) async {
+    Trace.call('StockRepository', 'getAllStockMovements');
     try {
       return await _client.stock.getAllStockMovements(
         type: type,
@@ -188,6 +197,7 @@ class StockRepository {
   /// de réapprovisionner certains produits.
   /// Exclut les produits avec trackStock = false.
   Future<List<dynamic>> getLowStockProducts() async {
+    Trace.call('StockRepository', 'getLowStockProducts');
     try {
       return await _client.stock.getLowStockProducts();
     } catch (e) {

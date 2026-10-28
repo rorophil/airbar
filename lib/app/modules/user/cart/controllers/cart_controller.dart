@@ -7,6 +7,7 @@ import '../../../../data/repositories/product_portion_repository.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/app_colors.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Classe helper pour associer un CartItem avec ses détails produit
 ///
@@ -25,7 +26,9 @@ class CartItemWithProduct {
   /// La portion sélectionnée (null pour produits réguliers)
   final ProductPortion? portion;
 
-  CartItemWithProduct(this.cartItem, this.product, this.portion);
+  CartItemWithProduct(this.cartItem, this.product, this.portion) {
+    Trace.create('CartItemWithProduct');
+  }
 
   /// ID du produit
   int get productId => cartItem.productId;
@@ -38,6 +41,7 @@ class CartItemWithProduct {
   /// Si une portion est sélectionnée, utilise le prix de la portion,
   /// sinon utilise le prix du produit.
   double get effectivePrice {
+    Trace.call('CartItemWithProduct', 'effectivePrice');
     if (portion != null) {
       return portion!.price;
     }
@@ -50,6 +54,7 @@ class CartItemWithProduct {
   /// - Avec portion: "Bière - 50cl"
   /// - Sans portion: "Coca-Cola"
   String get displayName {
+    Trace.call('CartItemWithProduct', 'displayName');
     if (product == null) return 'Produit inconnu';
     if (portion != null) {
       return '${product!.name} - ${portion!.name}';
@@ -98,12 +103,23 @@ class CartController extends GetxController {
   /// Solde actuel de l'utilisateur connecté
   double get userBalance => _authService.currentUser.value?.balance ?? 0.0;
 
+  CartController() {
+    Trace.create('CartController');
+  }
+
   @override
   void onInit() {
+    Trace.call('CartController', 'onInit');
     super.onInit();
     // Rafraîchissement du solde utilisateur à l'ouverture du panier
     _authService.refreshUser();
     loadCart();
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('CartController');
+    super.onClose();
   }
 
   /// Charger les articles du panier avec enrichissement des données
@@ -119,6 +135,7 @@ class CartController extends GetxController {
   /// L'enrichissement permet d'afficher nom, prix, description sans
   /// stocker ces données dans la table cart_item.
   Future<void> loadCart() async {
+    Trace.call('CartController', 'loadCart');
     try {
       isLoading.value = true;
 
@@ -174,6 +191,7 @@ class CartController extends GetxController {
   /// Somme: Σ (prix effectif × quantité) pour chaque article.
   /// Le prix effectif est celui de la portion si présente, sinon du produit.
   void _calculateTotal() {
+    Trace.call('CartController', '_calculateTotal');
     total.value = cartItems.fold(
       0.0,
       (sum, item) => sum + item.effectivePrice * item.quantity,
@@ -195,6 +213,7 @@ class CartController extends GetxController {
   ///
   /// IMPORTANT: Pour les produits avec portions, requiredStock = newQuantity × portion.quantity
   Future<void> updateQuantity(CartItemWithProduct item, int newQuantity) async {
+    Trace.call('CartController', 'updateQuantity');
     try {
       final userId = _authService.currentUser.value?.id;
       if (userId == null) return;
@@ -272,6 +291,7 @@ class CartController extends GetxController {
   ///
   /// Suppression via CartRepository puis rechargement du panier.
   Future<void> removeItem(CartItemWithProduct item) async {
+    Trace.call('CartController', 'removeItem');
     try {
       final userId = _authService.currentUser.value?.id;
       if (userId == null) return;
@@ -304,6 +324,7 @@ class CartController extends GetxController {
   /// Supprime tous les articles du panier de l'utilisateur connecté.
   /// Utile en cas d'abandon d'achat.
   Future<void> clearCart() async {
+    Trace.call('CartController', 'clearCart');
     try {
       final userId = _authService.currentUser.value?.id;
       if (userId == null) return;
@@ -336,6 +357,7 @@ class CartController extends GetxController {
   ///
   /// En cas de solde insuffisant, affiche un snackbar spécifique.
   Future<void> goToCheckout() async {
+    Trace.call('CartController', 'goToCheckout');
     // Vérification panier non vide
     if (cartItems.isEmpty) {
       Get.snackbar(
@@ -376,6 +398,7 @@ class CartController extends GetxController {
 
   /// Refresh cart
   Future<void> refresh() async {
+    Trace.call('CartController', 'refresh');
     await loadCart();
   }
 }

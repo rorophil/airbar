@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import 'package:intl/intl.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/transactions_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
@@ -47,10 +48,13 @@ import '../../../../core/values/app_colors.dart';
 /// - Crédits/Remboursements: vert avec signe + (ex: "+50.00 €")
 /// - Solde après: noir, 2 décimales
 class TransactionsView extends GetView<TransactionsController> {
-  const TransactionsView({Key? key}) : super(key: key);
+  TransactionsView({Key? key}) : super(key: key) {
+    Trace.create('TransactionsView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('TransactionsView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -331,10 +335,13 @@ class _TransactionCard extends GetView<TransactionsController> {
   final Transaction transaction;
   final VoidCallback? onRefund;
 
-  const _TransactionCard({required this.transaction, this.onRefund});
+  _TransactionCard({required this.transaction, this.onRefund}) {
+    Trace.create('_TransactionCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_TransactionCard', 'build');
     final typeColor = controller.getTypeColor(transaction.type);
     final typeLabel = controller.getTypeLabel(transaction.type);
 

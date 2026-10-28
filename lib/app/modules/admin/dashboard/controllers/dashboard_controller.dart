@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../services/auth_service.dart';
 
@@ -23,33 +24,49 @@ class DashboardController extends GetxController {
   /// Service d'authentification (utilisateur connecté)
   final AuthService _authService = Get.find();
 
+  DashboardController() {
+    Trace.create('DashboardController');
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('DashboardController');
+    super.onClose();
+  }
+
   /// Naviguer vers la gestion des utilisateurs
   void goToUsers() {
+    Trace.call('DashboardController', 'goToUsers');
     Get.toNamed(AppRoutes.ADMIN_USERS);
   }
 
   /// Naviguer vers la gestion des produits
   void goToProducts() {
+    Trace.call('DashboardController', 'goToProducts');
     Get.toNamed(AppRoutes.ADMIN_PRODUCTS);
   }
 
   /// Naviguer vers la gestion des catégories
   void goToCategories() {
+    Trace.call('DashboardController', 'goToCategories');
     Get.toNamed(AppRoutes.ADMIN_CATEGORIES);
   }
 
   /// Naviguer vers la gestion du stock
   void goToStock() {
+    Trace.call('DashboardController', 'goToStock');
     Get.toNamed(AppRoutes.ADMIN_STOCK);
   }
 
   /// Naviguer vers l'historique des transactions
   void goToTransactions() {
+    Trace.call('DashboardController', 'goToTransactions');
     Get.toNamed(AppRoutes.ADMIN_TRANSACTIONS);
   }
 
   /// Naviguer vers l'export de données
   void goToExport() {
+    Trace.call('DashboardController', 'goToExport');
     Get.toNamed(AppRoutes.ADMIN_EXPORT);
   }
 
@@ -57,6 +74,7 @@ class DashboardController extends GetxController {
   ///
   /// Permet aux admins d'acheter des produits sans se déconnecter.
   void goToShop() {
+    Trace.call('DashboardController', 'goToShop');
     Get.toNamed(AppRoutes.USER_SHOP);
   }
 
@@ -66,6 +84,7 @@ class DashboardController extends GetxController {
   /// 1. Effacer l'utilisateur connecté (AuthService.clearUser)
   /// 2. Naviguer vers l'écran de login (offAllNamed)
   void logout() {
+    Trace.call('DashboardController', 'logout');
     Get.defaultDialog(
       title: 'Déconnexion',
       middleText: 'Êtes-vous sûr de vouloir vous déconnecter ?',
@@ -83,6 +102,7 @@ class DashboardController extends GetxController {
   /// Retourne "Prénom Nom" ou "Admin" si non trouvé.
   /// Utilisé pour le message de bienvenue dans le dashboard.
   String get adminName {
+    Trace.call('DashboardController', 'adminName');
     final user = _authService.currentUser.value;
     return user != null ? '${user.firstName} ${user.lastName}' : 'Admin';
   }

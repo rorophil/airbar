@@ -1,5 +1,6 @@
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion des portions de produits
 ///
@@ -17,6 +18,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// Note: Ce repository ne gère PAS de cache car les portions changent rarement
 /// et sont toujours chargées avec leur produit parent.
 class ProductPortionRepository {
+  ProductPortionRepository() {
+    Trace.create('ProductPortionRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -34,6 +39,7 @@ class ProductPortionRepository {
     int productId, {
     bool activeOnly = true,
   }) async {
+    Trace.call('ProductPortionRepository', 'getProductPortions');
     try {
       return await _client.productPortion.getProductPortions(
         productId,
@@ -53,6 +59,7 @@ class ProductPortionRepository {
   ///
   /// Throws: Exception en cas d'erreur serveur
   Future<ProductPortion?> getPortionById(int portionId) async {
+    Trace.call('ProductPortionRepository', 'getPortionById');
     try {
       return await _client.productPortion.getPortionById(portionId);
     } catch (e) {
@@ -91,6 +98,7 @@ class ProductPortionRepository {
     required double price,
     int displayOrder = 0,
   }) async {
+    Trace.call('ProductPortionRepository', 'createPortion');
     try {
       return await _client.productPortion.createPortion(
         productId,
@@ -120,6 +128,7 @@ class ProductPortionRepository {
     required double price,
     int? displayOrder,
   }) async {
+    Trace.call('ProductPortionRepository', 'updatePortion');
     try {
       return await _client.productPortion.updatePortion(
         portionId,
@@ -143,6 +152,7 @@ class ProductPortionRepository {
   ///
   /// Throws: Exception si la portion n'existe pas ou erreur serveur
   Future<void> deletePortion(int portionId) async {
+    Trace.call('ProductPortionRepository', 'deletePortion');
     try {
       await _client.productPortion.deletePortion(portionId);
     } catch (e) {

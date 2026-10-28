@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/transaction_repository.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../services/auth_service.dart';
@@ -50,14 +51,26 @@ class TransactionsController extends GetxController {
   final endDate = Rxn<DateTime>();
   final limit = 50.obs;
 
+  TransactionsController() {
+    Trace.create('TransactionsController');
+  }
+
   @override
   void onInit() {
+    Trace.call('TransactionsController', 'onInit');
     super.onInit();
     loadData();
   }
 
+  @override
+  void onClose() {
+    Trace.dispose('TransactionsController');
+    super.onClose();
+  }
+
   /// Load transactions and users
   Future<void> loadData({bool forceRefresh = false}) async {
+    Trace.call('TransactionsController', 'loadData');
     if (isLoading.value) return;
 
     try {
@@ -90,6 +103,7 @@ class TransactionsController extends GetxController {
 
   /// Filter transactions
   void filterTransactions() {
+    Trace.call('TransactionsController', 'filterTransactions');
     var filtered = transactions.toList();
 
     // Filter by search query (local filter only)
@@ -114,18 +128,21 @@ class TransactionsController extends GetxController {
 
   /// Update search query
   void updateSearchQuery(String query) {
+    Trace.call('TransactionsController', 'updateSearchQuery');
     searchQuery.value = query;
     filterTransactions();
   }
 
   /// Select transaction type filter
   void selectType(TransactionType? type) {
+    Trace.call('TransactionsController', 'selectType');
     selectedType.value = type;
     loadData();
   }
 
   /// Refund transaction
   Future<void> refundTransaction(Transaction transaction) async {
+    Trace.call('TransactionsController', 'refundTransaction');
     // Confirm refund
     final confirm = await Get.dialog<bool>(
       AlertDialog(
@@ -185,6 +202,7 @@ class TransactionsController extends GetxController {
 
   /// Get transaction type label
   String getTypeLabel(TransactionType type) {
+    Trace.call('TransactionsController', 'getTypeLabel');
     switch (type) {
       case TransactionType.purchase:
         return 'Achat';
@@ -199,6 +217,7 @@ class TransactionsController extends GetxController {
 
   /// Get transaction type color
   Color getTypeColor(TransactionType type) {
+    Trace.call('TransactionsController', 'getTypeColor');
     switch (type) {
       case TransactionType.purchase:
         return const Color(0xFFF44336); // Red
@@ -213,6 +232,7 @@ class TransactionsController extends GetxController {
 
   /// Get user name by ID
   String getUserName(int userId) {
+    Trace.call('TransactionsController', 'getUserName');
     final user = users.firstWhereOrNull((u) => u.id == userId);
     if (user != null) {
       return '${user.firstName} ${user.lastName}';
@@ -222,6 +242,7 @@ class TransactionsController extends GetxController {
 
   /// Get seller name by ID
   String getSellerName(int sellerId) {
+    Trace.call('TransactionsController', 'getSellerName');
     final seller = users.firstWhereOrNull((u) => u.id == sellerId);
     if (seller != null) {
       return '${seller.firstName} ${seller.lastName}';
@@ -231,12 +252,14 @@ class TransactionsController extends GetxController {
 
   /// Update limit
   void updateLimit(int newLimit) {
+    Trace.call('TransactionsController', 'updateLimit');
     limit.value = newLimit;
     loadData();
   }
 
   /// Set start date
   void setStartDate(DateTime? date) {
+    Trace.call('TransactionsController', 'setStartDate');
     startDate.value = date;
     // If start date is set but no end date, set end date to now
     if (date != null && endDate.value == null) {
@@ -248,12 +271,14 @@ class TransactionsController extends GetxController {
 
   /// Set end date
   void setEndDate(DateTime? date) {
+    Trace.call('TransactionsController', 'setEndDate');
     endDate.value = date;
     loadData();
   }
 
   /// Clear date filters
   void clearDateFilters() {
+    Trace.call('TransactionsController', 'clearDateFilters');
     startDate.value = null;
     endDate.value = null;
     loadData();
@@ -261,6 +286,7 @@ class TransactionsController extends GetxController {
 
   /// Refresh data
   Future<void> refresh() async {
+    Trace.call('TransactionsController', 'refresh');
     await loadData(forceRefresh: true);
   }
 }

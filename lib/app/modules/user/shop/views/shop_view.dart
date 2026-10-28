@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/shop_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -30,10 +31,13 @@ import '../../../../core/values/app_strings.dart';
 /// - Si isBulkProduct = true, affiche les portions disponibles (25cl, 50cl, etc.)
 /// - Prix et stock affichés selon la portion sélectionnée
 class ShopView extends GetView<ShopController> {
-  const ShopView({Key? key}) : super(key: key);
+  ShopView({Key? key}) : super(key: key) {
+    Trace.create('ShopView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('ShopView', 'build');
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: kToolbarHeight + 16.h,
@@ -257,10 +261,13 @@ class ShopView extends GetView<ShopController> {
 class _ProductCard extends GetView<ShopController> {
   final Product product;
 
-  const _ProductCard({required this.product});
+  _ProductCard({required this.product}) {
+    Trace.create('_ProductCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_ProductCard', 'build');
     return Card(
       elevation: 3,
       margin: EdgeInsets.only(bottom: 12.h),
@@ -379,6 +386,7 @@ class _ProductCard extends GetView<ShopController> {
   }
 
   Color _getStockColor() {
+    Trace.call('_ProductCard', '_getStockColor');
     if (product.stockQuantity == 0) return AppColors.stockOut;
     if (product.stockQuantity <= product.minStockAlert)
       return AppColors.stockLow;
@@ -386,6 +394,7 @@ class _ProductCard extends GetView<ShopController> {
   }
 
   void _showProductDetails(BuildContext context) {
+    Trace.call('_ProductCard', '_showProductDetails');
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -399,10 +408,13 @@ class _ProductCard extends GetView<ShopController> {
 class _BulkProductCard extends GetView<ShopController> {
   final Product product;
 
-  const _BulkProductCard({required this.product});
+  _BulkProductCard({required this.product}) {
+    Trace.create('_BulkProductCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_BulkProductCard', 'build');
     final portions = controller.getPortionsForProduct(product.id!);
     final activePortions = portions.where((p) => p.isActive).toList();
 
@@ -599,6 +611,7 @@ class _BulkProductCard extends GetView<ShopController> {
   }
 
   Color _getStockColor() {
+    Trace.call('_BulkProductCard', '_getStockColor');
     if (product.stockQuantity == 0) return AppColors.stockOut;
     if (product.stockQuantity <= product.minStockAlert)
       return AppColors.stockLow;
@@ -606,6 +619,7 @@ class _BulkProductCard extends GetView<ShopController> {
   }
 
   void _showPortionDialog(BuildContext context, ProductPortion portion) {
+    Trace.call('_BulkProductCard', '_showPortionDialog');
     final quantityController = TextEditingController(text: '1');
 
     showDialog(
@@ -681,10 +695,13 @@ class _BulkProductCard extends GetView<ShopController> {
 class _ProductDetailsSheet extends GetView<ShopController> {
   final Product product;
 
-  const _ProductDetailsSheet({required this.product});
+  _ProductDetailsSheet({required this.product}) {
+    Trace.create('_ProductDetailsSheet');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_ProductDetailsSheet', 'build');
     final quantityController = TextEditingController(text: '1');
     final selectedPortion = Rxn<ProductPortion>();
 
@@ -704,6 +721,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
     BuildContext context,
     TextEditingController quantityController,
   ) {
+    Trace.call('_ProductDetailsSheet', '_buildRegularProductSheet');
     return Padding(
       padding: EdgeInsets.all(24.w),
       child: SingleChildScrollView(
@@ -827,6 +845,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
     Rxn<ProductPortion> selectedPortion,
     TextEditingController quantityController,
   ) {
+    Trace.call('_ProductDetailsSheet', '_buildBulkProductSheet');
     final portions = controller.getPortionsForProduct(product.id!);
 
     return Padding(

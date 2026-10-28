@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../services/server_config_service.dart';
 import '../../../services/connectivity_service.dart';
 import '../../../data/providers/serverpod_client_provider.dart';
@@ -46,8 +47,13 @@ class SettingsController extends GetxController {
   /// Connexion sécurisée HTTPS activée (observable, lié au switch des réglages)
   final useHttps = ServerConfigService.defaultUseHttps.obs;
 
+  SettingsController() {
+    Trace.create('SettingsController');
+  }
+
   @override
   void onInit() {
+    Trace.call('SettingsController', 'onInit');
     super.onInit();
     // Initialisation des champs avec la configuration actuelle
     hostController = TextEditingController(text: _configService.serverHost);
@@ -62,6 +68,7 @@ class SettingsController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('SettingsController');
     // Libération des controllers de texte
     hostController.dispose();
     portController.dispose();
@@ -79,6 +86,7 @@ class SettingsController extends GetxController {
   ///
   /// En cas d'erreur, affiche un snackbar d'erreur.
   Future<void> saveConfiguration() async {
+    Trace.call('SettingsController', 'saveConfiguration');
     final host = hostController.text.trim();
     final portText = portController.text.trim();
 
@@ -167,6 +175,7 @@ class SettingsController extends GetxController {
   ///
   /// Ne sauvegarde pas automatiquement, l'utilisateur doit cliquer sur "Sauvegarder".
   Future<void> resetToDefault() async {
+    Trace.call('SettingsController', 'resetToDefault');
     hostController.text = ServerConfigService.defaultHost;
     portController.text = ServerConfigService.defaultPort.toString();
     inactivityController.text = ServerConfigService
@@ -178,6 +187,7 @@ class SettingsController extends GetxController {
   /// Active/désactive la connexion sécurisée et bascule le port affiché
   /// (443 en HTTPS, 8080 en HTTP) en conséquence, sans frappe de l'utilisateur.
   void onHttpsChanged(bool value) {
+    Trace.call('SettingsController', 'onHttpsChanged');
     useHttps.value = value;
     portController.text =
         (value
@@ -195,6 +205,7 @@ class SettingsController extends GetxController {
   ///
   /// Affiche un snackbar de succès ou d'erreur selon le résultat.
   Future<void> testConnection() async {
+    Trace.call('SettingsController', 'testConnection');
     final host = hostController.text.trim();
     final port = int.tryParse(portController.text.trim());
 

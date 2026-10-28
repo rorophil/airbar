@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/checkout_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -35,10 +36,13 @@ import '../../../../services/auth_service.dart';
 /// - Débit compte + création transaction + déduction stock + vidage panier
 /// - Tout ou rien (rollback en cas d'erreur)
 class CheckoutView extends GetView<CheckoutController> {
-  const CheckoutView({Key? key}) : super(key: key);
+  CheckoutView({super.key}) {
+    Trace.create('CheckoutView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CheckoutView', 'build');
     final authService = Get.find<AuthService>();
 
     return Scaffold(

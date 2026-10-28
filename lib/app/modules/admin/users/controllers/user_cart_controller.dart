@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/cart_repository.dart';
 import '../../../../data/repositories/product_repository.dart';
 import '../../../../data/repositories/product_portion_repository.dart';
@@ -16,13 +17,16 @@ class AdminCartItemWithProduct {
   final Product? product;
   final ProductPortion? portion;
 
-  AdminCartItemWithProduct(this.cartItem, this.product, this.portion);
+  AdminCartItemWithProduct(this.cartItem, this.product, this.portion) {
+    Trace.create('AdminCartItemWithProduct');
+  }
 
   int get quantity => cartItem.quantity;
 
   double get effectivePrice => portion?.price ?? product?.price ?? 0.0;
 
   String get displayName {
+    Trace.call('AdminCartItemWithProduct', 'displayName');
     if (product == null) return 'Produit inconnu';
     if (portion != null) return '${product!.name} - ${portion!.name}';
     return product!.name;
@@ -50,16 +54,31 @@ class UserCartController extends GetxController {
   final cartItems = <AdminCartItemWithProduct>[].obs;
   final total = 0.0.obs;
 
+  UserCartController() {
+    Trace.create('UserCartController');
+  }
+
   @override
   void onInit() {
+    Trace.call('UserCartController', 'onInit');
     super.onInit();
     targetUser = Get.arguments?['user'];
     loadCart();
   }
 
-  Future<void> refresh() => loadCart();
+  @override
+  void onClose() {
+    Trace.dispose('UserCartController');
+    super.onClose();
+  }
+
+  Future<void> refresh() {
+    Trace.call('UserCartController', 'refresh');
+    return loadCart();
+  }
 
   Future<void> loadCart() async {
+    Trace.call('UserCartController', 'loadCart');
     if (targetUser?.id == null) return;
 
     try {
@@ -107,6 +126,7 @@ class UserCartController extends GetxController {
 
   /// Vide entièrement le panier du membre
   Future<void> clearCart() async {
+    Trace.call('UserCartController', 'clearCart');
     if (targetUser?.id == null) return;
 
     final confirmed = await Get.dialog<bool>(
@@ -155,6 +175,7 @@ class UserCartController extends GetxController {
 
   /// Force l'exécution du panier (débit du compte, PIN admin requis)
   Future<void> forceCheckout() async {
+    Trace.call('UserCartController', 'forceCheckout');
     if (targetUser?.id == null || cartItems.isEmpty) return;
 
     final admin = _authService.currentUser.value;
@@ -269,6 +290,7 @@ class UserCartController extends GetxController {
   }
 
   void _refreshUsersListIfPresent() {
+    Trace.call('UserCartController', '_refreshUsersListIfPresent');
     try {
       Get.find<UsersController>().loadUsers();
       Get.find<UsersController>().loadCartCounts();

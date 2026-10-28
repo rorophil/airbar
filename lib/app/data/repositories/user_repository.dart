@@ -1,5 +1,6 @@
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion des utilisateurs
 ///
@@ -14,6 +15,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// Ce repository ne gère PAS de cache car les données utilisateur doivent
 /// toujours être à jour (solde de compte, statut, etc.).
 class UserRepository {
+  UserRepository() {
+    Trace.create('UserRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -25,6 +30,7 @@ class UserRepository {
   ///
   /// Note: Opération réservée aux administrateurs uniquement
   Future<List<dynamic>> getAllUsers() async {
+    Trace.call('UserRepository', 'getAllUsers');
     try {
       return await _client.user.getAllUsers();
     } catch (e) {
@@ -41,6 +47,7 @@ class UserRepository {
   ///
   /// Throws: Exception si l'utilisateur n'existe pas ou erreur serveur
   Future<dynamic> getUserById(int userId) async {
+    Trace.call('UserRepository', 'getUserById');
     try {
       return await _client.user.getUserById(userId);
     } catch (e) {
@@ -71,6 +78,7 @@ class UserRepository {
     required String pin,
     required UserRole role,
   }) async {
+    Trace.call('UserRepository', 'createUser');
     try {
       return await _client.user.createUser(
         email,
@@ -109,6 +117,7 @@ class UserRepository {
     required String lastName,
     required UserRole role,
   }) async {
+    Trace.call('UserRepository', 'updateUser');
     try {
       return await _client.user.updateUser(
         userId,
@@ -135,6 +144,7 @@ class UserRepository {
   /// Note: Opération réservée aux administrateurs uniquement.
   /// Préférer la désactivation à la suppression pour préserver l'historique.
   Future<void> deactivateUser(int userId) async {
+    Trace.call('UserRepository', 'deactivateUser');
     try {
       await _client.user.deactivateUser(userId);
     } catch (e) {
@@ -153,6 +163,7 @@ class UserRepository {
   ///
   /// Note: Opération réservée aux administrateurs uniquement
   Future<void> reactivateUser(int userId) async {
+    Trace.call('UserRepository', 'reactivateUser');
     try {
       await _client.user.reactivateUser(userId);
     } catch (e) {
@@ -172,6 +183,7 @@ class UserRepository {
   ///
   /// Note: Opération réservée aux administrateurs uniquement
   Future<void> resetPassword(int userId, String newPassword) async {
+    Trace.call('UserRepository', 'resetPassword');
     try {
       await _client.user.resetPassword(userId, newPassword);
     } catch (e) {
@@ -192,6 +204,7 @@ class UserRepository {
   ///
   /// Note: Opération réservée aux administrateurs uniquement
   Future<void> resetPin(int userId, String newPin) async {
+    Trace.call('UserRepository', 'resetPin');
     try {
       await _client.user.resetPin(userId, newPin);
     } catch (e) {
@@ -211,6 +224,7 @@ class UserRepository {
   ///
   /// Note: Opération réservée aux administrateurs uniquement
   Future<void> deleteUser(int userId) async {
+    Trace.call('UserRepository', 'deleteUser');
     try {
       await _client.user.deleteUser(userId);
     } catch (e) {
@@ -243,6 +257,7 @@ class UserRepository {
     required double amount,
     String? notes,
   }) async {
+    Trace.call('UserRepository', 'creditAccount');
     try {
       return await _client.user.creditAccount(userId, amount, notes);
     } catch (e) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/users_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -35,10 +36,13 @@ import '../../../../core/values/app_strings.dart';
 /// - Recherche → Filtrage instantané de la liste
 /// - FAB → Création nouvel utilisateur
 class UsersView extends GetView<UsersController> {
-  const UsersView({Key? key}) : super(key: key);
+  UsersView({Key? key}) : super(key: key) {
+    Trace.create('UsersView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('UsersView', 'build');
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.users),
@@ -121,10 +125,13 @@ class UsersView extends GetView<UsersController> {
 class _UserCard extends GetView<UsersController> {
   final User user;
 
-  const _UserCard({required this.user});
+  _UserCard({required this.user}) {
+    Trace.create('_UserCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_UserCard', 'build');
     return Opacity(
       opacity: user.isActive ? 1.0 : 0.5,
       child: Card(

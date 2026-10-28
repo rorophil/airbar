@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../data/repositories/auth_repository.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/auth_service.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Controller du module Login
 ///
@@ -44,8 +45,13 @@ class LoginController extends GetxController {
   /// Clé du formulaire pour la validation
   final formKey = GlobalKey<FormState>();
 
+  LoginController() {
+    Trace.create('LoginController');
+  }
+
   @override
   void onClose() {
+    Trace.dispose('LoginController');
     // Libération des controllers de texte
     emailController.dispose();
     passwordController.dispose();
@@ -56,6 +62,7 @@ class LoginController extends GetxController {
   ///
   /// Permet à l'utilisateur de voir/masquer son mot de passe lors de la saisie.
   void togglePasswordVisibility() {
+    Trace.call('LoginController', 'togglePasswordVisibility');
     obscurePassword.value = !obscurePassword.value;
   }
 
@@ -69,6 +76,7 @@ class LoginController extends GetxController {
   ///
   /// Retourne un message d'erreur si invalide, null si valide.
   String? validateEmail(String? value) {
+    Trace.call('LoginController', 'validateEmail');
     // Vérification présence
     if (value == null || value.isEmpty) {
       return 'Veuillez entrer votre email';
@@ -93,6 +101,7 @@ class LoginController extends GetxController {
   ///
   /// Retourne un message d'erreur si invalide, null si valide.
   String? validatePassword(String? value) {
+    Trace.call('LoginController', 'validatePassword');
     if (value == null || value.isEmpty) {
       return 'Veuillez entrer votre mot de passe';
     }
@@ -115,6 +124,7 @@ class LoginController extends GetxController {
   /// En cas de succès, l'utilisateur est stocké dans AuthService
   /// et les routes sont nettoyées (offAllNamed).
   Future<void> login() async {
+    Trace.call('LoginController', 'login');
     // Validation du formulaire
     if (!formKey.currentState!.validate()) {
       return;

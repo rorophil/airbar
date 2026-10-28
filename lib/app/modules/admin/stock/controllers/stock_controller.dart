@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/stock_repository.dart';
 import '../../../../data/repositories/product_repository.dart';
 import '../../../../services/auth_service.dart';
@@ -47,14 +48,26 @@ class StockController extends GetxController {
   final searchQuery = ''.obs;
   final filteredProducts = <Product>[].obs;
 
+  StockController() {
+    Trace.create('StockController');
+  }
+
   @override
   void onInit() {
+    Trace.call('StockController', 'onInit');
     super.onInit();
     loadData(forceRefresh: true);
   }
 
+  @override
+  void onClose() {
+    Trace.dispose('StockController');
+    super.onClose();
+  }
+
   /// Load products and stock data
   Future<void> loadData({bool forceRefresh = false}) async {
+    Trace.call('StockController', 'loadData');
     if (isLoading.value) return;
 
     try {
@@ -87,6 +100,7 @@ class StockController extends GetxController {
 
   /// Filter products by search query
   void filterProducts() {
+    Trace.call('StockController', 'filterProducts');
     if (searchQuery.value.isEmpty) {
       filteredProducts.value = products;
     } else {
@@ -100,12 +114,14 @@ class StockController extends GetxController {
 
   /// Update search query
   void updateSearchQuery(String query) {
+    Trace.call('StockController', 'updateSearchQuery');
     searchQuery.value = query;
     filterProducts();
   }
 
   /// Navigate to restock product
   void restockProduct(Product product) {
+    Trace.call('StockController', 'restockProduct');
     Get.toNamed(
       AppRoutes.ADMIN_STOCK_RESTOCK,
       arguments: {'product': product},
@@ -122,6 +138,7 @@ class StockController extends GetxController {
     required int adjustment,
     required String reason,
   }) async {
+    Trace.call('StockController', 'adjustStock');
     try {
       final adminUser = _authService.currentUser.value;
       if (adminUser == null) {
@@ -158,6 +175,7 @@ class StockController extends GetxController {
 
   /// Get stock status
   String getStockStatus(Product product) {
+    Trace.call('StockController', 'getStockStatus');
     if (!product.trackStock) {
       return 'Stock non géré';
     }
@@ -172,6 +190,7 @@ class StockController extends GetxController {
 
   /// Get stock color
   Color getStockColor(Product product) {
+    Trace.call('StockController', 'getStockColor');
     if (!product.trackStock) {
       return const Color(0xFF9E9E9E); // Grey - Stock not tracked
     }
@@ -186,6 +205,7 @@ class StockController extends GetxController {
 
   /// Refresh data
   Future<void> refresh() async {
+    Trace.call('StockController', 'refresh');
     await loadData(forceRefresh: true);
   }
 }

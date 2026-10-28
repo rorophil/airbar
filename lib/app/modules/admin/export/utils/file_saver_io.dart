@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as path;
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Sauvegarde de fichiers pour plateformes IO (Desktop/Mobile)
 ///
@@ -28,6 +29,7 @@ import 'package:path/path.dart' as path;
 ///
 /// Returns: Chemin complet du fichier sauvegardé, ou null si annulation
 Future<String?> saveFile(String content, String fileName) async {
+  Trace.call('FileSaverIO', 'saveFile');
   print('=== DEBUG: saveFile called with fileName: $fileName ===');
 
   // Ask user to select a directory (works on macOS, Windows, Linux)

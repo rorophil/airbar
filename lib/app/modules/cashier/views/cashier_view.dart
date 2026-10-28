@@ -3,15 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/cashier_controller.dart';
 import '../../../core/values/app_colors.dart';
 
 /// Vue principale du module Caisse
 class CashierView extends GetView<CashierController> {
-  const CashierView({Key? key}) : super(key: key);
+  CashierView({Key? key}) : super(key: key) {
+    Trace.create('CashierView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CashierView', 'build');
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -312,6 +316,7 @@ class CashierView extends GetView<CashierController> {
   /// - Bouton "+": Augmente la quantité
   /// - Bouton poubelle: Supprime l'article du panier
   Widget _buildCartItem(CashSaleItem item, int index) {
+    Trace.call('CashierView', '_buildCartItem');
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       padding: EdgeInsets.all(8.w),
@@ -394,10 +399,13 @@ class CashierView extends GetView<CashierController> {
 class _ProductCard extends GetView<CashierController> {
   final Product product;
 
-  const _ProductCard({required this.product});
+  _ProductCard({required this.product}) {
+    Trace.create('_ProductCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_ProductCard', 'build');
     return Card(
       elevation: 3,
       margin: EdgeInsets.only(bottom: 12.h),
@@ -519,6 +527,7 @@ class _ProductCard extends GetView<CashierController> {
   /// - Orange: Stock faible (≤ seuil d'alerte)
   /// - Vert ([AppColors.success]): Stock OK (> seuil d'alerte)
   Color _getStockColor() {
+    Trace.call('_ProductCard', '_getStockColor');
     if (product.stockQuantity == 0) return AppColors.error;
     if (product.stockQuantity <= product.minStockAlert) return Colors.orange;
     return AppColors.success;
@@ -528,6 +537,7 @@ class _ProductCard extends GetView<CashierController> {
   ///
   /// Permet de sélectionner la quantité et d'ajouter au panier.
   void _showProductDetails(BuildContext context) {
+    Trace.call('_ProductCard', '_showProductDetails');
     showModalBottomSheet(
       context: context,
       shape: RoundedRectangleBorder(
@@ -561,10 +571,13 @@ class _ProductCard extends GetView<CashierController> {
 class _BulkProductCard extends GetView<CashierController> {
   final Product product;
 
-  const _BulkProductCard({required this.product});
+  _BulkProductCard({required this.product}) {
+    Trace.create('_BulkProductCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_BulkProductCard', 'build');
     final portions = controller.getPortionsForProduct(product.id!);
     final activePortions = portions.where((p) => p.isActive).toList();
 
@@ -764,6 +777,7 @@ class _BulkProductCard extends GetView<CashierController> {
   /// - Orange: Stock faible (≤ seuil d'alerte)
   /// - Vert ([AppColors.success]): Stock OK (> seuil d'alerte)
   Color _getStockColor() {
+    Trace.call('_BulkProductCard', '_getStockColor');
     if (product.stockQuantity == 0) return AppColors.error;
     if (product.stockQuantity <= product.minStockAlert) return Colors.orange;
     return AppColors.success;
@@ -784,6 +798,7 @@ class _BulkProductCard extends GetView<CashierController> {
   /// 2. Appelle [addToCashierCart] avec l'ID de la portion
   /// 3. Affiche un snackbar de confirmation
   void _showPortionDialog(BuildContext context, ProductPortion portion) {
+    Trace.call('_BulkProductCard', '_showPortionDialog');
     final quantityController = TextEditingController(text: '1');
 
     showDialog(
@@ -869,10 +884,13 @@ class _BulkProductCard extends GetView<CashierController> {
 class _ProductDetailsSheet extends GetView<CashierController> {
   final Product product;
 
-  const _ProductDetailsSheet({required this.product});
+  _ProductDetailsSheet({required this.product}) {
+    Trace.create('_ProductDetailsSheet');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_ProductDetailsSheet', 'build');
     final quantityController = TextEditingController(text: '1');
     final selectedPortion = Rxn<ProductPortion>();
 
@@ -904,6 +922,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
     BuildContext context,
     TextEditingController quantityController,
   ) {
+    Trace.call('_ProductDetailsSheet', '_buildRegularProductSheet');
     return Padding(
       padding: EdgeInsets.all(24.w),
       child: SingleChildScrollView(
@@ -1045,6 +1064,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
     Rxn<ProductPortion> selectedPortion,
     TextEditingController quantityController,
   ) {
+    Trace.call('_ProductDetailsSheet', '_buildBulkProductSheet');
     final portions = controller.getPortionsForProduct(product.id!);
 
     return Padding(

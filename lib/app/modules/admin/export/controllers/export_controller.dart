@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import 'package:intl/intl.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/transaction_repository.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../data/repositories/product_repository.dart';
@@ -56,8 +57,19 @@ class ExportController extends GetxController {
   final includeInactiveUsers = false.obs;
   final includeInactiveProducts = false.obs;
 
+  ExportController() {
+    Trace.create('ExportController');
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('ExportController');
+    super.onClose();
+  }
+
   /// Select start date
   Future<void> selectStartDate(BuildContext context) async {
+    Trace.call('ExportController', 'selectStartDate');
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate:
@@ -72,6 +84,7 @@ class ExportController extends GetxController {
 
   /// Select end date
   Future<void> selectEndDate(BuildContext context) async {
+    Trace.call('ExportController', 'selectEndDate');
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: endDate.value ?? DateTime.now(),
@@ -85,11 +98,13 @@ class ExportController extends GetxController {
 
   /// Select transaction type filter
   void selectType(TransactionType? type) {
+    Trace.call('ExportController', 'selectType');
     selectedType.value = type;
   }
 
   /// Export transactions
   Future<void> exportTransactions() async {
+    Trace.call('ExportController', 'exportTransactions');
     print('=== DEBUG: exportTransactions called ===');
 
     if (startDate.value == null || endDate.value == null) {
@@ -176,6 +191,7 @@ class ExportController extends GetxController {
 
   /// Export products below stock alert threshold
   Future<void> exportLowStockProducts() async {
+    Trace.call('ExportController', 'exportLowStockProducts');
     print('=== DEBUG: exportLowStockProducts called ===');
 
     try {
@@ -267,16 +283,19 @@ class ExportController extends GetxController {
 
   /// Toggle whether deactivated users are included in the balances export
   void toggleIncludeInactiveUsers(bool value) {
+    Trace.call('ExportController', 'toggleIncludeInactiveUsers');
     includeInactiveUsers.value = value;
   }
 
   /// Toggle whether deactivated products are included in the inventory export
   void toggleIncludeInactiveProducts(bool value) {
+    Trace.call('ExportController', 'toggleIncludeInactiveProducts');
     includeInactiveProducts.value = value;
   }
 
   /// Export full product inventory
   Future<void> exportProductInventory() async {
+    Trace.call('ExportController', 'exportProductInventory');
     try {
       isExporting.value = true;
 
@@ -333,6 +352,7 @@ class ExportController extends GetxController {
 
   /// Export user account balances
   Future<void> exportUserBalances() async {
+    Trace.call('ExportController', 'exportUserBalances');
     print('=== DEBUG: exportUserBalances called ===');
 
     try {
@@ -387,6 +407,7 @@ class ExportController extends GetxController {
 
   /// Generate CSV content for the full product inventory
   String _generateInventoryCSV(List<Product> products) {
+    Trace.call('ExportController', '_generateInventoryCSV');
     final buffer = StringBuffer();
 
     buffer.writeln(
@@ -449,6 +470,7 @@ class ExportController extends GetxController {
 
   /// Generate CSV content for user balances
   String _generateUserBalancesCSV(List<User> users) {
+    Trace.call('ExportController', '_generateUserBalancesCSV');
     final buffer = StringBuffer();
 
     buffer.writeln('ID,Prénom,Nom,Email,Rôle,Solde,Statut');
@@ -472,6 +494,7 @@ class ExportController extends GetxController {
 
   /// Generate CSV content for products
   String _generateProductsCSV(List<Product> products) {
+    Trace.call('ExportController', '_generateProductsCSV');
     final buffer = StringBuffer();
 
     // Header
@@ -541,6 +564,7 @@ class ExportController extends GetxController {
 
   /// Get category name by ID
   String _getCategoryName(int categoryId) {
+    Trace.call('ExportController', '_getCategoryName');
     final category = categories.firstWhereOrNull((c) => c.id == categoryId);
     if (category != null) {
       return category.name;
@@ -550,6 +574,7 @@ class ExportController extends GetxController {
 
   /// Generate CSV content
   String _generateCSV(List<Transaction> transactions) {
+    Trace.call('ExportController', '_generateCSV');
     final buffer = StringBuffer();
 
     // Header
@@ -577,6 +602,7 @@ class ExportController extends GetxController {
 
   /// Get user name by ID
   String _getUserName(int userId) {
+    Trace.call('ExportController', '_getUserName');
     final user = users.firstWhereOrNull((u) => u.id == userId);
     if (user != null) {
       return '${user.firstName} ${user.lastName}';
@@ -587,11 +613,13 @@ class ExportController extends GetxController {
   /// Save CSV file
   /// Returns file path if saved successfully, null if user cancelled
   Future<String?> _saveFile(String content, String fileName) async {
+    Trace.call('ExportController', '_saveFile');
     return await file_saver.saveFile(content, fileName);
   }
 
   /// Get transaction type label
   String getTypeLabel(TransactionType type) {
+    Trace.call('ExportController', 'getTypeLabel');
     switch (type) {
       case TransactionType.purchase:
         return 'Achats';

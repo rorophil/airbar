@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../controllers/login_controller.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Injection de dépendances pour le module Login
 ///
@@ -9,8 +10,13 @@ import '../controllers/login_controller.dart';
 /// Pattern GetX: Le controller est créé à la demande (lazy) et automatiquement
 /// libéré quand la route login est quittée.
 class LoginBinding extends Bindings {
+  LoginBinding() {
+    Trace.create('LoginBinding');
+  }
+
   @override
   void dependencies() {
+    Trace.call('LoginBinding', 'dependencies');
     // Enregistrement lazy du controller de login
     Get.lazyPut<LoginController>(() => LoginController());
   }

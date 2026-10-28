@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../services/auth_service.dart';
 import '../app_routes.dart';
 
@@ -12,11 +13,16 @@ import '../app_routes.dart';
 ///
 /// Usage: Ajouter `middlewares: [AdminMiddleware()]` dans GetPage
 class AdminMiddleware extends GetMiddleware {
+  AdminMiddleware() {
+    Trace.create('AdminMiddleware');
+  }
+
   @override
   int? get priority => 2;
 
   @override
   RouteSettings? redirect(String? route) {
+    Trace.call('AdminMiddleware', 'redirect', 'route=$route');
     final authService = Get.find<AuthService>();
 
     // Si non authentifié, rediriger vers login

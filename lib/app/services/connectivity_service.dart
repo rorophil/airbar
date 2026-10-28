@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import '../core/utils/trace_logger.dart';
 
 /// Service de surveillance de la connectivité réseau
 ///
@@ -9,8 +10,13 @@ class ConnectivityService extends GetxService {
   /// Indique si l'appareil est connecté à internet
   final RxBool isOnline = true.obs;
 
+  ConnectivityService() {
+    Trace.create('ConnectivityService');
+  }
+
   @override
   void onInit() {
+    Trace.call('ConnectivityService', 'onInit');
     super.onInit();
     // Vérification initiale de la connectivité
     _initConnectivity();
@@ -20,6 +26,7 @@ class ConnectivityService extends GetxService {
 
   /// Initialise l'état de connectivité au démarrage
   Future<void> _initConnectivity() async {
+    Trace.call('ConnectivityService', '_initConnectivity');
     try {
       final result = await Connectivity().checkConnectivity();
       _updateConnectionStatus(result.first);
@@ -32,6 +39,7 @@ class ConnectivityService extends GetxService {
   ///
   /// Utilise connectivity_plus pour surveiller les changements en temps réel.
   void _setupConnectivityListener() {
+    Trace.call('ConnectivityService', '_setupConnectivityListener');
     Connectivity().onConnectivityChanged.listen((
       List<ConnectivityResult> results,
     ) {
@@ -47,6 +55,7 @@ class ConnectivityService extends GetxService {
   ///
   /// Affiche un snackbar lors du passage online ↔ offline.
   void _updateConnectionStatus(ConnectivityResult result) {
+    Trace.call('ConnectivityService', '_updateConnectionStatus');
     final wasOnline = isOnline.value;
     // Considéré offline uniquement si aucune connexion
     isOnline.value = result != ConnectivityResult.none;
@@ -75,6 +84,7 @@ class ConnectivityService extends GetxService {
   ///
   /// Returns: `true` si online, `false` si offline (+ snackbar d'avertissement)
   bool requiresConnection(String operation) {
+    Trace.call('ConnectivityService', 'requiresConnection');
     if (!isOnline.value) {
       Get.snackbar(
         'Connexion requise',

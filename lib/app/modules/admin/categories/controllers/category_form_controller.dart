@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/category_repository.dart';
 import '../../../../core/values/app_strings.dart';
 import 'categories_controller.dart';
@@ -46,6 +47,10 @@ class CategoryFormController extends GetxController {
 
   ProductCategory? categoryToEdit;
 
+  CategoryFormController() {
+    Trace.create('CategoryFormController');
+  }
+
   // Available icons
   final availableIcons = [
     'category',
@@ -63,6 +68,7 @@ class CategoryFormController extends GetxController {
 
   @override
   void onInit() {
+    Trace.call('CategoryFormController', 'onInit');
     super.onInit();
 
     // Check if editing
@@ -82,6 +88,7 @@ class CategoryFormController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('CategoryFormController');
     nameController.dispose();
     descriptionController.dispose();
     displayOrderController.dispose();
@@ -90,6 +97,7 @@ class CategoryFormController extends GetxController {
 
   /// Validate and submit form
   Future<void> submit() async {
+    Trace.call('CategoryFormController', 'submit');
     if (!formKey.currentState!.validate()) {
       return;
     }
@@ -168,6 +176,7 @@ class CategoryFormController extends GetxController {
 
   /// Validate name
   String? validateName(String? value) {
+    Trace.call('CategoryFormController', 'validateName');
     if (value == null || value.isEmpty) {
       return 'Nom requis';
     }
@@ -176,6 +185,7 @@ class CategoryFormController extends GetxController {
 
   /// Validate display order
   String? validateDisplayOrder(String? value) {
+    Trace.call('CategoryFormController', 'validateDisplayOrder');
     if (value == null || value.isEmpty) {
       return 'Ordre requis';
     }

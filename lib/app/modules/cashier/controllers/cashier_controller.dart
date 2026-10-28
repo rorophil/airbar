@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../data/repositories/product_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/product_portion_repository.dart';
@@ -41,18 +42,30 @@ class CashSaleItem {
   /// La portion sélectionnée (pour les produits en vrac uniquement)
   final ProductPortion? portion;
 
-  CashSaleItem({required this.product, required this.quantity, this.portion});
+  CashSaleItem({required this.product, required this.quantity, this.portion}) {
+    Trace.create('CashSaleItem');
+  }
 
   /// Prix effectif: prix de la portion si définie, sinon prix du produit
-  double get effectivePrice => portion?.price ?? product.price;
+  double get effectivePrice {
+    Trace.call('CashSaleItem', 'effectivePrice');
+    return portion?.price ?? product.price;
+  }
 
   /// Nom d'affichage: nom du produit avec portion si applicable
   /// Exemple: "Bière - 50cl" ou simplement "Bière"
-  String get displayName =>
-      portion != null ? '${product.name} - ${portion!.name}' : product.name;
+  String get displayName {
+    Trace.call('CashSaleItem', 'displayName');
+    return portion != null
+        ? '${product.name} - ${portion!.name}'
+        : product.name;
+  }
 
   /// Sous-total de la ligne: prix effectif × quantité
-  double get subtotal => effectivePrice * quantity;
+  double get subtotal {
+    Trace.call('CashSaleItem', 'subtotal');
+    return effectivePrice * quantity;
+  }
 }
 
 /// Controller du module Caisse
@@ -77,8 +90,13 @@ class CashierController extends GetxController {
   /// Utilisé pour afficher les options de taille dans l'interface utilisateur.
   final productPortions = <int, List<ProductPortion>>{}.obs;
 
+  CashierController() {
+    Trace.create('CashierController');
+  }
+
   // Getters
   List<Product> get filteredProducts {
+    Trace.call('CashierController', 'filteredProducts');
     var filtered = products.where((p) => p.isActive).toList();
 
     // Filter by category
@@ -106,6 +124,7 @@ class CashierController extends GetxController {
 
   /// Nom complet du caissier connecté
   String get cashierName {
+    Trace.call('CashierController', 'cashierName');
     final user = _authService.currentUser.value;
     if (user == null) return '';
     return '${user.firstName} ${user.lastName}';
@@ -114,11 +133,19 @@ class CashierController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    Trace.call('CashierController', 'onInit');
     loadData();
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('CashierController');
+    super.onClose();
   }
 
   /// Charge les produits et catégories
   Future<void> loadData() async {
+    Trace.call('CashierController', 'loadData');
     try {
       isLoading.value = true;
 
@@ -152,6 +179,7 @@ class CashierController extends GetxController {
   ///
   /// Appelée automatiquement lors du chargement initial des données.
   Future<void> _loadPortionsForBulkProducts() async {
+    Trace.call('CashierController', '_loadPortionsForBulkProducts');
     try {
       final bulkProducts = products.where((p) => p.isBulkProduct).toList();
 
@@ -183,6 +211,7 @@ class CashierController extends GetxController {
   /// }
   /// ```
   List<ProductPortion> getPortionsForProduct(int productId) {
+    Trace.call('CashierController', 'getPortionsForProduct');
     return productPortions[productId] ?? [];
   }
 
@@ -212,6 +241,7 @@ class CashierController extends GetxController {
   /// controller.addToCashierCart(futBiere, 3, portionId: portion50cl.id);
   /// ```
   void addToCashierCart(Product product, int quantity, {int? portionId}) {
+    Trace.call('CashierController', 'addToCashierCart');
     // Récupérer la portion si fournie
     ProductPortion? portion;
     if (portionId != null) {
@@ -276,6 +306,7 @@ class CashierController extends GetxController {
 
   /// Met à jour la quantité d'un article dans le panier
   void updateQuantity(int index, int newQuantity) {
+    Trace.call('CashierController', 'updateQuantity');
     if (newQuantity <= 0) {
       removeFromCart(index);
       return;
@@ -319,11 +350,13 @@ class CashierController extends GetxController {
 
   /// Supprime un article du panier
   void removeFromCart(int index) {
+    Trace.call('CashierController', 'removeFromCart');
     cashierCart.removeAt(index);
   }
 
   /// Vide le panier
   void clearCart() {
+    Trace.call('CashierController', 'clearCart');
     Get.defaultDialog(
       title: 'Vider le panier',
       middleText: 'Voulez-vous vraiment vider le panier ?',
@@ -338,16 +371,19 @@ class CashierController extends GetxController {
 
   /// Filtre par catégorie
   void filterByCategory(int? categoryId) {
+    Trace.call('CashierController', 'filterByCategory');
     selectedCategoryId.value = categoryId;
   }
 
   /// Met à jour la recherche
   void updateSearchQuery(String query) {
+    Trace.call('CashierController', 'updateSearchQuery');
     searchQuery.value = query;
   }
 
   /// Navigation vers le checkout
   void goToCheckout() {
+    Trace.call('CashierController', 'goToCheckout');
     if (cashierCart.isEmpty) {
       Get.snackbar(
         'Panier vide',
@@ -365,6 +401,7 @@ class CashierController extends GetxController {
 
   /// Retour au dashboard avec confirmation si panier non vide
   void goBackToDashboard() {
+    Trace.call('CashierController', 'goBackToDashboard');
     if (cashierCart.isNotEmpty) {
       Get.defaultDialog(
         title: 'Quitter le mode caisse',
@@ -385,6 +422,7 @@ class CashierController extends GetxController {
 
   /// Navigation robuste vers le dashboard
   void _navigateToDashboard() {
+    Trace.call('CashierController', '_navigateToDashboard');
     // Vérifier si l'utilisateur est admin
     if (_authService.currentUser.value?.role == UserRole.admin) {
       // Si admin, aller au dashboard admin

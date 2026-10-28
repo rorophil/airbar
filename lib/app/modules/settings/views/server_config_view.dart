@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../services/server_config_service.dart';
 import '../../../services/connectivity_service.dart';
 import '../controllers/settings_controller.dart';
@@ -28,10 +29,13 @@ import '../controllers/settings_controller.dart';
 ///
 /// Configuration par défaut: localhost:8080
 class ServerConfigView extends GetView<SettingsController> {
-  const ServerConfigView({super.key});
+  ServerConfigView({super.key}) {
+    Trace.create('ServerConfigView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('ServerConfigView', 'build');
     final configService = Get.find<ServerConfigService>();
     final connectivityService = Get.find<ConnectivityService>();
 

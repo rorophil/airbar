@@ -4,15 +4,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/cashier_receipt_controller.dart';
 import '../../../core/values/app_colors.dart';
 
 /// Vue du reçu de vente caisse
 class CashierReceiptView extends GetView<CashierReceiptController> {
-  const CashierReceiptView({Key? key}) : super(key: key);
+  CashierReceiptView({Key? key}) : super(key: key) {
+    Trace.create('CashierReceiptView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CashierReceiptView', 'build');
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
 
     return Scaffold(
@@ -138,6 +142,7 @@ class CashierReceiptView extends GetView<CashierReceiptController> {
   }
 
   Widget _buildInfoRow(String label, String value, {bool isTotal = false}) {
+    Trace.call('CashierReceiptView', '_buildInfoRow');
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

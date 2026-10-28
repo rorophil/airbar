@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/transaction_repository.dart';
 import '../../../../services/auth_service.dart';
 import '../../../../routes/app_routes.dart';
@@ -27,6 +28,10 @@ import '../../../../core/values/app_colors.dart';
 /// - Le PIN est effacé après chaque tentative (succès ou échec)
 /// - Timeout de 30 secondes sur la requête
 class CheckoutController extends GetxController {
+  CheckoutController() {
+    Trace.create('CheckoutController');
+  }
+
   /// Repository pour les transactions
   final TransactionRepository _transactionRepository = Get.find();
 
@@ -50,6 +55,7 @@ class CheckoutController extends GetxController {
 
   @override
   void onInit() {
+    Trace.call('CheckoutController', 'onInit');
     super.onInit();
     // Récupération du montant total passé en argument depuis CartView
     cartTotal = Get.arguments?['total'] ?? 0.0;
@@ -57,6 +63,7 @@ class CheckoutController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('CheckoutController');
     pinController.dispose();
     super.onClose();
   }
@@ -65,6 +72,7 @@ class CheckoutController extends GetxController {
   ///
   /// Permet à l'utilisateur de voir/masquer son PIN lors de la saisie.
   void togglePinVisibility() {
+    Trace.call('CheckoutController', 'togglePinVisibility');
     showPin.value = !showPin.value;
   }
 
@@ -72,6 +80,7 @@ class CheckoutController extends GetxController {
   ///
   /// [value] Le nouveau PIN (4 chiffres attendus)
   void updatePin(String value) {
+    Trace.call('CheckoutController', 'updatePin');
     pin.value = value;
   }
 
@@ -99,6 +108,7 @@ class CheckoutController extends GetxController {
   /// - Le PIN est effacé après chaque tentative
   /// - Le hash est fait côté serveur (jamais côté client)
   Future<void> processCheckout() async {
+    Trace.call('CheckoutController', 'processCheckout');
     // Validation: PIN non vide
     if (pin.value.isEmpty) {
       Get.snackbar(
@@ -198,6 +208,7 @@ class CheckoutController extends GetxController {
   ///
   /// Retourne à l'écran précédent (CartView) sans traiter le paiement.
   void cancel() {
+    Trace.call('CheckoutController', 'cancel');
     Get.back();
   }
 }

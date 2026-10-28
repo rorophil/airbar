@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../routes/app_routes.dart';
 import '../../../services/auth_service.dart';
 
@@ -14,11 +15,16 @@ import '../../../services/auth_service.dart';
 ///
 /// Ce controller est initialisé immédiatement au démarrage de l'app.
 class SplashController extends GetxController {
+  SplashController() {
+    Trace.create('SplashController');
+  }
+
   /// Service d'authentification global
   final AuthService _authService = Get.find();
 
   @override
   void onInit() {
+    Trace.call('SplashController', 'onInit');
     super.onInit();
     print('💦 [SPLASH] SplashController initialized');
     // Lancer la navigation automatique
@@ -37,6 +43,7 @@ class SplashController extends GetxController {
   ///
   /// Utilise offAllNamed pour nettoyer la pile de navigation.
   Future<void> _navigateToNextScreen() async {
+    Trace.call('SplashController', '_navigateToNextScreen');
     try {
       print('⏱️ [SPLASH] Waiting 2 seconds...');
       // Pause de 2 secondes pour afficher le splash screen
@@ -64,5 +71,11 @@ class SplashController extends GetxController {
       print('🚨 [SPLASH] ERROR during navigation: $e');
       print('📝 [SPLASH] StackTrace: $stackTrace');
     }
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('SplashController');
+    super.onClose();
   }
 }

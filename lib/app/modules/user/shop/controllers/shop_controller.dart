@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/product_repository.dart';
 import '../../../../data/repositories/category_repository.dart';
 import '../../../../data/repositories/cart_repository.dart';
@@ -68,8 +69,19 @@ class ShopController extends GetxController {
   /// Map des portions par ID de produit (productId → List<ProductPortion>)
   final productPortions = <int, List<ProductPortion>>{}.obs;
 
+  ShopController() {
+    Trace.create('ShopController');
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('ShopController');
+    super.onClose();
+  }
+
   @override
   void onInit() {
+    Trace.call('ShopController', 'onInit');
     super.onInit();
     // Chargement initial des données
     loadData();
@@ -85,6 +97,7 @@ class ShopController extends GetxController {
   ///
   /// Utilise forceRefresh: true pour éviter les problèmes de cache.
   Future<void> loadData() async {
+    Trace.call('ShopController', 'loadData');
     try {
       isLoading.value = true;
 
@@ -121,6 +134,7 @@ class ShopController extends GetxController {
   ///
   /// Stocke le résultat dans productPortions[productId].
   Future<void> _loadPortionsForBulkProducts() async {
+    Trace.call('ShopController', '_loadPortionsForBulkProducts');
     try {
       // Récupération de tous les produits en vrac
       final bulkProducts = allProducts.where((p) => p.isBulkProduct).toList();
@@ -146,6 +160,7 @@ class ShopController extends GetxController {
   /// Retourne la liste des portions si le produit en a, sinon liste vide.
   /// Utilisé dans l'UI pour afficher les options de taille (25cl, 50cl, etc.).
   List<ProductPortion> getPortionsForProduct(int productId) {
+    Trace.call('ShopController', 'getPortionsForProduct');
     return productPortions[productId] ?? [];
   }
 
@@ -156,6 +171,7 @@ class ShopController extends GetxController {
   ///
   /// Appelé au chargement et après chaque ajout au panier.
   Future<void> loadCartCount() async {
+    Trace.call('ShopController', 'loadCartCount');
     try {
       final userId = _authService.currentUser.value?.id;
       if (userId != null) {
@@ -175,6 +191,7 @@ class ShopController extends GetxController {
   ///
   /// Le résultat est stocké dans filteredProducts (observable).
   void filterProducts() {
+    Trace.call('ShopController', 'filterProducts');
     var result = allProducts.toList();
 
     // Filtre par catégorie
@@ -205,6 +222,7 @@ class ShopController extends GetxController {
   ///
   /// Appelle filterProducts() pour mettre à jour l'affichage.
   void selectCategory(int? categoryId) {
+    Trace.call('ShopController', 'selectCategory');
     selectedCategoryId.value = categoryId;
     filterProducts();
   }
@@ -215,6 +233,7 @@ class ShopController extends GetxController {
   ///
   /// Appelle filterProducts() pour mettre à jour l'affichage en temps réel.
   void updateSearchQuery(String query) {
+    Trace.call('ShopController', 'updateSearchQuery');
     searchQuery.value = query;
     filterProducts();
   }
@@ -241,6 +260,7 @@ class ShopController extends GetxController {
     int quantity, {
     int? productPortionId,
   }) async {
+    Trace.call('ShopController', 'addToCart');
     try {
       // Vérification de l'authentification
       final userId = _authService.currentUser.value?.id;
@@ -333,6 +353,7 @@ class ShopController extends GetxController {
   ///
   /// Après le retour du panier, recharge le nombre d'articles (badge).
   Future<void> goToCart() async {
+    Trace.call('ShopController', 'goToCart');
     await Get.toNamed('/user/cart');
     // Rechargement du badge après modification du panier
     await loadCartCount();
@@ -343,6 +364,7 @@ class ShopController extends GetxController {
   /// Accessible uniquement si l'utilisateur connecté a le rôle admin.
   /// Permet aux admins d'accéder à la gestion sans se déconnecter.
   void goToAdminDashboard() {
+    Trace.call('ShopController', 'goToAdminDashboard');
     Get.toNamed('/admin/dashboard');
   }
 
@@ -367,6 +389,7 @@ class ShopController extends GetxController {
   ///
   /// Retourne la catégorie correspondante ou null si non trouvée.
   ProductCategory? getCategoryForProduct(Product product) {
+    Trace.call('ShopController', 'getCategoryForProduct');
     return categories.firstWhereOrNull((cat) => cat.id == product.categoryId);
   }
 
@@ -383,6 +406,7 @@ class ShopController extends GetxController {
   ///
   /// Par défaut: Icons.help_outline
   IconData getIconForCategory(ProductCategory? category) {
+    Trace.call('ShopController', 'getIconForCategory');
     if (category == null) return Icons.help_outline;
 
     // Mapping nom/iconName → icône
@@ -449,6 +473,7 @@ class ShopController extends GetxController {
 
   /// Logout
   void logout() {
+    Trace.call('ShopController', 'logout');
     Get.defaultDialog(
       title: 'Déconnexion',
       middleText: 'Êtes-vous sûr de vouloir vous déconnecter ?',
@@ -463,6 +488,7 @@ class ShopController extends GetxController {
 
   /// Refresh data
   Future<void> refresh() async {
+    Trace.call('ShopController', 'refresh');
     await _authService.refreshUser();
     await loadData();
     await loadCartCount();

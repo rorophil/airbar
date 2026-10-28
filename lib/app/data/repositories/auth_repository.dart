@@ -4,6 +4,7 @@ import '../../services/auth_service.dart';
 import '../../services/connectivity_service.dart';
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion de l'authentification
 ///
@@ -14,6 +15,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// Ce repository ne gère PAS de cache car les données d'authentification
 /// sont sensibles et gérées par [AuthService].
 class AuthRepository {
+  AuthRepository() {
+    Trace.create('AuthRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -33,6 +38,7 @@ class AuthRepository {
   /// Note: En cas de succès, l'utilisateur est automatiquement enregistré
   /// dans [AuthService] pour un accès global.
   Future<Map<String, dynamic>> login(String email, String password) async {
+    Trace.call('AuthRepository', 'login');
     // Vérification de la connectivité réseau avant tout appel (évite un blocage hors-ligne)
     if (!Get.find<ConnectivityService>().requiresConnection('la connexion')) {
       return {'success': false, 'error': 'Pas de connexion internet.'};
@@ -81,6 +87,7 @@ class AuthRepository {
   /// Note: Ne lance pas d'exception en cas d'erreur pour éviter
   /// de bloquer le processus de déconnexion.
   Future<void> logout() async {
+    Trace.call('AuthRepository', 'logout');
     try {
       _authService.clearUser();
     } catch (e) {
@@ -99,6 +106,7 @@ class AuthRepository {
   ///
   /// Returns: `true` si le PIN est correct, `false` sinon
   Future<bool> validatePin(int userId, String pin) async {
+    Trace.call('AuthRepository', 'validatePin');
     try {
       return await _client.auth.validatePin(userId, pin);
     } catch (e) {
@@ -117,6 +125,7 @@ class AuthRepository {
   ///
   /// Throws: Exception si l'ancien PIN est incorrect (capturée et retourne false)
   Future<bool> changePin(int userId, String oldPin, String newPin) async {
+    Trace.call('AuthRepository', 'changePin');
     try {
       await _client.auth.changePin(userId, oldPin, newPin);
       return true;

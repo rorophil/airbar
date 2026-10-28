@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/cart_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -29,10 +30,13 @@ import '../../../../core/values/app_strings.dart';
 /// - Solde vérifié avant accès au paiement
 /// - Panier vide → Message "Panier vide" avec retour boutique
 class CartView extends GetView<CartController> {
-  const CartView({Key? key}) : super(key: key);
+  CartView({Key? key}) : super(key: key) {
+    Trace.create('CartView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CartView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -198,6 +202,7 @@ class CartView extends GetView<CartController> {
   }
 
   void _confirmClearCart(BuildContext context) {
+    Trace.call('CartView', '_confirmClearCart');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -227,10 +232,13 @@ class CartView extends GetView<CartController> {
 class _CartItemCard extends GetView<CartController> {
   final int index;
 
-  const _CartItemCard({required this.index});
+  _CartItemCard({required this.index}) {
+    Trace.create('_CartItemCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_CartItemCard', 'build');
     return Obx(() {
       // Reactive: rebuild when cartItems changes
       if (index >= controller.cartItems.length) {
@@ -383,6 +391,7 @@ class _CartItemCard extends GetView<CartController> {
   }
 
   void _confirmRemove(BuildContext context, CartItemWithProduct item) {
+    Trace.call('_CartItemCard', '_confirmRemove');
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

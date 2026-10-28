@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../data/repositories/cart_repository.dart';
 import '../../../../routes/app_routes.dart';
@@ -48,12 +49,23 @@ class UsersController extends GetxController {
   /// Nombre d'articles dans le panier de chaque utilisateur (userId -> nombre d'articles)
   final RxMap<int, int> cartItemCounts = <int, int>{}.obs;
 
+  UsersController() {
+    Trace.create('UsersController');
+  }
+
   @override
   void onInit() {
+    Trace.call('UsersController', 'onInit');
     super.onInit();
     // Chargement initial des utilisateurs au démarrage du controller
     loadUsers();
     loadCartCounts();
+  }
+
+  @override
+  void onClose() {
+    Trace.dispose('UsersController');
+    super.onClose();
   }
 
   /// Charge le nombre d'articles présents dans le panier de chaque utilisateur
@@ -61,6 +73,7 @@ class UsersController extends GetxController {
   /// Utilisé pour colorer l'icône panier dans la liste des utilisateurs
   /// (orange si le panier n'est pas vide, gris sinon).
   Future<void> loadCartCounts() async {
+    Trace.call('UsersController', 'loadCartCounts');
     try {
       final allItems = await _cartRepository.getAllCartItems();
       final counts = <int, int>{};
@@ -80,6 +93,7 @@ class UsersController extends GetxController {
   /// Permet de consulter le panier, le vider, ou forcer son exécution.
   /// Recharge la liste des utilisateurs et les compteurs de panier au retour.
   void openUserCart(User user) async {
+    Trace.call('UsersController', 'openUserCart');
     final result = await Get.toNamed(
       AppRoutes.ADMIN_USER_CART,
       arguments: {'user': user},
@@ -97,6 +111,7 @@ class UsersController extends GetxController {
   ///
   /// En cas d'erreur, affiche un snackbar mais ne crash pas l'application.
   Future<void> loadUsers() async {
+    Trace.call('UsersController', 'loadUsers');
     try {
       isLoading.value = true;
       final result = await _userRepository.getAllUsers();
@@ -123,6 +138,7 @@ class UsersController extends GetxController {
   ///
   /// Si la recherche est vide, affiche tous les utilisateurs.
   void filterUsers() {
+    Trace.call('UsersController', 'filterUsers');
     if (searchQuery.value.isEmpty) {
       // Aucune recherche = affiche tous les utilisateurs
       filteredUsers.value = List<User>.from(users);
@@ -141,6 +157,7 @@ class UsersController extends GetxController {
   /// Appelée automatiquement lors de la saisie dans le champ de recherche.
   /// Déclenche le filtrage immédiat de la liste.
   void updateSearchQuery(String query) {
+    Trace.call('UsersController', 'updateSearchQuery');
     searchQuery.value = query;
     filterUsers();
   }
@@ -150,6 +167,7 @@ class UsersController extends GetxController {
   /// Ouvre l'écran UserFormView en mode création.
   /// Si l'utilisateur est créé (result == true), recharge la liste.
   void createUser() async {
+    Trace.call('UsersController', 'createUser');
     final result = await Get.toNamed(AppRoutes.ADMIN_USER_FORM);
     if (result == true) {
       await loadUsers();
@@ -161,6 +179,7 @@ class UsersController extends GetxController {
   /// Ouvre l'écran UserFormView en mode édition avec les données du [user].
   /// Si l'utilisateur est modifié (result == true), recharge la liste.
   void editUser(User user) async {
+    Trace.call('UsersController', 'editUser');
     final result = await Get.toNamed(
       AppRoutes.ADMIN_USER_FORM,
       arguments: {'user': user, 'isEdit': true},
@@ -176,6 +195,7 @@ class UsersController extends GetxController {
   /// Permet d'ajouter un montant positif (crédit) ou négatif (débit).
   /// Si le compte est modifié (result == true), recharge la liste.
   void creditAccount(User user) async {
+    Trace.call('UsersController', 'creditAccount');
     final result = await Get.toNamed(
       AppRoutes.ADMIN_USER_CREDIT,
       arguments: {'user': user},
@@ -193,6 +213,7 @@ class UsersController extends GetxController {
   ///
   /// Cas d'usage: suspension de compte, départ du club, non-paiement cotisation.
   Future<void> deactivateUser(User user) async {
+    Trace.call('UsersController', 'deactivateUser');
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
         title: const Text('Désactiver l\'utilisateur'),
@@ -240,6 +261,7 @@ class UsersController extends GetxController {
   /// L'utilisateur peut à nouveau se connecter et acheter des produits.
   /// Affiche une confirmation avant l'action.
   Future<void> reactivateUser(User user) async {
+    Trace.call('UsersController', 'reactivateUser');
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
         title: const Text('Réactiver l\'utilisateur'),
@@ -283,6 +305,7 @@ class UsersController extends GetxController {
 
   /// Reset user password
   Future<void> resetPassword(User user) async {
+    Trace.call('UsersController', 'resetPassword');
     final TextEditingController passwordController = TextEditingController();
     final TextEditingController confirmPasswordController =
         TextEditingController();
@@ -422,6 +445,7 @@ class UsersController extends GetxController {
   /// Le PIN est haché en SHA256 côté serveur avant stockage.
   /// Utilisé pour: PIN oublié, compromission du code, nouveaux utilisateurs.
   Future<void> resetPin(User user) async {
+    Trace.call('UsersController', 'resetPin');
     final TextEditingController pinController = TextEditingController();
     final TextEditingController confirmPinController = TextEditingController();
 
@@ -564,6 +588,7 @@ class UsersController extends GetxController {
   ///
   /// Cas d'usage exceptionnels: données de test, RGPD (droit à l'oubli), erreur de saisie.
   Future<void> deleteUser(User user) async {
+    Trace.call('UsersController', 'deleteUser');
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
         title: const Text('Supprimer l\'utilisateur'),
@@ -627,6 +652,7 @@ class UsersController extends GetxController {
 
   /// Refresh users list
   Future<void> refresh() async {
+    Trace.call('UsersController', 'refresh');
     await loadUsers();
     await loadCartCounts();
   }

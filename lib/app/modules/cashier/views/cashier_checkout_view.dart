@@ -3,15 +3,19 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/cashier_checkout_controller.dart';
 import '../../../core/values/app_colors.dart';
 
 /// Vue du checkout de la caisse
 class CashierCheckoutView extends GetView<CashierCheckoutController> {
-  const CashierCheckoutView({Key? key}) : super(key: key);
+  CashierCheckoutView({Key? key}) : super(key: key) {
+    Trace.create('CashierCheckoutView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CashierCheckoutView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -48,6 +52,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
   }
 
   Widget _buildCartSummary() {
+    Trace.call('CashierCheckoutView', '_buildCartSummary');
     return Card(
       child: Padding(
         padding: EdgeInsets.all(16.w),
@@ -110,6 +115,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
   }
 
   Widget _buildPaymentMethodSelector() {
+    Trace.call('CashierCheckoutView', '_buildPaymentMethodSelector');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -153,6 +159,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
     IconData icon,
     bool isSelected,
   ) {
+    Trace.call('CashierCheckoutView', '_buildPaymentCard');
     return InkWell(
       onTap: () => controller.selectPaymentMethod(method),
       child: Container(
@@ -189,6 +196,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
   }
 
   Widget _buildPinField() {
+    Trace.call('CashierCheckoutView', '_buildPinField');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -250,6 +258,7 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
   }
 
   Widget _buildActionButtons() {
+    Trace.call('CashierCheckoutView', '_buildActionButtons');
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

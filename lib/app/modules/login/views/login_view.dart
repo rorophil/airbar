@@ -5,6 +5,7 @@ import '../controllers/login_controller.dart';
 import '../../../core/values/app_colors.dart';
 import '../../../core/values/app_strings.dart';
 import '../../../routes/app_routes.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Vue du module Login
 ///
@@ -27,10 +28,13 @@ import '../../../routes/app_routes.dart';
 ///
 /// Responsive: Utilise FlutterScreenUtil pour l'adaptation multi-écrans.
 class LoginView extends GetView<LoginController> {
-  const LoginView({Key? key}) : super(key: key);
+  LoginView({Key? key}) : super(key: key) {
+    Trace.create('LoginView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('LoginView', 'build');
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(

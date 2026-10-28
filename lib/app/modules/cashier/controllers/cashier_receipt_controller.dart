@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../data/services/pdf_receipt_service.dart';
 import '../../../services/auth_service.dart';
 import '../../../routes/app_routes.dart';
@@ -17,8 +18,13 @@ class CashierReceiptController extends GetxController {
   // État réactif
   final isGeneratingPdf = false.obs;
 
+  CashierReceiptController() {
+    Trace.create('CashierReceiptController');
+  }
+
   // Getter pour le nom du vendeur
   String get sellerName {
+    Trace.call('CashierReceiptController', 'sellerName');
     final user = _authService.currentUser.value;
     if (user != null) {
       return '${user.firstName} ${user.lastName}';
@@ -29,6 +35,7 @@ class CashierReceiptController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    Trace.call('CashierReceiptController', 'onInit');
 
     // Récupérer la transaction et les items
     final args = Get.arguments as Map<String, dynamic>;
@@ -36,8 +43,15 @@ class CashierReceiptController extends GetxController {
     items = args['items'] ?? [];
   }
 
+  @override
+  void onClose() {
+    Trace.dispose('CashierReceiptController');
+    super.onClose();
+  }
+
   /// Génère et affiche/imprime le PDF
   Future<void> printReceipt() async {
+    Trace.call('CashierReceiptController', 'printReceipt');
     try {
       isGeneratingPdf.value = true;
 
@@ -65,6 +79,7 @@ class CashierReceiptController extends GetxController {
 
   /// Retourne à la caisse pour une nouvelle vente
   void startNewSale() {
+    Trace.call('CashierReceiptController', 'startNewSale');
     Get.offAllNamed(AppRoutes.CASHIER);
   }
 }

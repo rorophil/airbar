@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/user_credit_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -34,10 +35,13 @@ import '../../../../core/values/app_strings.dart';
 /// Workflow:
 /// - Saisie montant et notes → Validation → Ajustement compte → Message succès → Retour liste
 class UserCreditView extends GetView<UserCreditController> {
-  const UserCreditView({Key? key}) : super(key: key);
+  UserCreditView({Key? key}) : super(key: key) {
+    Trace.create('UserCreditView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('UserCreditView', 'build');
     final user = controller.user;
 
     return Scaffold(

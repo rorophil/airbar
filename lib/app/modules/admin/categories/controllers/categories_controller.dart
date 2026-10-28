@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/category_repository.dart';
 import '../../../../routes/app_routes.dart';
 import '../../../../core/values/app_strings.dart';
@@ -36,14 +37,26 @@ class CategoriesController extends GetxController {
   final searchQuery = ''.obs;
   final filteredCategories = <ProductCategory>[].obs;
 
+  CategoriesController() {
+    Trace.create('CategoriesController');
+  }
+
   @override
   void onInit() {
+    Trace.call('CategoriesController', 'onInit');
     super.onInit();
     loadData(forceRefresh: true);
   }
 
+  @override
+  void onClose() {
+    Trace.dispose('CategoriesController');
+    super.onClose();
+  }
+
   /// Load categories
   Future<void> loadData({bool forceRefresh = false}) async {
+    Trace.call('CategoriesController', 'loadData');
     if (isLoading.value) return;
 
     try {
@@ -68,6 +81,7 @@ class CategoriesController extends GetxController {
 
   /// Filter categories by search query
   void filterCategories() {
+    Trace.call('CategoriesController', 'filterCategories');
     if (searchQuery.value.isEmpty) {
       filteredCategories.value = categories;
     } else {
@@ -81,12 +95,14 @@ class CategoriesController extends GetxController {
 
   /// Update search query
   void updateSearchQuery(String query) {
+    Trace.call('CategoriesController', 'updateSearchQuery');
     searchQuery.value = query;
     filterCategories();
   }
 
   /// Navigate to create category
   void createCategory() {
+    Trace.call('CategoriesController', 'createCategory');
     Get.toNamed(
       AppRoutes.ADMIN_CATEGORY_FORM,
       arguments: {'isEdit': false},
@@ -99,6 +115,7 @@ class CategoriesController extends GetxController {
 
   /// Navigate to edit category
   void editCategory(ProductCategory category) {
+    Trace.call('CategoriesController', 'editCategory');
     Get.toNamed(
       AppRoutes.ADMIN_CATEGORY_FORM,
       arguments: {'isEdit': true, 'category': category},
@@ -111,6 +128,7 @@ class CategoriesController extends GetxController {
 
   /// Delete category
   Future<void> deleteCategory(ProductCategory category) async {
+    Trace.call('CategoriesController', 'deleteCategory');
     // Prevent deletion of "Sans catégorie"
     if (category.name == 'Sans catégorie') {
       Get.snackbar(
@@ -169,6 +187,7 @@ class CategoriesController extends GetxController {
 
   /// Refresh data
   Future<void> refresh() async {
+    Trace.call('CategoriesController', 'refresh');
     await loadData(forceRefresh: true);
   }
 }

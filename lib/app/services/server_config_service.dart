@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/utils/trace_logger.dart';
 
 /// Service de gestion de la configuration du serveur Serverpod
 ///
@@ -40,6 +41,10 @@ class ServerConfigService extends GetxService {
   /// Délai d'inactivité en minutes avant déconnexion automatique (observable)
   final _inactivityTimeoutMinutes = defaultInactivityTimeoutMinutes.obs;
 
+  ServerConfigService() {
+    Trace.create('ServerConfigService');
+  }
+
   /// Getter pour l'hôte actuel
   String get serverHost => _serverHost.value;
 
@@ -53,11 +58,14 @@ class ServerConfigService extends GetxService {
   int get inactivityTimeoutMinutes => _inactivityTimeoutMinutes.value;
 
   /// URL complète du serveur (format: http(s)://host:port/)
-  String get serverUrl =>
-      '${useHttps ? 'https' : 'http'}://$serverHost:$serverPort/';
+  String get serverUrl {
+    Trace.call('ServerConfigService', 'serverUrl');
+    return '${useHttps ? 'https' : 'http'}://$serverHost:$serverPort/';
+  }
 
   @override
   Future<void> onInit() async {
+    Trace.call('ServerConfigService', 'onInit');
     super.onInit();
     _prefs = await SharedPreferences.getInstance();
     // Chargement de la configuration sauvegardée
@@ -68,6 +76,7 @@ class ServerConfigService extends GetxService {
   ///
   /// Utilise les valeurs par défaut si aucune configuration n'existe.
   Future<void> _loadConfig() async {
+    Trace.call('ServerConfigService', '_loadConfig');
     _serverHost.value = _prefs.getString(_keyServerHost) ?? defaultHost;
     _serverPort.value = _prefs.getInt(_keyServerPort) ?? defaultPort;
     _useHttps.value = _prefs.getBool(_keyUseHttps) ?? defaultUseHttps;
@@ -88,6 +97,7 @@ class ServerConfigService extends GetxService {
     required int port,
     required bool useHttps,
   }) async {
+    Trace.call('ServerConfigService', 'saveServerConfig');
     await _prefs.setString(_keyServerHost, host);
     await _prefs.setInt(_keyServerPort, port);
     await _prefs.setBool(_keyUseHttps, useHttps);
@@ -101,6 +111,7 @@ class ServerConfigService extends GetxService {
   ///
   /// [minutes] Délai en minutes (0 désactive la déconnexion automatique)
   Future<void> saveInactivityTimeout(int minutes) async {
+    Trace.call('ServerConfigService', 'saveInactivityTimeout');
     await _prefs.setInt(_keyInactivityTimeoutMinutes, minutes);
     _inactivityTimeoutMinutes.value = minutes;
   }
@@ -109,6 +120,7 @@ class ServerConfigService extends GetxService {
   ///
   /// Restaure localhost:8080 en HTTP comme configuration serveur.
   Future<void> resetToDefault() async {
+    Trace.call('ServerConfigService', 'resetToDefault');
     await saveServerConfig(
       host: defaultHost,
       port: defaultPort,
@@ -120,6 +132,7 @@ class ServerConfigService extends GetxService {
   ///
   /// Returns: `true` si host=localhost, port=8080 et useHttps=false
   bool get isDefaultConfig {
+    Trace.call('ServerConfigService', 'isDefaultConfig');
     return serverHost == defaultHost &&
         serverPort == defaultPort &&
         useHttps == defaultUseHttps;

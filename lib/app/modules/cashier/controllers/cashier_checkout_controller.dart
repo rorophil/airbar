@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../data/repositories/cashier_repository.dart';
 import '../../../services/auth_service.dart';
 import '../../../routes/app_routes.dart';
@@ -22,6 +23,10 @@ class CashierCheckoutController extends GetxController {
   final selectedPaymentMethod = Rx<PaymentMethod?>(null);
   final isProcessing = false.obs;
 
+  CashierCheckoutController() {
+    Trace.create('CashierCheckoutController');
+  }
+
   // Getters
   bool get canProceed =>
       pin.value.length == 4 && selectedPaymentMethod.value != null;
@@ -31,6 +36,7 @@ class CashierCheckoutController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    Trace.call('CashierCheckoutController', 'onInit');
 
     // Récupérer les arguments
     final args = Get.arguments as Map<String, dynamic>;
@@ -40,27 +46,32 @@ class CashierCheckoutController extends GetxController {
 
   /// Met à jour le PIN
   void updatePin(String value) {
+    Trace.call('CashierCheckoutController', 'updatePin');
     pin.value = value;
   }
 
   @override
   void onClose() {
+    Trace.dispose('CashierCheckoutController');
     pinController.dispose();
     super.onClose();
   }
 
   /// Toggle visibilité du PIN
   void togglePinVisibility() {
+    Trace.call('CashierCheckoutController', 'togglePinVisibility');
     showPin.value = !showPin.value;
   }
 
   /// Sélectionne le mode de paiement
   void selectPaymentMethod(PaymentMethod method) {
+    Trace.call('CashierCheckoutController', 'selectPaymentMethod');
     selectedPaymentMethod.value = method;
   }
 
   /// Traite la vente caisse
   Future<void> processSale() async {
+    Trace.call('CashierCheckoutController', 'processSale');
     if (!canProceed) {
       Get.snackbar(
         'Informations manquantes',
@@ -120,6 +131,7 @@ class CashierCheckoutController extends GetxController {
 
   /// Annule le checkout
   void cancel() {
+    Trace.call('CashierCheckoutController', 'cancel');
     Get.back();
   }
 }

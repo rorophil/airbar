@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/export_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
@@ -54,10 +55,13 @@ import '../../../../core/values/app_colors.dart';
 /// - Web: téléchargement automatique
 /// - Desktop/Mobile: sélection dossier de sauvegarde
 class ExportView extends GetView<ExportController> {
-  const ExportView({Key? key}) : super(key: key);
+  ExportView({Key? key}) : super(key: key) {
+    Trace.create('ExportView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('ExportView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

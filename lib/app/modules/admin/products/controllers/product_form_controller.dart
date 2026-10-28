@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/product_repository.dart';
 import '../../../../data/repositories/product_portion_repository.dart';
 import '../../../../data/repositories/category_repository.dart';
@@ -71,8 +72,13 @@ class ProductFormController extends GetxController {
 
   Product? productToEdit;
 
+  ProductFormController() {
+    Trace.create('ProductFormController');
+  }
+
   @override
   void onInit() {
+    Trace.call('ProductFormController', 'onInit');
     super.onInit();
     loadCategories();
 
@@ -109,6 +115,7 @@ class ProductFormController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('ProductFormController');
     nameController.dispose();
     descriptionController.dispose();
     priceController.dispose();
@@ -122,6 +129,7 @@ class ProductFormController extends GetxController {
 
   /// Load portions for the product
   Future<void> loadPortions() async {
+    Trace.call('ProductFormController', 'loadPortions');
     if (productToEdit == null || !productToEdit!.isBulkProduct) return;
 
     try {
@@ -146,6 +154,7 @@ class ProductFormController extends GetxController {
 
   /// Load categories
   Future<void> loadCategories() async {
+    Trace.call('ProductFormController', 'loadCategories');
     try {
       final result = await _categoryRepository.getAllCategories(
         forceRefresh: true,
@@ -162,6 +171,7 @@ class ProductFormController extends GetxController {
 
   /// Validate and submit form
   Future<void> submit() async {
+    Trace.call('ProductFormController', 'submit');
     if (!formKey.currentState!.validate()) {
       return;
     }
@@ -341,6 +351,7 @@ class ProductFormController extends GetxController {
 
   /// Create portions for a new product
   Future<void> _createPortions(int productId) async {
+    Trace.call('ProductFormController', '_createPortions');
     for (var i = 0; i < portions.length; i++) {
       final p = portions[i];
       await _portionRepository.createPortion(
@@ -355,6 +366,7 @@ class ProductFormController extends GetxController {
 
   /// Update portions for existing product
   Future<void> _updatePortions(int productId) async {
+    Trace.call('ProductFormController', '_updatePortions');
     // For simplicity, we'll delete all existing portions and create new ones
     // In a production app, you might want to update them individually
     try {
@@ -377,16 +389,19 @@ class ProductFormController extends GetxController {
 
   /// Add a new portion
   void addPortion(String name, double quantity, double price) {
+    Trace.call('ProductFormController', 'addPortion');
     portions.add(PortionData(name: name, quantity: quantity, price: price));
   }
 
   /// Remove a portion
   void removePortion(int index) {
+    Trace.call('ProductFormController', 'removePortion');
     portions.removeAt(index);
   }
 
   /// Show dialog to add/edit portion
   Future<void> showPortionDialog({int? index}) async {
+    Trace.call('ProductFormController', 'showPortionDialog');
     final nameCtrl = TextEditingController();
     final quantityCtrl = TextEditingController();
     final priceCtrl = TextEditingController();
@@ -472,6 +487,7 @@ class ProductFormController extends GetxController {
 
   /// Validate name
   String? validateName(String? value) {
+    Trace.call('ProductFormController', 'validateName');
     if (value == null || value.isEmpty) {
       return 'Nom requis';
     }
@@ -480,6 +496,7 @@ class ProductFormController extends GetxController {
 
   /// Validate price
   String? validatePrice(String? value) {
+    Trace.call('ProductFormController', 'validatePrice');
     // For bulk products, price is optional (portions define the prices)
     if (isBulkProduct.value) {
       if (value == null || value.isEmpty) {
@@ -508,6 +525,7 @@ class ProductFormController extends GetxController {
 
   /// Validate stock
   String? validateStock(String? value) {
+    Trace.call('ProductFormController', 'validateStock');
     if (value == null || value.isEmpty) {
       return 'Quantité requise';
     }
@@ -520,6 +538,7 @@ class ProductFormController extends GetxController {
 
   /// Validate min stock alert
   String? validateMinStock(String? value) {
+    Trace.call('ProductFormController', 'validateMinStock');
     if (value == null || value.isEmpty) {
       return 'Seuil requis';
     }
@@ -543,5 +562,7 @@ class PortionData {
     required this.name,
     required this.quantity,
     required this.price,
-  });
+  }) {
+    Trace.create('PortionData');
+  }
 }

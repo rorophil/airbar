@@ -3,6 +3,7 @@ import '../../services/storage_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion des catégories de produits
 ///
@@ -21,6 +22,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// - displayOrder = 999 (toujours en dernier)
 /// - Les produits orphelins y sont automatiquement assignés
 class CategoryRepository {
+  CategoryRepository() {
+    Trace.create('CategoryRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -41,6 +46,7 @@ class CategoryRepository {
   /// 2. Si cache trouvé, retour immédiat
   /// 3. Sinon, appel serveur et mise en cache du résultat
   Future<List<dynamic>> getAllCategories({bool forceRefresh = false}) async {
+    Trace.call('CategoryRepository', 'getAllCategories');
     try {
       // Vérification du cache d'abord
       if (!forceRefresh) {
@@ -74,6 +80,7 @@ class CategoryRepository {
   /// Note: Utilise le cache via [getAllCategories] pour éviter
   /// un appel serveur supplémentaire
   Future<dynamic> getCategoryById(int categoryId) async {
+    Trace.call('CategoryRepository', 'getCategoryById');
     try {
       // Récupération de toutes les catégories (avec cache)
       final categories = await getAllCategories();
@@ -108,6 +115,7 @@ class CategoryRepository {
     String? iconName,
     int displayOrder = 0,
   }) async {
+    Trace.call('CategoryRepository', 'createCategory');
     try {
       final category = await _client.category.createCategory(
         name,
@@ -145,6 +153,7 @@ class CategoryRepository {
     String? iconName,
     int displayOrder = 0,
   }) async {
+    Trace.call('CategoryRepository', 'updateCategory');
     try {
       final category = await _client.category.updateCategory(
         categoryId,
@@ -181,6 +190,7 @@ class CategoryRepository {
   /// Note: Invalide le cache après suppression.
   /// Opération réservée aux administrateurs uniquement.
   Future<void> deleteCategory(int categoryId) async {
+    Trace.call('CategoryRepository', 'deleteCategory');
     try {
       await _client.category.deleteCategory(categoryId);
 
@@ -196,6 +206,7 @@ class CategoryRepository {
   ///
   /// Force le rechargement depuis le serveur au prochain appel.
   Future<void> clearCache() async {
+    Trace.call('CategoryRepository', 'clearCache');
     _storageService.remove(AppConstants.keyCategories);
   }
 }

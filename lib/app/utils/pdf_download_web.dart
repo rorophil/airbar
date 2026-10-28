@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:get/get.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 Future<void> downloadPdf(Uint8List bytes, String filename) async {
+  Trace.call('PdfDownloadWeb', 'downloadPdf');
   try {
     final blob = html.Blob([bytes], 'application/pdf');
     final url = html.Url.createObjectUrlFromBlob(blob);

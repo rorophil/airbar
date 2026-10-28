@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/dashboard_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -30,10 +31,13 @@ import '../../../../core/values/app_strings.dart';
 ///
 /// Responsive: Adaptation automatique avec FlutterScreenUtil.
 class DashboardView extends GetView<DashboardController> {
-  const DashboardView({Key? key}) : super(key: key);
+  DashboardView({Key? key}) : super(key: key) {
+    Trace.create('DashboardView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('DashboardView', 'build');
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.admin),
@@ -155,16 +159,19 @@ class _DashboardCard extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _DashboardCard({
+  _DashboardCard({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.color,
     required this.onTap,
-  });
+  }) {
+    Trace.create('_DashboardCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_DashboardCard', 'build');
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),

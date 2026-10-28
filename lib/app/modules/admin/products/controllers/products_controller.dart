@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/product_repository.dart';
 import '../../../../data/repositories/category_repository.dart';
 import '../../../../routes/app_routes.dart';
@@ -45,20 +46,27 @@ class ProductsController extends GetxController {
   final selectedCategoryId = Rxn<int>();
   final filteredProducts = <Product>[].obs;
 
+  ProductsController() {
+    Trace.create('ProductsController');
+  }
+
   @override
   void onInit() {
+    Trace.call('ProductsController', 'onInit');
     super.onInit();
     loadData();
   }
 
   @override
   void onClose() {
+    Trace.dispose('ProductsController');
     searchController.dispose();
     super.onClose();
   }
 
   /// Load products and categories
   Future<void> loadData() async {
+    Trace.call('ProductsController', 'loadData');
     try {
       isLoading.value = true;
 
@@ -84,6 +92,7 @@ class ProductsController extends GetxController {
 
   /// Filter products
   void filterProducts() {
+    Trace.call('ProductsController', 'filterProducts');
     var result = products.toList();
 
     // Filter by category
@@ -107,12 +116,14 @@ class ProductsController extends GetxController {
 
   /// Update search query
   void updateSearchQuery(String query) {
+    Trace.call('ProductsController', 'updateSearchQuery');
     searchQuery.value = query;
     filterProducts();
   }
 
   /// Clear search
   void clearSearch() {
+    Trace.call('ProductsController', 'clearSearch');
     searchController.clear();
     searchQuery.value = '';
     filterProducts();
@@ -120,12 +131,14 @@ class ProductsController extends GetxController {
 
   /// Select category filter
   void selectCategory(int? categoryId) {
+    Trace.call('ProductsController', 'selectCategory');
     selectedCategoryId.value = categoryId;
     filterProducts();
   }
 
   /// Navigate to create product
   void createProduct() async {
+    Trace.call('ProductsController', 'createProduct');
     final result = await Get.toNamed(AppRoutes.ADMIN_PRODUCT_FORM);
     if (result == true) {
       loadData();
@@ -134,6 +147,7 @@ class ProductsController extends GetxController {
 
   /// Navigate to edit product
   void editProduct(Product product) async {
+    Trace.call('ProductsController', 'editProduct');
     final result = await Get.toNamed(
       AppRoutes.ADMIN_PRODUCT_FORM,
       arguments: {'product': product, 'isEdit': true},
@@ -145,6 +159,7 @@ class ProductsController extends GetxController {
 
   /// Delete product (soft delete)
   Future<void> deleteProduct(Product product) async {
+    Trace.call('ProductsController', 'deleteProduct');
     final confirmed = await Get.dialog<bool>(
       AlertDialog(
         title: const Text('Supprimer définitivement'),
@@ -191,6 +206,7 @@ class ProductsController extends GetxController {
 
   /// Toggle product active status (activate/deactivate)
   Future<void> toggleActiveStatus(Product product) async {
+    Trace.call('ProductsController', 'toggleActiveStatus');
     final isActivating = !product.isActive;
     final action = isActivating ? 'réactiver' : 'désactiver';
 
@@ -250,6 +266,7 @@ class ProductsController extends GetxController {
 
   /// Manage product stock
   Future<void> manageStock(Product product) async {
+    Trace.call('ProductsController', 'manageStock');
     final TextEditingController stockController = TextEditingController(
       text: product.stockQuantity.toString(),
     );
@@ -356,11 +373,13 @@ class ProductsController extends GetxController {
 
   /// Refresh
   Future<void> refresh() async {
+    Trace.call('ProductsController', 'refresh');
     await loadData();
   }
 
   /// Get category name by ID
   String getCategoryName(int categoryId) {
+    Trace.call('ProductsController', 'getCategoryName');
     try {
       final category = categories.firstWhere((c) => c.id == categoryId);
       return category.name;

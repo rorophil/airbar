@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/user_repository.dart';
 import 'users_controller.dart';
 
@@ -35,8 +36,13 @@ class UserCreditController extends GetxController {
 
   User? user;
 
+  UserCreditController() {
+    Trace.create('UserCreditController');
+  }
+
   @override
   void onInit() {
+    Trace.call('UserCreditController', 'onInit');
     super.onInit();
 
     final args = Get.arguments;
@@ -47,6 +53,7 @@ class UserCreditController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('UserCreditController');
     amountController.dispose();
     notesController.dispose();
     super.onClose();
@@ -54,6 +61,7 @@ class UserCreditController extends GetxController {
 
   /// Credit or debit user account
   Future<void> creditAccount() async {
+    Trace.call('UserCreditController', 'creditAccount');
     if (user == null) return;
 
     final amount = double.tryParse(amountController.text);

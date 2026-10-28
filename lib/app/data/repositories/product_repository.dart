@@ -3,6 +3,7 @@ import '../../services/storage_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion des produits
 ///
@@ -22,6 +23,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// 3. Mise en cache automatique du résultat
 /// 4. Invalidation du cache lors des modifications (create, update, delete)
 class ProductRepository {
+  ProductRepository() {
+    Trace.create('ProductRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -42,6 +47,7 @@ class ProductRepository {
   /// 2. Si cache trouvé, retour immédiat (économie réseau)
   /// 3. Sinon, appel serveur et mise en cache du résultat
   Future<List<dynamic>> getAllProducts({bool forceRefresh = false}) async {
+    Trace.call('ProductRepository', 'getAllProducts');
     try {
       // Vérification du cache d'abord pour économiser la bande passante
       if (!forceRefresh) {
@@ -82,6 +88,7 @@ class ProductRepository {
     int categoryId, {
     bool forceRefresh = false,
   }) async {
+    Trace.call('ProductRepository', 'getProductsByCategory');
     try {
       return await _client.product.getProductsByCategory(categoryId);
     } catch (e) {
@@ -101,6 +108,7 @@ class ProductRepository {
   /// Note: Utilisé principalement dans la boutique pour n'afficher
   /// que les produits disponibles à l'achat.
   Future<List<dynamic>> getActiveProducts({bool forceRefresh = false}) async {
+    Trace.call('ProductRepository', 'getActiveProducts');
     try {
       // Tentative de filtrage depuis le cache
       if (!forceRefresh) {
@@ -137,6 +145,7 @@ class ProductRepository {
   ///
   /// Throws: Exception si le produit n'existe pas ou erreur serveur
   Future<dynamic> getProductById(int productId) async {
+    Trace.call('ProductRepository', 'getProductById');
     try {
       return await _client.product.getProductById(productId);
     } catch (e) {
@@ -185,6 +194,7 @@ class ProductRepository {
     double? currentUnitRemaining,
     bool trackStock = true,
   }) async {
+    Trace.call('ProductRepository', 'createProduct');
     try {
       // Appel au backend pour création du produit
       return await _client.product.createProduct(
@@ -234,6 +244,7 @@ class ProductRepository {
     double? currentUnitRemaining,
     bool? trackStock,
   }) async {
+    Trace.call('ProductRepository', 'updateProduct');
     try {
       return await _client.product.updateProduct(
         productId,
@@ -269,6 +280,7 @@ class ProductRepository {
   /// Note: Invalide le cache après suppression.
   /// Opération réservée aux administrateurs uniquement.
   Future<void> deleteProduct(int productId) async {
+    Trace.call('ProductRepository', 'deleteProduct');
     try {
       await _client.product.deleteProduct(productId);
 
@@ -293,6 +305,7 @@ class ProductRepository {
   /// Invalide le cache après modification.
   /// Opération réservée aux administrateurs uniquement.
   Future<dynamic> toggleActiveStatus(int productId, bool isActive) async {
+    Trace.call('ProductRepository', 'toggleActiveStatus');
     try {
       final result = await _client.product.toggleActiveStatus(
         productId,
@@ -325,6 +338,7 @@ class ProductRepository {
   /// Invalide le cache après modification.
   /// Opération réservée aux administrateurs uniquement.
   Future<dynamic> updateStock(int productId, int newStockQuantity) async {
+    Trace.call('ProductRepository', 'updateStock');
     try {
       final result = await _client.product.updateStock(
         productId,
@@ -347,6 +361,7 @@ class ProductRepository {
   /// Utile après des modifications importantes ou pour résoudre
   /// des problèmes de synchronisation.
   Future<void> clearCache() async {
+    Trace.call('ProductRepository', 'clearCache');
     _storageService.remove(AppConstants.keyProducts);
   }
 }

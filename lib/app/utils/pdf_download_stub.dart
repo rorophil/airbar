@@ -2,8 +2,10 @@ import 'dart:typed_data';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:get/get.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 Future<void> downloadPdf(Uint8List bytes, String filename) async {
+  Trace.call('PdfDownloadStub', 'downloadPdf');
   try {
     // Demander à l'utilisateur où sauvegarder le fichier
     String? outputPath = await FilePicker.platform.saveFile(

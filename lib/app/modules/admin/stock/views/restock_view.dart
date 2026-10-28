@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/restock_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
@@ -45,10 +46,13 @@ import '../../../../core/values/app_colors.dart';
 /// Note: Pour produits en vrac, la quantité représente le nombre d'unités
 /// complètes à ajouter (ex: +2 fûts de 6L).
 class RestockView extends GetView<RestockController> {
-  const RestockView({Key? key}) : super(key: key);
+  RestockView({Key? key}) : super(key: key) {
+    Trace.create('RestockView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('RestockView', 'build');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

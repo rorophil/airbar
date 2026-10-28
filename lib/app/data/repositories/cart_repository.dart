@@ -1,5 +1,6 @@
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository de gestion du panier d'achat
 ///
@@ -16,6 +17,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// multi-appareils. Chaque utilisateur a son propre panier identifié par userId.
 /// Ce repository ne gère PAS de cache car le panier change fréquemment.
 class CartRepository {
+  CartRepository() {
+    Trace.create('CartRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -28,6 +33,7 @@ class CartRepository {
   ///
   /// Throws: Exception si l'utilisateur n'existe pas ou erreur serveur
   Future<List<dynamic>> getUserCart(int userId) async {
+    Trace.call('CartRepository', 'getUserCart');
     try {
       return await _client.cart.getCart(userId);
     } catch (e) {
@@ -59,6 +65,7 @@ class CartRepository {
     required int quantity,
     int? productPortionId,
   }) async {
+    Trace.call('CartRepository', 'addToCart');
     try {
       return await _client.cart.addToCart(
         userId,
@@ -95,6 +102,7 @@ class CartRepository {
     required int quantity,
     int? productPortionId,
   }) async {
+    Trace.call('CartRepository', 'updateCartItem');
     try {
       return await _client.cart.updateCartItem(
         userId,
@@ -122,6 +130,7 @@ class CartRepository {
     required int productId,
     int? productPortionId,
   }) async {
+    Trace.call('CartRepository', 'removeFromCart');
     try {
       await _client.cart.removeFromCart(
         userId,
@@ -144,6 +153,7 @@ class CartRepository {
   ///
   /// Note: Appelé automatiquement après un checkout réussi
   Future<void> clearCart(int userId) async {
+    Trace.call('CartRepository', 'clearCart');
     try {
       await _client.cart.clearCart(userId);
     } catch (e) {
@@ -159,6 +169,7 @@ class CartRepository {
   ///
   /// Throws: Exception en cas d'erreur serveur
   Future<List<dynamic>> getAllCartItems() async {
+    Trace.call('CartRepository', 'getAllCartItems');
     try {
       return await _client.cart.getAllCartItems();
     } catch (e) {
@@ -177,6 +188,7 @@ class CartRepository {
   /// Le serveur recalcule toujours le montant lors du checkout pour
   /// des raisons de sécurité (éviter la manipulation des prix côté client).
   Future<double> calculateCartTotal(List<dynamic> cartItems) async {
+    Trace.call('CartRepository', 'calculateCartTotal');
     try {
       double total = 0.0;
 

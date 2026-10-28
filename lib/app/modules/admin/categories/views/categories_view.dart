@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/categories_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
@@ -37,10 +38,13 @@ import '../../../../core/values/app_colors.dart';
 /// - Recherche → Filtrage instantané
 /// - FAB → Création nouvelle catégorie
 class CategoriesView extends GetView<CategoriesController> {
-  const CategoriesView({Key? key}) : super(key: key);
+  CategoriesView({Key? key}) : super(key: key) {
+    Trace.create('CategoriesView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('CategoriesView', 'build');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Catégories'),
@@ -127,14 +131,17 @@ class _CategoryCard extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _CategoryCard({
+  _CategoryCard({
     required this.category,
     required this.onEdit,
     required this.onDelete,
-  });
+  }) {
+    Trace.create('_CategoryCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_CategoryCard', 'build');
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
@@ -244,6 +251,7 @@ class _CategoryCard extends StatelessWidget {
   }
 
   IconData _getIconData(String? iconName) {
+    Trace.call('_CategoryCard', '_getIconData');
     if (iconName == null) return Icons.category;
 
     switch (iconName.toLowerCase()) {

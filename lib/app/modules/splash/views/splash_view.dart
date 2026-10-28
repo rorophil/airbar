@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/splash_controller.dart';
 import '../../../core/values/app_strings.dart';
 
@@ -23,10 +24,13 @@ import '../../../core/values/app_strings.dart';
 /// - ADMIN_DASHBOARD si admin connecté
 /// - USER_SHOP si utilisateur standard connecté
 class SplashView extends GetView<SplashController> {
-  const SplashView({super.key});
+  SplashView({super.key}) {
+    Trace.create('SplashView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('SplashView', 'build');
     return Scaffold(
       body: Center(
         child: Column(

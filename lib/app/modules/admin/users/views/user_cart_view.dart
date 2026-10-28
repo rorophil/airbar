@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/user_cart_controller.dart';
 import '../../../../core/values/app_colors.dart';
 
@@ -11,10 +12,13 @@ import '../../../../core/values/app_colors.dart';
 /// - Vider entièrement ce panier (sans débit)
 /// - Forcer l'exécution du panier (débit du compte, PIN admin requis)
 class UserCartView extends GetView<UserCartController> {
-  const UserCartView({Key? key}) : super(key: key);
+  UserCartView({Key? key}) : super(key: key) {
+    Trace.create('UserCartView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('UserCartView', 'build');
     final user = controller.targetUser;
 
     return Scaffold(
@@ -94,6 +98,7 @@ class UserCartView extends GetView<UserCartController> {
   }
 
   Widget _buildBottomBar() {
+    Trace.call('UserCartView', '_buildBottomBar');
     return Container(
       padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(

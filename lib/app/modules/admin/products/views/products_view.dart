@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../controllers/products_controller.dart';
 import '../../../../core/values/app_colors.dart';
 import '../../../../core/values/app_strings.dart';
@@ -41,10 +42,13 @@ import '../../../../core/values/app_strings.dart';
 /// - Activer/Désactiver: toggle visibilité boutique
 /// - Supprimer: soft delete (isActive = false)
 class ProductsView extends GetView<ProductsController> {
-  const ProductsView({Key? key}) : super(key: key);
+  ProductsView({Key? key}) : super(key: key) {
+    Trace.create('ProductsView');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('ProductsView', 'build');
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.products),
@@ -180,10 +184,13 @@ class ProductsView extends GetView<ProductsController> {
 class _ProductCard extends GetView<ProductsController> {
   final Product product;
 
-  const _ProductCard({required this.product});
+  _ProductCard({required this.product}) {
+    Trace.create('_ProductCard');
+  }
 
   @override
   Widget build(BuildContext context) {
+    Trace.call('_ProductCard', 'build');
     final stockColor = !product.trackStock
         ? AppColors.textHint
         : product.stockQuantity == 0

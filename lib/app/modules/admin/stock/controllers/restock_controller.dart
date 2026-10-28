@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 import '../../../../data/repositories/stock_repository.dart';
 import '../../../../services/auth_service.dart';
 import 'stock_controller.dart';
@@ -50,8 +51,13 @@ class RestockController extends GetxController {
 
   Product? product;
 
+  RestockController() {
+    Trace.create('RestockController');
+  }
+
   @override
   void onInit() {
+    Trace.call('RestockController', 'onInit');
     super.onInit();
 
     // Get product from arguments
@@ -74,6 +80,7 @@ class RestockController extends GetxController {
 
   @override
   void onClose() {
+    Trace.dispose('RestockController');
     quantityController.dispose();
     notesController.dispose();
     super.onClose();
@@ -81,6 +88,7 @@ class RestockController extends GetxController {
 
   /// Validate and submit restock
   Future<void> submit() async {
+    Trace.call('RestockController', 'submit');
     if (!formKey.currentState!.validate()) {
       return;
     }
@@ -149,6 +157,7 @@ class RestockController extends GetxController {
 
   /// Validate quantity
   String? validateQuantity(String? value) {
+    Trace.call('RestockController', 'validateQuantity');
     if (value == null || value.isEmpty) {
       return 'Quantité requise';
     }

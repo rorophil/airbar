@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:convert';
 import 'dart:html' as html;
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Sauvegarde de fichiers pour plateforme Web
 ///
@@ -29,6 +30,7 @@ import 'dart:html' as html;
 ///
 /// Returns: Nom du fichier (toujours non-null sur Web, sauf exception)
 Future<String?> saveFile(String content, String fileName) async {
+  Trace.call('FileSaverWeb', 'saveFile');
   final bytes = utf8.encode(content);
   final blob = html.Blob([bytes]);
   final url = html.Url.createObjectUrlFromBlob(blob);

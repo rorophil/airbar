@@ -1,5 +1,6 @@
 import '../providers/serverpod_client_provider.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Repository pour les opérations de caisse
 ///
@@ -17,6 +18,10 @@ import 'package:airbar_backend_client/airbar_backend_client.dart';
 /// - Déduction automatique du stock
 /// - Génération de reçu
 class CashierRepository {
+  CashierRepository() {
+    Trace.create('CashierRepository');
+  }
+
   /// Client Serverpod pour les appels API
   Client get _client => ServerpodClientProvider.client;
 
@@ -52,6 +57,7 @@ class CashierRepository {
     required PaymentMethod paymentMethod,
     required String pin,
   }) async {
+    Trace.call('CashierRepository', 'processCashSale');
     try {
       return await _client.cashier.processCashSale(
         sellerId,
@@ -82,6 +88,7 @@ class CashierRepository {
     int limit = 50,
     int offset = 0,
   }) async {
+    Trace.call('CashierRepository', 'getSellerTransactions');
     try {
       return await _client.cashier.getSellerTransactions(
         sellerId,

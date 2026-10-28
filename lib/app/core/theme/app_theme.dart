@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../values/app_colors.dart';
+import 'package:airbar/app/core/utils/trace_logger.dart';
 
 /// Configuration des thèmes de l'application AirBar
 ///
@@ -10,6 +11,7 @@ class AppTheme {
   /// Utilise Material Design 3 avec la couleur primaire [AppColors.primary]
   /// et un fond clair.
   static ThemeData get lightTheme {
+    Trace.call('AppTheme', 'lightTheme');
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
@@ -48,6 +50,7 @@ class AppTheme {
   /// Utilise Material Design 3 avec la couleur primaire [AppColors.primary]
   /// et un fond sombre.
   static ThemeData get darkTheme {
+    Trace.call('AppTheme', 'darkTheme');
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
