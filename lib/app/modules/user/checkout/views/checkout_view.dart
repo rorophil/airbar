@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/checkout_controller.dart';
@@ -14,12 +15,12 @@ import '../../../../services/auth_service.dart';
 /// Composants principaux:
 /// - Card Solde: Affichage du solde actuel et solde après achat
 /// - Card Total: Montant total de la commande
-/// - Champ PIN: Saisie sécurisée du code PIN (4 chiffres)
+/// - Champ PIN: TextField masqué, clavier numérique du système (4 chiffres)
 /// - Bouton Payer: Déclenchement de la transaction
 /// - Bouton Annuler: Retour au panier
 ///
 /// Interactions:
-/// - Saisie PIN → Validation format (4 chiffres)
+/// - Saisie PIN → Filtre chiffres uniquement, validation clavier (Entrée)
 /// - Tap icône œil → Bascule visibilité PIN
 /// - Tap Payer → Transaction atomique + navigation boutique
 /// - Tap Annuler → Retour panier
@@ -159,79 +160,58 @@ class CheckoutView extends GetView<CheckoutController> {
 
                 SizedBox(height: 16.h),
 
-                // PIN display
+                // Saisie du PIN via le clavier numérique du système
                 Obx(
-                  () => Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      4,
-                      (index) => Container(
-                        width: 40.w,
-                        height: 40.w,
-                        margin: EdgeInsets.symmetric(horizontal: 6.w),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: AppColors.primary,
-                            width: 2,
-                          ),
-                          borderRadius: BorderRadius.circular(10.r),
+                  () => Center(
+                    child: SizedBox(
+                      width: 220.w,
+                      child: TextField(
+                        controller: controller.pinController,
+                        autofocus: true,
+                        obscureText: !controller.showPin.value,
+                        keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        textAlign: TextAlign.center,
+                        maxLength: 4,
+                        enableSuggestions: false,
+                        autocorrect: false,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        style: TextStyle(
+                          fontSize: 24.sp,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 8,
                         ),
-                        child: Center(
-                          child: Text(
-                            index < controller.pin.value.length
-                                ? (controller.showPin.value
-                                      ? controller.pin.value[index]
-                                      : '●')
-                                : '',
-                            style: TextStyle(
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.bold,
+                        decoration: InputDecoration(
+                          counterText: '',
+                          hintText: '••••',
+                          prefixIcon: const Icon(Icons.pin),
+                          suffixIcon: IconButton(
+                            tooltip: controller.showPin.value
+                                ? 'Masquer'
+                                : 'Afficher',
+                            icon: Icon(
+                              controller.showPin.value
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
+                            onPressed: controller.togglePinVisibility,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.r),
                           ),
                         ),
+                        onChanged: controller.updatePin,
+                        onSubmitted: (_) {
+                          if (controller.pin.value.length == 4 &&
+                              !controller.isProcessing.value) {
+                            controller.processCheckout();
+                          }
+                        },
                       ),
                     ),
                   ),
-                ),
-
-                SizedBox(height: 8.h),
-
-                // Show/Hide PIN toggle
-                Obx(
-                  () => TextButton.icon(
-                    onPressed: controller.togglePinVisibility,
-                    icon: Icon(
-                      controller.showPin.value
-                          ? Icons.visibility_off
-                          : Icons.visibility,
-                      size: 18.sp,
-                    ),
-                    label: Text(
-                      controller.showPin.value ? 'Masquer' : 'Afficher',
-                      style: TextStyle(fontSize: 14.sp),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 12.h),
-
-                // Numeric keypad
-                _NumericKeypad(
-                  onNumberPressed: (num) {
-                    if (controller.pin.value.length < 4) {
-                      controller.updatePin(controller.pin.value + num);
-                    }
-                  },
-                  onBackspacePressed: () {
-                    if (controller.pin.value.isNotEmpty) {
-                      controller.updatePin(
-                        controller.pin.value.substring(
-                          0,
-                          controller.pin.value.length - 1,
-                        ),
-                      );
-                    }
-                  },
                 ),
 
                 SizedBox(height: 12.h),
@@ -294,81 +274,6 @@ class CheckoutView extends GetView<CheckoutController> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _NumericKeypad extends StatelessWidget {
-  final Function(String) onNumberPressed;
-  final VoidCallback onBackspacePressed;
-
-  const _NumericKeypad({
-    required this.onNumberPressed,
-    required this.onBackspacePressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GridView.count(
-      crossAxisCount: 3,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 2.5,
-      mainAxisSpacing: 6.h,
-      crossAxisSpacing: 6.w,
-      children: [
-        // Numbers 1-9
-        ...List.generate(9, (index) {
-          final number = (index + 1).toString();
-          return _KeypadButton(
-            text: number,
-            onPressed: () => onNumberPressed(number),
-          );
-        }),
-
-        // Empty space
-        const SizedBox.shrink(),
-
-        // Number 0
-        _KeypadButton(text: '0', onPressed: () => onNumberPressed('0')),
-
-        // Backspace
-        _KeypadButton(
-          icon: Icons.backspace_outlined,
-          onPressed: onBackspacePressed,
-        ),
-      ],
-    );
-  }
-}
-
-class _KeypadButton extends StatelessWidget {
-  final String? text;
-  final IconData? icon;
-  final VoidCallback onPressed;
-
-  const _KeypadButton({this.text, this.icon, required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-        elevation: 1,
-        padding: EdgeInsets.symmetric(vertical: 4.h),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.r),
-          side: const BorderSide(color: AppColors.primary, width: 1),
-        ),
-      ),
-      child: text != null
-          ? Text(
-              text!,
-              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
-            )
-          : Icon(icon, size: 20.sp),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
@@ -52,6 +53,7 @@ class CashierView extends GetView<CashierController> {
                   Padding(
                     padding: EdgeInsets.all(16.w),
                     child: TextField(
+                      textInputAction: TextInputAction.search,
                       decoration: InputDecoration(
                         hintText: 'Rechercher un produit...',
                         prefixIcon: const Icon(Icons.search),
@@ -814,6 +816,7 @@ class _BulkProductCard extends GetView<CashierController> {
             TextField(
               controller: quantityController,
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 labelText: 'Quantité',
                 border: OutlineInputBorder(
@@ -969,6 +972,7 @@ class _ProductDetailsSheet extends GetView<CashierController> {
                   child: TextField(
                     controller: quantityController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -1226,6 +1230,9 @@ class _ProductDetailsSheet extends GetView<CashierController> {
                         child: TextField(
                           controller: quantityController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(

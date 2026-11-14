@@ -130,7 +130,10 @@ class ServerConfigView extends GetView<SettingsController> {
                 filled: true,
                 fillColor: Colors.grey.shade50,
               ),
-              keyboardType: TextInputType.text,
+              keyboardType: TextInputType.url,
+              textCapitalization: TextCapitalization.none,
+              autocorrect: false,
+              enableSuggestions: false,
             ),
 
             SizedBox(height: 24.h),

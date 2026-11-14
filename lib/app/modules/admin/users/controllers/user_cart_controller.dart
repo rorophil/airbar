@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/cart_repository.dart';
@@ -194,6 +195,7 @@ class UserCartController extends GetxController {
               controller: pinController,
               obscureText: true,
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               maxLength: 4,
               decoration: const InputDecoration(
                 labelText: 'Votre code PIN administrateur',

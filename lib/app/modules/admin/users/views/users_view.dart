@@ -57,6 +57,7 @@ class UsersView extends GetView<UsersController> {
           Padding(
             padding: EdgeInsets.all(16.w),
             child: TextField(
+              textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: AppStrings.search,
                 prefixIcon: const Icon(Icons.search),

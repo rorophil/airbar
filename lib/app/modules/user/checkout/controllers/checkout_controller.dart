@@ -45,11 +45,20 @@ class CheckoutController extends GetxController {
   /// Montant total du panier (passé en argument depuis CartView)
   double cartTotal = 0.0;
 
+  /// Contrôleur du champ PIN (clavier numérique système)
+  final pinController = TextEditingController();
+
   @override
   void onInit() {
     super.onInit();
     // Récupération du montant total passé en argument depuis CartView
     cartTotal = Get.arguments?['total'] ?? 0.0;
+  }
+
+  @override
+  void onClose() {
+    pinController.dispose();
+    super.onClose();
   }
 
   /// Basculer la visibilité du code PIN
@@ -124,6 +133,7 @@ class CheckoutController extends GetxController {
 
       // Effacement du PIN pour sécurité
       pin.value = '';
+      pinController.clear();
 
       // Affichage du succès
       Get.snackbar(
@@ -175,6 +185,11 @@ class CheckoutController extends GetxController {
         );
       }
     } finally {
+      // PIN effacé après chaque tentative (succès ou échec)
+      if (!isClosed) {
+        pin.value = '';
+        pinController.clear();
+      }
       isProcessing.value = false;
     }
   }

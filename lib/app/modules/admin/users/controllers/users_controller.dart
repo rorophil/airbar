@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
 import '../../../../data/repositories/user_repository.dart';
 import '../../../../data/repositories/cart_repository.dart';
 import '../../../../routes/app_routes.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/values/app_strings.dart';
 
 /// Controller du module de gestion des utilisateurs (Admin)
@@ -360,6 +362,14 @@ class UsersController extends GetxController {
                     );
                     return;
                   }
+                  if (passwordController.text.length < 6) {
+                    Get.snackbar(
+                      'Erreur',
+                      'Le mot de passe doit contenir au moins 6 caractères',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
                   if (passwordController.text !=
                       confirmPasswordController.text) {
                     Get.snackbar(
@@ -436,7 +446,8 @@ class UsersController extends GetxController {
                   controller: pinController,
                   obscureText: !isPinVisible,
                   keyboardType: TextInputType.number,
-                  maxLength: 6,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  maxLength: AppConstants.pinLength,
                   decoration: InputDecoration(
                     labelText: 'Nouveau code PIN',
                     border: const OutlineInputBorder(),
@@ -457,7 +468,8 @@ class UsersController extends GetxController {
                   controller: confirmPinController,
                   obscureText: !isConfirmPinVisible,
                   keyboardType: TextInputType.number,
-                  maxLength: 6,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  maxLength: AppConstants.pinLength,
                   decoration: InputDecoration(
                     labelText: 'Confirmer le code PIN',
                     border: const OutlineInputBorder(),
@@ -488,6 +500,14 @@ class UsersController extends GetxController {
                     Get.snackbar(
                       'Erreur',
                       'Le code PIN ne peut pas être vide',
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                    return;
+                  }
+                  if (pinController.text.length != AppConstants.pinLength) {
+                    Get.snackbar(
+                      'Erreur',
+                      'Le code PIN doit contenir ${AppConstants.pinLength} chiffres',
                       snackPosition: SnackPosition.BOTTOM,
                     );
                     return;

@@ -63,6 +63,7 @@ class ProductsView extends GetView<ProductsController> {
           Padding(
             padding: EdgeInsets.all(16.w),
             child: TextField(
+              textInputAction: TextInputAction.search,
               controller: controller.searchController,
               decoration: InputDecoration(
                 hintText: AppStrings.search,

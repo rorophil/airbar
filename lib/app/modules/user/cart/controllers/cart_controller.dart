@@ -205,8 +205,8 @@ class CartController extends GetxController {
         return;
       }
 
-      // Validation du stock disponible
-      if (item.product != null) {
+      // Validation du stock disponible (uniquement si le stock est géré)
+      if (item.product != null && item.product!.trackStock) {
         // Calcul du stock requis
         double requiredStock = newQuantity.toDouble();
 

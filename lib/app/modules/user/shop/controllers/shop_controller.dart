@@ -273,7 +273,9 @@ class ShopController extends GetxController {
       // Calcul du stock total disponible
       double availableStock = 0.0;
 
-      if (product.isBulkProduct && product.bulkTotalQuantity != null) {
+      if (!product.trackStock) {
+        // Stock non géré (libre-service) : aucune validation de stock
+      } else if (product.isBulkProduct && product.bulkTotalQuantity != null) {
         // Produits en vrac: total = (unités complètes × capacité) + unité entamée
         // Ex: 5 fûts de 6L + 4.25L ouvert = (5 × 6) + 4.25 = 34.25L
         availableStock =

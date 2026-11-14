@@ -68,6 +68,7 @@ class TransactionsView extends GetView<TransactionsController> {
             Padding(
               padding: EdgeInsets.all(16.w),
               child: TextField(
+                textInputAction: TextInputAction.search,
                 decoration: InputDecoration(
                   hintText: 'Rechercher...',
                   prefixIcon: const Icon(Icons.search),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:airbar_backend_client/airbar_backend_client.dart';
@@ -71,26 +72,32 @@ class ShopView extends GetView<ShopController> {
                 ),
                 if (controller.cartItemCount.value > 0)
                   Positioned(
-                    right: 8,
-                    top: 8,
-                    child: Container(
-                      padding: EdgeInsets.all(2.w),
-                      decoration: const BoxDecoration(
-                        color: AppColors.error,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 16.w,
-                        minHeight: 16.w,
-                      ),
-                      child: Text(
-                        '${controller.cartItemCount.value}',
-                        style: TextStyle(
-                          color: AppColors.textWhite,
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.bold,
+                    right: 4,
+                    top: 4,
+                    // Le badge ne doit pas intercepter les clics sur l'icône
+                    child: IgnorePointer(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 4.w,
+                          vertical: 1.h,
                         ),
-                        textAlign: TextAlign.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.error,
+                          borderRadius: BorderRadius.circular(10.r),
+                        ),
+                        constraints: BoxConstraints(
+                          minWidth: 16.w,
+                          minHeight: 16.w,
+                        ),
+                        child: Text(
+                          '${controller.cartItemCount.value}',
+                          style: TextStyle(
+                            color: AppColors.textWhite,
+                            fontSize: 10.sp,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
                   ),
@@ -132,6 +139,7 @@ class ShopView extends GetView<ShopController> {
               Padding(
                 padding: EdgeInsets.all(16.w),
                 child: TextField(
+                  textInputAction: TextInputAction.search,
                   decoration: InputDecoration(
                     hintText: AppStrings.search,
                     prefixIcon: const Icon(Icons.search),
@@ -328,24 +336,25 @@ class _ProductCard extends GetView<ShopController> {
                             color: AppColors.primary,
                           ),
                         ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.inventory_2,
-                              size: 14.sp,
-                              color: _getStockColor(),
-                            ),
-                            SizedBox(width: 4.w),
-                            Text(
-                              '${product.stockQuantity}',
-                              style: TextStyle(
-                                fontSize: 14.sp,
-                                fontWeight: FontWeight.w600,
+                        if (product.trackStock)
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.inventory_2,
+                                size: 14.sp,
                                 color: _getStockColor(),
                               ),
-                            ),
-                          ],
-                        ),
+                              SizedBox(width: 4.w),
+                              Text(
+                                '${product.stockQuantity}',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                  color: _getStockColor(),
+                                ),
+                              ),
+                            ],
+                          ),
                       ],
                     ),
                   ],
@@ -358,7 +367,7 @@ class _ProductCard extends GetView<ShopController> {
               Icon(
                 Icons.add_shopping_cart,
                 size: 24.sp,
-                color: product.stockQuantity > 0
+                color: (!product.trackStock || product.stockQuantity > 0)
                     ? AppColors.primary
                     : AppColors.textHint,
               ),
@@ -461,24 +470,25 @@ class _BulkProductCard extends GetView<ShopController> {
                   ),
                 ),
                 // Stock indicator
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Icon(
-                      Icons.inventory_2,
-                      size: 18.sp,
-                      color: _getStockColor(),
-                    ),
-                    Text(
-                      '${product.stockQuantity}',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.bold,
+                if (product.trackStock)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Icon(
+                        Icons.inventory_2,
+                        size: 18.sp,
                         color: _getStockColor(),
                       ),
-                    ),
-                  ],
-                ),
+                      Text(
+                        '${product.stockQuantity}',
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: _getStockColor(),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
 
@@ -514,7 +524,7 @@ class _BulkProductCard extends GetView<ShopController> {
             else
               ...activePortions.map(
                 (portion) => InkWell(
-                  onTap: product.stockQuantity > 0
+                  onTap: (!product.trackStock || product.stockQuantity > 0)
                       ? () => _showPortionDialog(context, portion)
                       : null,
                   child: Container(
@@ -569,7 +579,9 @@ class _BulkProductCard extends GetView<ShopController> {
                             Icon(
                               Icons.add_shopping_cart,
                               size: 20.sp,
-                              color: product.stockQuantity > 0
+                              color:
+                                  (!product.trackStock ||
+                                      product.stockQuantity > 0)
                                   ? AppColors.primary
                                   : AppColors.textHint,
                             ),
@@ -626,6 +638,7 @@ class _BulkProductCard extends GetView<ShopController> {
             TextField(
               controller: quantityController,
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
                 labelText: 'Quantité',
                 border: OutlineInputBorder(
@@ -736,15 +749,16 @@ class _ProductDetailsSheet extends GetView<ShopController> {
             SizedBox(height: 8.h),
 
             // Stock
-            Text(
-              'Stock disponible: ${product.stockQuantity}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: product.stockQuantity > 0
-                    ? AppColors.success
-                    : AppColors.error,
+            if (product.trackStock)
+              Text(
+                'Stock disponible: ${product.stockQuantity}',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: product.stockQuantity > 0
+                      ? AppColors.success
+                      : AppColors.error,
+                ),
               ),
-            ),
 
             SizedBox(height: 24.h),
 
@@ -758,6 +772,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
                   child: TextField(
                     controller: quantityController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
@@ -780,7 +795,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
               width: double.infinity,
               height: 48.h,
               child: ElevatedButton.icon(
-                onPressed: product.stockQuantity > 0
+                onPressed: (!product.trackStock || product.stockQuantity > 0)
                     ? () {
                         final quantity =
                             int.tryParse(quantityController.text) ?? 1;
@@ -879,15 +894,16 @@ class _ProductDetailsSheet extends GetView<ShopController> {
             SizedBox(height: 16.h),
 
             // Stock
-            Text(
-              'Stock disponible: ${product.stockQuantity} ${product.bulkUnit ?? "unité(s)"}',
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: product.stockQuantity > 0
-                    ? AppColors.success
-                    : AppColors.error,
+            if (product.trackStock)
+              Text(
+                'Stock disponible: ${product.stockQuantity} ${product.bulkUnit ?? "unité(s)"}',
+                style: TextStyle(
+                  fontSize: 14.sp,
+                  color: product.stockQuantity > 0
+                      ? AppColors.success
+                      : AppColors.error,
+                ),
               ),
-            ),
 
             SizedBox(height: 16.h),
 
@@ -996,6 +1012,9 @@ class _ProductDetailsSheet extends GetView<ShopController> {
                         child: TextField(
                           controller: quantityController,
                           keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly,
+                          ],
                           textAlign: TextAlign.center,
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
@@ -1022,7 +1041,7 @@ class _ProductDetailsSheet extends GetView<ShopController> {
                 height: 48.h,
                 child: ElevatedButton.icon(
                   onPressed:
-                      (product.stockQuantity > 0 &&
+                      ((!product.trackStock || product.stockQuantity > 0) &&
                           selectedPortion.value != null)
                       ? () {
                           final quantity =

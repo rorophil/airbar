@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../controllers/category_form_controller.dart';
@@ -64,6 +65,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
               // Name
               TextFormField(
                 controller: controller.nameController,
+                textCapitalization: TextCapitalization.sentences,
                 decoration: InputDecoration(
                   labelText: 'Nom de la catégorie',
                   prefixIcon: const Icon(Icons.category),
@@ -102,6 +104,7 @@ class CategoryFormView extends GetView<CategoryFormController> {
                   ),
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: controller.validateDisplayOrder,
               ),
 
