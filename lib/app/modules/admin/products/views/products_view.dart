@@ -57,121 +57,126 @@ class ProductsView extends GetView<ProductsController> {
         label: const Text('Nouveau produit'),
         backgroundColor: AppColors.primary,
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: EdgeInsets.all(16.w),
-            child: TextField(
-              textInputAction: TextInputAction.search,
-              controller: controller.searchController,
-              decoration: InputDecoration(
-                hintText: AppStrings.search,
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: Obx(
-                  () => controller.searchQuery.value.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: controller.clearSearch,
-                        )
-                      : const SizedBox.shrink(),
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                filled: true,
-                fillColor: AppColors.surface,
-              ),
-              onChanged: controller.updateSearchQuery,
-            ),
-          ),
-
-          // Category filters
-          Obx(() {
-            if (controller.categories.isEmpty) return const SizedBox.shrink();
-
-            return SizedBox(
-              height: 50.h,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(right: 8.w),
-                    child: Obx(
-                      () => ChoiceChip(
-                        label: const Text('Tous'),
-                        selected: controller.selectedCategoryId.value == null,
-                        onSelected: (_) => controller.selectCategory(null),
-                        selectedColor: AppColors.primary,
-                        labelStyle: TextStyle(
-                          color: controller.selectedCategoryId.value == null
-                              ? AppColors.textWhite
-                              : AppColors.textPrimary,
-                        ),
-                      ),
-                    ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search bar
+            Padding(
+              padding: EdgeInsets.all(16.w),
+              child: TextField(
+                textInputAction: TextInputAction.search,
+                controller: controller.searchController,
+                decoration: InputDecoration(
+                  hintText: AppStrings.search,
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: Obx(
+                    () => controller.searchQuery.value.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: controller.clearSearch,
+                          )
+                        : const SizedBox.shrink(),
                   ),
-                  ...controller.categories.map(
-                    (cat) => Padding(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
+                ),
+                onChanged: controller.updateSearchQuery,
+              ),
+            ),
+
+            // Category filters
+            Obx(() {
+              if (controller.categories.isEmpty) return const SizedBox.shrink();
+
+              return SizedBox(
+                height: 50.h,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  children: [
+                    Padding(
                       padding: EdgeInsets.only(right: 8.w),
                       child: Obx(
                         () => ChoiceChip(
-                          label: Text(cat.name),
-                          selected:
-                              controller.selectedCategoryId.value == cat.id,
-                          onSelected: (_) => controller.selectCategory(cat.id),
+                          label: const Text('Tous'),
+                          selected: controller.selectedCategoryId.value == null,
+                          onSelected: (_) => controller.selectCategory(null),
                           selectedColor: AppColors.primary,
                           labelStyle: TextStyle(
-                            color: controller.selectedCategoryId.value == cat.id
+                            color: controller.selectedCategoryId.value == null
                                 ? AppColors.textWhite
                                 : AppColors.textPrimary,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-
-          SizedBox(height: 8.h),
-
-          // Products list
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (controller.filteredProducts.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Aucun produit trouvé',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: AppColors.textSecondary,
+                    ...controller.categories.map(
+                      (cat) => Padding(
+                        padding: EdgeInsets.only(right: 8.w),
+                        child: Obx(
+                          () => ChoiceChip(
+                            label: Text(cat.name),
+                            selected:
+                                controller.selectedCategoryId.value == cat.id,
+                            onSelected: (_) =>
+                                controller.selectCategory(cat.id),
+                            selectedColor: AppColors.primary,
+                            labelStyle: TextStyle(
+                              color:
+                                  controller.selectedCategoryId.value == cat.id
+                                  ? AppColors.textWhite
+                                  : AppColors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              }
-
-              return RefreshIndicator(
-                onRefresh: controller.refresh,
-                child: ListView.separated(
-                  padding: EdgeInsets.all(16.w),
-                  itemCount: controller.filteredProducts.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    final product = controller.filteredProducts[index];
-                    return _ProductCard(product: product);
-                  },
+                  ],
                 ),
               );
             }),
-          ),
-        ],
+
+            SizedBox(height: 8.h),
+
+            // Products list
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (controller.filteredProducts.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Aucun produit trouvé',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: controller.refresh,
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(16.w),
+                    itemCount: controller.filteredProducts.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final product = controller.filteredProducts[index];
+                      return _ProductCard(product: product);
+                    },
+                  ),
+                );
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }

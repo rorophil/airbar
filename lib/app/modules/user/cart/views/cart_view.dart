@@ -70,130 +70,133 @@ class CartView extends GetView<CartController> {
           ),
         ],
       ),
-      body: Obx(() {
-        // Indicateur de chargement
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: SafeArea(
+        child: Obx(() {
+          // Indicateur de chargement
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        // Message panier vide
-        if (controller.cartItems.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.shopping_cart_outlined,
-                  size: 100.sp,
-                  color: AppColors.textHint,
-                ),
-                SizedBox(height: 16.h),
-                Text(
-                  'Votre panier est vide',
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    color: AppColors.textSecondary,
+          // Message panier vide
+          if (controller.cartItems.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 100.sp,
+                    color: AppColors.textHint,
                   ),
-                ),
-                SizedBox(height: 24.h),
-                ElevatedButton.icon(
-                  onPressed: () => Get.back(),
-                  icon: const Icon(Icons.shopping_bag),
-                  label: const Text('Continuer mes achats'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: AppColors.textWhite,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 12.h,
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Votre panier est vide',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      color: AppColors.textSecondary,
                     ),
                   ),
-                ),
-              ],
-            ),
-          );
-        }
-
-        return Column(
-          children: [
-            // Cart items list
-            Expanded(
-              child: RefreshIndicator(
-                onRefresh: controller.refresh,
-                child: ListView.separated(
-                  padding: EdgeInsets.all(16.w),
-                  itemCount: controller.cartItems.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    return _CartItemCard(index: index);
-                  },
-                ),
-              ),
-            ),
-
-            // Bottom summary and checkout
-            Container(
-              padding: EdgeInsets.all(16.w),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, -2),
+                  SizedBox(height: 24.h),
+                  ElevatedButton.icon(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.shopping_bag),
+                    label: const Text('Continuer mes achats'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textWhite,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 12.h,
+                      ),
+                    ),
                   ),
                 ],
               ),
-              child: SafeArea(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppStrings.total,
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Obx(
-                          () => Text(
-                            '${controller.total.value.toStringAsFixed(2)} €',
-                            style: TextStyle(
-                              fontSize: 24.sp,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 16.h),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50.h,
-                      child: ElevatedButton.icon(
-                        onPressed: controller.goToCheckout,
-                        icon: const Icon(Icons.payment),
-                        label: const Text(AppStrings.checkout),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.textWhite,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.r),
-                          ),
-                        ),
-                      ),
+            );
+          }
+
+          return Column(
+            children: [
+              // Cart items list
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: controller.refresh,
+                  child: ListView.separated(
+                    padding: EdgeInsets.all(16.w),
+                    itemCount: controller.cartItems.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      return _CartItemCard(index: index);
+                    },
+                  ),
+                ),
+              ),
+
+              // Bottom summary and checkout
+              Container(
+                padding: EdgeInsets.all(16.w),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
                     ),
                   ],
                 ),
+                child: SafeArea(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            AppStrings.total,
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Obx(
+                            () => Text(
+                              '${controller.total.value.toStringAsFixed(2)} €',
+                              style: TextStyle(
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16.h),
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton.icon(
+                          onPressed: controller.goToCheckout,
+                          icon: const Icon(Icons.payment),
+                          label: const Text(AppStrings.checkout),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.textWhite,
+                            minimumSize: Size.fromHeight(56.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        }),
+      ),
     );
   }
 

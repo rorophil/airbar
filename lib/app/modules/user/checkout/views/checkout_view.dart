@@ -218,35 +218,33 @@ class CheckoutView extends GetView<CheckoutController> {
 
                 // Action buttons
                 Obx(
-                  () => SizedBox(
-                    height: 44.h,
-                    child: ElevatedButton.icon(
-                      onPressed:
-                          controller.isProcessing.value ||
-                              controller.pin.value.length != 4
-                          ? null
-                          : controller.processCheckout,
-                      icon: controller.isProcessing.value
-                          ? SizedBox(
-                              width: 20.w,
-                              height: 20.w,
-                              child: const CircularProgressIndicator(
-                                color: AppColors.textWhite,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Icon(Icons.check_circle),
-                      label: Text(
-                        controller.isProcessing.value
-                            ? 'Traitement...'
-                            : AppStrings.confirm,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.textWhite,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
+                  () => ElevatedButton.icon(
+                    onPressed:
+                        controller.isProcessing.value ||
+                            controller.pin.value.length != 4
+                        ? null
+                        : controller.processCheckout,
+                    icon: controller.isProcessing.value
+                        ? SizedBox(
+                            width: 20.w,
+                            height: 20.w,
+                            child: const CircularProgressIndicator(
+                              color: AppColors.textWhite,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(Icons.check_circle),
+                    label: Text(
+                      controller.isProcessing.value
+                          ? 'Traitement...'
+                          : AppStrings.confirm,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: AppColors.textWhite,
+                      minimumSize: Size.fromHeight(56.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                     ),
                   ),

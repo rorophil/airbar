@@ -51,68 +51,71 @@ class UsersView extends GetView<UsersController> {
         label: const Text('Nouvel utilisateur'),
         backgroundColor: AppColors.primary,
       ),
-      body: Column(
-        children: [
-          // Search bar
-          Padding(
-            padding: EdgeInsets.all(16.w),
-            child: TextField(
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                hintText: AppStrings.search,
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: Obx(
-                  () => controller.searchQuery.value.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          onPressed: () => controller.updateSearchQuery(''),
-                        )
-                      : const SizedBox.shrink(),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Search bar
+            Padding(
+              padding: EdgeInsets.all(16.w),
+              child: TextField(
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: AppStrings.search,
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: Obx(
+                    () => controller.searchQuery.value.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => controller.updateSearchQuery(''),
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.surface,
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                filled: true,
-                fillColor: AppColors.surface,
+                onChanged: controller.updateSearchQuery,
               ),
-              onChanged: controller.updateSearchQuery,
             ),
-          ),
 
-          // Users list
-          Expanded(
-            child: Obx(() {
-              if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
-              }
+            // Users list
+            Expanded(
+              child: Obx(() {
+                if (controller.isLoading.value) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-              if (controller.filteredUsers.isEmpty) {
-                return Center(
-                  child: Text(
-                    'Aucun utilisateur trouvé',
-                    style: TextStyle(
-                      fontSize: 16.sp,
-                      color: AppColors.textSecondary,
+                if (controller.filteredUsers.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'Aucun utilisateur trouvé',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        color: AppColors.textSecondary,
+                      ),
                     ),
+                  );
+                }
+
+                return RefreshIndicator(
+                  onRefresh: controller.refresh,
+                  child: ListView.separated(
+                    padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 100.h),
+                    itemCount: controller.filteredUsers.length,
+                    separatorBuilder: (context, index) =>
+                        SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final user = controller.filteredUsers[index];
+                      return _UserCard(user: user);
+                    },
                   ),
                 );
-              }
-
-              return RefreshIndicator(
-                onRefresh: controller.refresh,
-                child: ListView.separated(
-                  padding: EdgeInsets.fromLTRB(16.w, 0, 16.w, 100.h),
-                  itemCount: controller.filteredUsers.length,
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    final user = controller.filteredUsers[index];
-                    return _UserCard(user: user);
-                  },
-                ),
-              );
-            }),
-          ),
-        ],
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
