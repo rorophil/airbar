@@ -22,26 +22,28 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Récapitulatif du panier
-            _buildCartSummary(),
-            SizedBox(height: 24.h),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Récapitulatif du panier
+              _buildCartSummary(),
+              SizedBox(height: 24.h),
 
-            // Sélection du mode de paiement
-            _buildPaymentMethodSelector(),
-            SizedBox(height: 24.h),
+              // Sélection du mode de paiement
+              _buildPaymentMethodSelector(),
+              SizedBox(height: 24.h),
 
-            // Champ PIN vendeur
-            _buildPinField(),
-            SizedBox(height: 32.h),
+              // Champ PIN vendeur
+              _buildPinField(),
+              SizedBox(height: 32.h),
 
-            // Boutons d'action
-            _buildActionButtons(),
-          ],
+              // Boutons d'action
+              _buildActionButtons(),
+            ],
+          ),
         ),
       ),
     );
@@ -254,33 +256,31 @@ class CashierCheckoutView extends GetView<CashierCheckoutController> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Obx(
-          () => SizedBox(
-            height: 44.h,
-            child: ElevatedButton.icon(
-              onPressed: controller.isProcessing.value || !controller.canProceed
-                  ? null
-                  : controller.processSale,
-              icon: controller.isProcessing.value
-                  ? SizedBox(
-                      width: 20.w,
-                      height: 20.w,
-                      child: const CircularProgressIndicator(
-                        color: AppColors.textWhite,
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : const Icon(Icons.check_circle),
-              label: Text(
-                controller.isProcessing.value
-                    ? 'Traitement...'
-                    : 'Confirmer la vente',
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: AppColors.textWhite,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
+          () => ElevatedButton.icon(
+            onPressed: controller.isProcessing.value || !controller.canProceed
+                ? null
+                : controller.processSale,
+            icon: controller.isProcessing.value
+                ? SizedBox(
+                    width: 20.w,
+                    height: 20.w,
+                    child: const CircularProgressIndicator(
+                      color: AppColors.textWhite,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Icon(Icons.check_circle),
+            label: Text(
+              controller.isProcessing.value
+                  ? 'Traitement...'
+                  : 'Confirmer la vente',
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.textWhite,
+              minimumSize: Size.fromHeight(56.h),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.r),
               ),
             ),
           ),

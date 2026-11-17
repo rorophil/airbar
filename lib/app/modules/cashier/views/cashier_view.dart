@@ -37,84 +37,160 @@ class CashierView extends GetView<CashierController> {
           ),
         ],
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: SafeArea(
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-        return Row(
-          children: [
-            // Partie gauche: Grille de produits
-            Expanded(
-              flex: 3,
-              child: Column(
-                children: [
-                  // Barre de recherche
-                  Padding(
-                    padding: EdgeInsets.all(16.w),
-                    child: TextField(
-                      textInputAction: TextInputAction.search,
-                      decoration: InputDecoration(
-                        hintText: 'Rechercher un produit...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.r),
-                        ),
-                      ),
-                      onChanged: controller.updateSearchQuery,
-                    ),
-                  ),
-
-                  // Filtres catégories
-                  if (controller.categories.isNotEmpty)
-                    SizedBox(
-                      height: 50.h,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: EdgeInsets.symmetric(horizontal: 16.w),
-                        children: [
-                          // Chip "Tous"
-                          Padding(
-                            padding: EdgeInsets.only(right: 8.w),
-                            child: Obx(
-                              () => ChoiceChip(
-                                label: const Text('Tous'),
-                                selected:
-                                    controller.selectedCategoryId.value == null,
-                                onSelected: (_) =>
-                                    controller.filterByCategory(null),
-                                selectedColor: AppColors.primary,
-                                labelStyle: TextStyle(
-                                  color:
-                                      controller.selectedCategoryId.value ==
-                                          null
-                                      ? Colors.white
-                                      : AppColors.textPrimary,
-                                ),
-                              ),
-                            ),
+          return Row(
+            children: [
+              // Partie gauche: Grille de produits
+              Expanded(
+                flex: 3,
+                child: Column(
+                  children: [
+                    // Barre de recherche
+                    Padding(
+                      padding: EdgeInsets.all(16.w),
+                      child: TextField(
+                        textInputAction: TextInputAction.search,
+                        decoration: InputDecoration(
+                          hintText: 'Rechercher un produit...',
+                          prefixIcon: const Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
-                          // Chips des catégories
-                          ...controller.categories.map(
-                            (cat) => Padding(
+                        ),
+                        onChanged: controller.updateSearchQuery,
+                      ),
+                    ),
+
+                    // Filtres catégories
+                    if (controller.categories.isNotEmpty)
+                      SizedBox(
+                        height: 50.h,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          padding: EdgeInsets.symmetric(horizontal: 16.w),
+                          children: [
+                            // Chip "Tous"
+                            Padding(
                               padding: EdgeInsets.only(right: 8.w),
                               child: Obx(
                                 () => ChoiceChip(
-                                  label: Text(cat.name),
+                                  label: const Text('Tous'),
                                   selected:
                                       controller.selectedCategoryId.value ==
-                                      cat.id,
+                                      null,
                                   onSelected: (_) =>
-                                      controller.filterByCategory(cat.id),
+                                      controller.filterByCategory(null),
                                   selectedColor: AppColors.primary,
                                   labelStyle: TextStyle(
                                     color:
                                         controller.selectedCategoryId.value ==
-                                            cat.id
+                                            null
                                         ? Colors.white
                                         : AppColors.textPrimary,
                                   ),
                                 ),
+                              ),
+                            ),
+                            // Chips des catégories
+                            ...controller.categories.map(
+                              (cat) => Padding(
+                                padding: EdgeInsets.only(right: 8.w),
+                                child: Obx(
+                                  () => ChoiceChip(
+                                    label: Text(cat.name),
+                                    selected:
+                                        controller.selectedCategoryId.value ==
+                                        cat.id,
+                                    onSelected: (_) =>
+                                        controller.filterByCategory(cat.id),
+                                    selectedColor: AppColors.primary,
+                                    labelStyle: TextStyle(
+                                      color:
+                                          controller.selectedCategoryId.value ==
+                                              cat.id
+                                          ? Colors.white
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Grille de produits
+                    Expanded(
+                      child: Obx(() {
+                        if (controller.filteredProducts.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'Aucun produit trouvé',
+                              style: TextStyle(
+                                fontSize: 16.sp,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          );
+                        }
+
+                        return ListView.builder(
+                          padding: EdgeInsets.all(12.w),
+                          itemCount: controller.filteredProducts.length,
+                          itemBuilder: (context, index) {
+                            final product = controller.filteredProducts[index];
+                            if (product.isBulkProduct) {
+                              return _BulkProductCard(product: product);
+                            }
+                            return _ProductCard(product: product);
+                          },
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Partie droite: Panier en temps réel
+              Container(
+                width: 300.w,
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  border: Border(left: BorderSide(color: Colors.grey.shade300)),
+                ),
+                child: Column(
+                  children: [
+                    // En-tête du panier
+                    Container(
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        border: Border(
+                          bottom: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Panier',
+                            style: TextStyle(
+                              fontSize: 18.sp,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          Obx(
+                            () => Text(
+                              '${controller.cashierCart.length} article(s)',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -122,178 +198,105 @@ class CashierView extends GetView<CashierController> {
                       ),
                     ),
 
-                  // Grille de produits
-                  Expanded(
-                    child: Obx(() {
-                      if (controller.filteredProducts.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'Aucun produit trouvé',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        padding: EdgeInsets.all(12.w),
-                        itemCount: controller.filteredProducts.length,
-                        itemBuilder: (context, index) {
-                          final product = controller.filteredProducts[index];
-                          if (product.isBulkProduct) {
-                            return _BulkProductCard(product: product);
-                          }
-                          return _ProductCard(product: product);
-                        },
-                      );
-                    }),
-                  ),
-                ],
-              ),
-            ),
-
-            // Partie droite: Panier en temps réel
-            Container(
-              width: 300.w,
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                border: Border(left: BorderSide(color: Colors.grey.shade300)),
-              ),
-              child: Column(
-                children: [
-                  // En-tête du panier
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      border: Border(
-                        bottom: BorderSide(color: Colors.grey.shade300),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Panier',
-                          style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        Obx(
-                          () => Text(
-                            '${controller.cashierCart.length} article(s)',
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // Liste des articles
-                  Expanded(
-                    child: Obx(() {
-                      if (controller.cashierCart.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'Panier vide',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return ListView.builder(
-                        itemCount: controller.cashierCart.length,
-                        itemBuilder: (context, index) {
-                          final item = controller.cashierCart[index];
-                          return _buildCartItem(item, index);
-                        },
-                      );
-                    }),
-                  ),
-
-                  // Total et boutons d'action
-                  Container(
-                    padding: EdgeInsets.all(16.w),
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(color: Colors.grey.shade300),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        // Total
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'TOTAL',
+                    // Liste des articles
+                    Expanded(
+                      child: Obx(() {
+                        if (controller.cashierCart.isEmpty) {
+                          return Center(
+                            child: Text(
+                              'Panier vide',
                               style: TextStyle(
-                                fontSize: 18.sp,
-                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                                color: AppColors.textSecondary,
                               ),
                             ),
-                            Obx(
-                              () => Text(
-                                '${controller.total.toStringAsFixed(2)} €',
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 16.h),
+                          );
+                        }
 
-                        // Boutons
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 2,
-                              child: ElevatedButton(
-                                onPressed: controller.clearCart,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.background,
-                                ),
-                                child: const Text('Vider'),
-                              ),
-                            ),
-                            SizedBox(width: 8.w),
-                            Expanded(
-                              flex: 2,
-                              child: ElevatedButton(
-                                onPressed: controller.goToCheckout,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                ),
-                                child: const Text(
-                                  'Valider',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
+                        return ListView.builder(
+                          itemCount: controller.cashierCart.length,
+                          itemBuilder: (context, index) {
+                            final item = controller.cashierCart[index];
+                            return _buildCartItem(item, index);
+                          },
+                        );
+                      }),
                     ),
-                  ),
-                ],
+
+                    // Total et boutons d'action
+                    Container(
+                      padding: EdgeInsets.all(16.w),
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          // Total
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'TOTAL',
+                                style: TextStyle(
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Obx(
+                                () => Text(
+                                  '${controller.total.toStringAsFixed(2)} €',
+                                  style: TextStyle(
+                                    fontSize: 20.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 16.h),
+
+                          // Boutons
+                          Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: ElevatedButton(
+                                  onPressed: controller.clearCart,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.background,
+                                  ),
+                                  child: const Text('Vider'),
+                                ),
+                              ),
+                              SizedBox(width: 8.w),
+                              Expanded(
+                                flex: 2,
+                                child: ElevatedButton(
+                                  onPressed: controller.goToCheckout,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppColors.primary,
+                                  ),
+                                  child: const Text(
+                                    'Valider',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
-        );
-      }),
+            ],
+          );
+        }),
+      ),
     );
   }
 
@@ -530,10 +533,12 @@ class _ProductCard extends GetView<CashierController> {
   void _showProductDetails(BuildContext context) {
     showModalBottomSheet(
       context: context,
+      useSafeArea: true,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.r)),
       ),
-      builder: (context) => _ProductDetailsSheet(product: product),
+      builder: (context) =>
+          SafeArea(top: false, child: _ProductDetailsSheet(product: product)),
     );
   }
 }

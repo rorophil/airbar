@@ -28,40 +28,44 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Logo de l'application
-            Icon(
-              Icons.local_bar,
-              size: 100,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            const SizedBox(height: 24),
-
-            // Nom de l'application
-            Text(
-              AppStrings.appName,
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo de l'application
+              Icon(
+                Icons.local_bar,
+                size: 100,
                 color: Theme.of(context).colorScheme.primary,
               ),
-            ),
-            const SizedBox(height: 8),
+              const SizedBox(height: 24),
 
-            // Slogan de l'application
-            Text(
-              AppStrings.appTagLine,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              // Nom de l'application
+              Text(
+                AppStrings.appName,
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            ),
-            const SizedBox(height: 48),
+              const SizedBox(height: 8),
 
-            // Indicateur de chargement
-            const CircularProgressIndicator(),
-          ],
+              // Slogan de l'application
+              Text(
+                AppStrings.appTagLine,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: 48),
+
+              // Indicateur de chargement
+              const CircularProgressIndicator(),
+            ],
+          ),
         ),
       ),
     );
